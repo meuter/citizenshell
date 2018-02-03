@@ -13,6 +13,7 @@ Linux and MacOS, but may be extended to work to Windows based platform in the fu
 - [ ] shell over ssh using paramiko
 - [ ] shell over adb
 - [ ] shell over serial using pyserial
+- [ ] available from PIP repository
 
 ## Examples
 
