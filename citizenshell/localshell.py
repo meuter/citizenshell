@@ -1,5 +1,6 @@
+import copy
 import os
-import subprocess
+from subprocess import Popen, PIPE
 
 from .shellerror import ShellError
 from .shellresult import ShellResult
@@ -7,22 +8,30 @@ from .shellresult import ShellResult
 
 class LocalShell:
 
-    def __init__(self, shell="/bin/bash", check_xc=False, check_err=False):
-        self._env = os.environ
-        self._shell = shell
+    def __init__(self, check_xc=False, check_err=False, **kwargs):
+        self._env = copy.deepcopy(os.environ)
         self._check_xc = check_xc
         self._check_err = check_err
+        for var, val in kwargs.items():
+            self._env[var] = val
 
-    def __call__(self, cmd, check_xc=None, check_err=None):
+    def _get_env(self, **kwargs):
+        if not kwargs:
+            return self._env
+        env = copy.deepcopy(self._env)
+        for var, val in kwargs.items():
+            env[var] = val
+        return env
+
+    def __call__(self, cmd, check_xc=None, check_err=None, **kwargs):
         check_xc = check_xc if check_xc else self._check_xc
         check_err = check_err if check_err else self._check_err
+        env = self._get_env(**kwargs)
 
-        shell_process = subprocess.Popen(self._shell, shell=False, env=self._env,
-                                         stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE)
-        out, err = shell_process.communicate(str.encode(cmd))
-        result = ShellResult(cmd, out.splitlines(), err.splitlines(), shell_process.returncode)
+        proc = Popen(cmd, shell=True, env=env, stdout=PIPE, stderr=PIPE)
+        out, err = proc.communicate()
+        result = ShellResult(cmd, out.splitlines(), err.splitlines(), proc.returncode)
+
         if check_xc and result.xc != 0:
             raise ShellError(result)
         if check_err and result.err:

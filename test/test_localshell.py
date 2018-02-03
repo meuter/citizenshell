@@ -24,10 +24,6 @@ def test_local_shell_can_be_instantiated():
     LocalShell()
 
 
-def test_local_shell_can_be_provided_with_a_specific_shell():
-    LocalShell(shell="/bin/zsh")
-
-
 def test_local_shell_can_run_one_basic_command():
     shell = LocalShell()
     result = shell("echo Foo")
@@ -83,6 +79,18 @@ def test_local_shell_has_environment_variable():
     shell["SOME_VARIABLE"] = "value"
     assert shell["SOME_VARIABLE"] == "value"
     assert shell("echo $SOME_VARIABLE") == "value"
+
+
+def test_local_shell_can_be_constructed_with_env_as_kwargs():
+    shell = LocalShell(FOO="bar")
+    assert shell("echo $FOO") == "bar"
+
+
+def test_local_shell_can_override_environment_variable_on_invokation():
+    shell = LocalShell(VAR="foo")
+    assert shell("echo $VAR") == "foo"
+    assert shell("echo $VAR", VAR="bar") == "bar"
+    assert shell("echo $VAR") == "foo"
 
 
 def test_local_shell_result_can_throw_on_nonzero_exitcode():
