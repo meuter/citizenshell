@@ -4,4 +4,6 @@ python:
   - "2.7"
   - "pypy"
 
-script: pytest
+script: 
+  - python setup.py install
+  - pytest test/
