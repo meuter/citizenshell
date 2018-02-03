@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-from citizenshell.shellerror import ShellError
-from citizenshell.shellresult import ShellResult
+from .shellerror import ShellError
+from .shellresult import ShellResult
 
 
 class LocalShell:
@@ -21,7 +21,7 @@ class LocalShell:
                                          stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE)
-        out, err = shell_process.communicate(cmd)
+        out, err = shell_process.communicate(str.encode(cmd))
         result = ShellResult(cmd, out.splitlines(), err.splitlines(), shell_process.returncode)
         if check_xc and result.xc != 0:
             raise ShellError(result)

@@ -1,4 +1,4 @@
-from shellresult import ShellResult
+from .shellresult import ShellResult
 
 
 class ShellError(RuntimeError):

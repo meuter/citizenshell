@@ -1,3 +1,3 @@
-from localshell import LocalShell
-from shellerror import ShellError
-from shellresult import ShellResult
+from .localshell import LocalShell
+from .shellerror import ShellError
+from .shellresult import ShellResult
