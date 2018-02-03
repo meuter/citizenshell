@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ed334c9-7ba6-4df1-bd29-d8df0c264fba" name="Default" comment="">
+      <change beforePath="" afterPath="$PROJECT_DIR$/citizenshell/shellexception.py" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/citizenshell/__init__.py" afterPath="$PROJECT_DIR$/citizenshell/__init__.py" />
+      <change beforePath="$PROJECT_DIR$/citizenshell/localshell.py" afterPath="$PROJECT_DIR$/citizenshell/localshell.py" />
       <change beforePath="$PROJECT_DIR$/citizenshell/shellresult.py" afterPath="$PROJECT_DIR$/citizenshell/shellresult.py" />
       <change beforePath="$PROJECT_DIR$/test/test_localshell.py" afterPath="$PROJECT_DIR$/test/test_localshell.py" />
     </list>
@@ -20,8 +23,8 @@
       <file leaf-file-name="localshell.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/citizenshell/localshell.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+            <state relative-caret-position="325">
+              <caret line="23" column="60" lean-forward="false" selection-start-line="23" selection-start-column="46" selection-end-line="23" selection-end-column="60" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -29,11 +32,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="shellresult.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="shellresult.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/citizenshell/shellresult.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+            <state relative-caret-position="170">
+              <caret line="10" column="12" lean-forward="false" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -42,7 +45,7 @@
       <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
+            <state relative-caret-position="0">
               <caret line="2" column="16" lean-forward="false" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
               <folding />
             </state>
@@ -52,9 +55,11 @@
       <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/citizenshell/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="20" lean-forward="false" selection-start-line="0" selection-start-column="20" selection-end-line="0" selection-end-column="20" />
-              <folding />
+            <state relative-caret-position="34">
+              <caret line="2" column="41" lean-forward="false" selection-start-line="2" selection-start-column="41" selection-end-line="2" selection-end-column="41" />
+              <folding>
+                <element signature="e#0#33#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -62,8 +67,28 @@
       <file leaf-file-name="test_localshell.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/test_localshell.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="421">
-              <caret line="50" column="31" lean-forward="false" selection-start-line="50" selection-start-column="31" selection-end-line="50" selection-end-column="31" />
+            <state relative-caret-position="427">
+              <caret line="88" column="27" lean-forward="false" selection-start-line="88" selection-start-column="27" selection-end-line="88" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workspace.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="shellexception.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/citizenshell/shellexception.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="34">
+              <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -85,10 +110,11 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/citizenshell/__init__.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/citizenshell/__init__.py" />
         <option value="$PROJECT_DIR$/citizenshell/localshell.py" />
         <option value="$PROJECT_DIR$/test/test_localshell.py" />
+        <option value="$PROJECT_DIR$/citizenshell/shellexception.py" />
         <option value="$PROJECT_DIR$/citizenshell/shellresult.py" />
       </list>
     </option>
@@ -123,6 +149,11 @@
               <item name="citizenshell" type="b2602c69:ProjectViewProjectNode" />
               <item name="citizenshell" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="citizenshell" type="b2602c69:ProjectViewProjectNode" />
+              <item name="citizenshell" type="462c0819:PsiDirectoryNode" />
+              <item name="citizenshell" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -132,7 +163,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
     <property name="SearchEverywhereHistoryKey" value="shellresul&#9;null&#9;null" />
   </component>
   <component name="RunDashboard">
@@ -177,7 +208,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="citizenshell" />
       <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;--color\u003dyes --tb\u003dshort -s&quot;" />
+      <option name="_new_additionalArguments" value="&quot;--color\u003dyes --tb\u003dshort -sv&quot;" />
       <option name="_new_target" value="&quot;test&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
     </configuration>
@@ -284,38 +315,45 @@
       <option name="project" value="LOCAL" />
       <updated>1517649709411</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="added __nonzero__ to ShellResult">
+      <created>1517650903208</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1517650903208</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 10m 39s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 18m 48s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 17m 40s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 19m 01s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 18m 06s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 21m 33s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 18m 31s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 24m 11s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 18m 50s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 24m 45s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 37m 02s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 25m 19s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 38m 27s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 25m 28s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 39m 15s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 25m 36s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 39m 38s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 26m 33s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
-    <history-entry file="Run_All_Tests - 2018.02.03 at 10h 39m 50s.xml">
+    <history-entry file="Run_All_Tests - 2018.02.03 at 11h 28m 09s.xml">
       <configuration name="Run All Tests" configurationId="tests" />
     </history-entry>
   </component>
@@ -349,7 +387,8 @@
     <MESSAGE value="basic LocalShell working" />
     <MESSAGE value="implemented iteration of ShellResult" />
     <MESSAGE value="implemented the possibility to inject environment variable in LocalShell" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented the possibility to inject environment variable in LocalShell" />
+    <MESSAGE value="added __nonzero__ to ShellResult" />
+    <option name="LAST_COMMIT_MESSAGE" value="added __nonzero__ to ShellResult" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
@@ -384,7 +423,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
+        <state relative-caret-position="0">
           <caret line="2" column="16" lean-forward="false" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
           <folding />
         </state>
@@ -392,34 +431,52 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/citizenshell/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="20" lean-forward="false" selection-start-line="0" selection-start-column="20" selection-end-line="0" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/test_localshell.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="50" column="31" lean-forward="false" selection-start-line="50" selection-start-column="31" selection-end-line="50" selection-end-column="31" />
-          <folding />
+        <state relative-caret-position="34">
+          <caret line="2" column="41" lean-forward="false" selection-start-line="2" selection-start-column="41" selection-end-line="2" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/citizenshell/localshell.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+        <state relative-caret-position="325">
+          <caret line="23" column="60" lean-forward="false" selection-start-line="23" selection-start-column="46" selection-end-line="23" selection-end-column="60" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/citizenshell/shellexception.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/citizenshell/shellresult.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+        <state relative-caret-position="170">
+          <caret line="10" column="12" lean-forward="false" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test_localshell.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="427">
+          <caret line="88" column="27" lean-forward="false" selection-start-line="88" selection-start-column="27" selection-end-line="88" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>

@@ -1,18 +1,19 @@
 class ShellResult:
 
-    def __init__(self, out, err, xc):
+    def __init__(self, cmd, out, err, xc):
+        self.cmd = cmd
         self.out = out
         self.err = err
         self.xc = xc
 
-    def __eq__(self, expected_out):
-        if isinstance(expected_out, str):
-            return expected_out.splitlines() == self.out
-        return self.out == expected_out
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return other.splitlines() == self.out
+        return (other.cmd == self.cmd) and (other.out == self.out) and \
+               (other.err == self.err) and (other.xc == self.xc)
 
     def __iter__(self):
         return iter(self.out)
 
     def __nonzero__(self):
-        print "calling non zero"
         return self.xc == 0
