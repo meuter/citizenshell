@@ -1,7 +1,7 @@
 from citizenshell import LocalShell
 
 
-def test_local_shell_can_be_instatiated():
+def test_local_shell_can_be_instantiated():
     LocalShell()
 
 
@@ -21,7 +21,7 @@ def test_local_shell_can_run_another_basic_command():
     assert result == "Bar"
 
 
-def test_local_shell_result_can_extract_stdout():
+def test_local_shell_result_has_stdout():
     shell = LocalShell()
     result = shell("echo Foo")
     assert result.out == ["Foo"]
@@ -29,7 +29,7 @@ def test_local_shell_result_can_extract_stdout():
     assert result.xc == 0
 
 
-def test_local_shell_result_can_extract_stderr():
+def test_local_shell_result_has_stderr():
     shell = LocalShell()
     result = shell(">&2 echo Baz")
     assert result.out == []
@@ -37,12 +37,18 @@ def test_local_shell_result_can_extract_stderr():
     assert result.xc == 0
 
 
-def test_local_shell_result_can_extract_exit_code():
+def test_local_shell_result_has_exit_code():
     shell = LocalShell()
     result = shell("exit 15")
     assert result.out == []
     assert result.err == []
     assert result.xc == 15
+
+
+def test_local_shell_result_can_be_compared_for_boolean():
+    shell = LocalShell()
+    assert shell("exit 0")
+    assert not shell("exit 10")
 
 
 def test_local_shell_result_can_be_iterated_on():

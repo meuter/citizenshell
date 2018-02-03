@@ -12,3 +12,7 @@ class ShellResult:
 
     def __iter__(self):
         return iter(self.out)
+
+    def __nonzero__(self):
+        print "calling non zero"
+        return self.xc == 0
