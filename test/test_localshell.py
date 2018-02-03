@@ -1,4 +1,4 @@
-from citizenshell import LocalShell, ShellError
+from citizenshell import LocalShell, ShellError, sh
 
 
 def check_exception_is_not_raised(cmd, global_check_xc=False, local_check_xc=None,
@@ -28,6 +28,10 @@ def test_local_shell_can_run_one_basic_command():
     shell = LocalShell()
     result = shell("echo Foo")
     assert result == "Foo"
+
+
+def test_builting_local_shell():
+    assert sh("echo Bar") == "Bar"
 
 
 def test_local_shell_can_run_another_basic_command():
@@ -105,3 +109,30 @@ def test_local_shell_result_can_throw_on_nonempty_err():
     check_exception_is_raised(">&2 echo error", global_check_err=True, local_check_err=True)
     check_exception_is_raised(">&2 echo error", global_check_err=False, local_check_err=True)
     check_exception_is_not_raised(">&2 echo error", global_check_err=False, local_check_err=None)
+
+
+def test_readme_example_1():
+    assert sh("echo Hello World") == "Hello World"
+
+
+def test_readme_example_2():
+    shell = LocalShell(GREET="Hello")
+    assert shell("echo $GREET $WHO", WHO="Citizen") == "Hello Citizen"
+
+
+def test_readme_example_3():
+    shell = LocalShell()
+    result = [int(x) for x in shell("""
+        for i in 1 2 3 4; do
+            echo $i;
+        done
+    """)]
+    assert result == [1, 2, 3, 4]
+
+
+def test_readme_example_4():
+    shell = LocalShell()
+    result = shell(">&2 echo error && echo output && exit 13")
+    assert result.out == ["output"]
+    assert result.err == ["error"]
+    assert result.xc == 13
