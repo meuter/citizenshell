@@ -26,7 +26,7 @@ from citizenshell import sh
 assert sh("echo Hello World") == "Hello World"
 ```
 
-you can instanciat a `LocalShell` for more complex cases:
+you can instanciate a `LocalShell` for more complex cases:
 
 ```python
 from citizenshell import LocalShell
