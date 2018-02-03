@@ -24,22 +24,30 @@ def test_local_shell_can_run_another_basic_command():
 def test_local_shell_result_can_extract_stdout():
     shell = LocalShell()
     result = shell("echo Foo")
-    assert result.out == "Foo"
-    assert result.err == ""
+    assert result.out == ["Foo"]
+    assert result.err == []
     assert result.xc == 0
 
 
 def test_local_shell_result_can_extract_stderr():
     shell = LocalShell()
     result = shell(">&2 echo Baz")
-    assert result.out == ""
-    assert result.err == "Baz"
+    assert result.out == []
+    assert result.err == ["Baz"]
     assert result.xc == 0
 
 
 def test_local_shell_result_can_extract_exit_code():
     shell = LocalShell()
     result = shell("exit 15")
-    assert result.out == ""
-    assert result.err == ""
+    assert result.out == []
+    assert result.err == []
     assert result.xc == 15
+
+
+def test_local_shell_result_can_be_iterated_on():
+    shell = LocalShell()
+    collected = []
+    for line in shell("echo 'Foo\nBar'"):
+        collected.append(line)
+    assert collected == ['Foo', 'Bar']

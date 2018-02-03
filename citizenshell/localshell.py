@@ -16,4 +16,4 @@ class LocalShell:
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE)
         (out, err) = shell_process.communicate(script)
-        return ShellResult(out.strip(), err.strip(), shell_process.returncode)
+        return ShellResult(out.splitlines(), err.splitlines(), shell_process.returncode)
