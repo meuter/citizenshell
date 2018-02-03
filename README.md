@@ -9,7 +9,7 @@ both python 2 (>=2.5) and 3 (>=3.4) as well  [PyPy](https://pypy.org/).
 ```python
 from citizenshell import LocalShell
 
-shell = LocalShell()
-shell["WHO"] = 'Citizen'
-assert shell("echo 'Hello $WHO'") == "Hello Citizen"
+shell = LocalShell(GREET="Hello")
+shell["FIRST"] = 'Citizen'
+assert shell("echo $GREET $FIRST $LAST", LAST="Shell") == "Hello Citizen Shell"
 ```
