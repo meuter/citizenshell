@@ -18,7 +18,7 @@ Linux and MacOS, but may be extended to Windows based platform in the future.
 
 #### LocalShell
 
-you can use the built-in sh command for simple commands:
+you can use the built-in `sh` command for simple commands:
 
 ```python
 from citizenshell import sh
@@ -26,7 +26,7 @@ from citizenshell import sh
 assert sh("echo Hello World") == "Hello World"
 ```
 
-you can instanciat a LocalShell for more complex cases:
+you can instanciat a `LocalShell` for more complex cases:
 
 ```python
 from citizenshell import LocalShell
