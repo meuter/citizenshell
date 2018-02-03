@@ -51,3 +51,10 @@ def test_local_shell_result_can_be_iterated_on():
     for line in shell("echo 'Foo\nBar'"):
         collected.append(line)
     assert collected == ['Foo', 'Bar']
+
+
+def test_local_shell_has_environment_variable():
+    shell = LocalShell()
+    shell["SOME_VARIABLE"] = "value"
+    assert shell["SOME_VARIABLE"] == "value"
+    assert shell("echo $SOME_VARIABLE") == "value"

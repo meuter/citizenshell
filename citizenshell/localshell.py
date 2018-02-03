@@ -17,3 +17,9 @@ class LocalShell:
                                          stderr=subprocess.PIPE)
         (out, err) = shell_process.communicate(script)
         return ShellResult(out.splitlines(), err.splitlines(), shell_process.returncode)
+
+    def __setitem__(self, key, value):
+        self._env[key] = value
+
+    def __getitem__(self, item):
+        return self._env[item]
