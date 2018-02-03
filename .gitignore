@@ -1,4 +1,6 @@
 venv/
 .pytest_cache/
 .idea/
+.vscode/
+build/
 **/*.pyc

@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-from shellerror import ShellError
-from shellresult import ShellResult
+from citizenshell.shellerror import ShellError
+from citizenshell.shellresult import ShellResult
 
 
 class LocalShell:
