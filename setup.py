@@ -6,7 +6,7 @@ setup(
     packages=['citizenshell'],
     url='',
     license='',
-    author='Cédric Meuter',
+    author='Cedric Meuter',
     author_email='cedric.meuter@gmail.com',
     description='Interact with shell locally or over different connection types (telnet, ssh, serial, adb)'
 )
