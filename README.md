@@ -4,12 +4,12 @@ __citizenshell__ is (or rather will be) a python library allowing to execute she
 over several protocols (telnet, ssh, serial or adb) using a consistent and uniform API. This library is compatible with
 both python 2 (>=2.5) and 3 (>=3.4) as well  [PyPy](https://pypy.org/).
 
-## LocalShell
+## Example
 
 ```python
 from citizenshell import LocalShell
 
-shell = LocalShell(check_xc=True)
-shell["WHO"] = 'citizen'
-shell("echo 'Hello $WHO'")
+shell = LocalShell()
+shell["WHO"] = 'Citizen'
+assert shell("echo 'Hello $WHO'") == "Hello Citizen"
 ```
