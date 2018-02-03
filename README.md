@@ -8,11 +8,11 @@ Linux and MacOS, but may be extended to Windows based platform in the future.
 ## Roadmap
 
 #### Version 1.0
-[x] local shell
-[ ] shell over telnet using telnetlib
-[ ] shell over ssh using paramiko
-[ ] shell over adb
-[ ] shell over serial using pyserial
+- [x] local shell
+- [ ] shell over telnet using telnetlib
+- [ ] shell over ssh using paramiko
+- [ ] shell over adb
+- [ ] shell over serial using pyserial
 
 ## Examples
 
