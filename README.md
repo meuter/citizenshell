@@ -1,3 +1,15 @@
 # citizenshell [![Build Status](https://travis-ci.org/meuter/citizenshell.svg?branch=master)](https://travis-ci.org/meuter/citizenshell)
 
-executing shell command locally or remotely over various types of protocol (telnet, serial, ssh or adb). Still under dev.
+__citizenshell__ is (or rather will be) a python library allowing to execute shell commands either locally or remotely 
+over several protocols (telnet, ssh, serial or adb) using a consistent and uniform API. This library is compatible with
+both python 2 (>=2.5) and 3 (>=3.4) as well  [PyPy](https://pypy.org/).
+
+## LocalShell
+
+```python
+from citizenshell import LocalShell
+
+shell = LocalShell(check_xc=True)
+shell["WHO"] = 'citizen'
+shell("echo 'Hello $WHO'")
+```
