@@ -1,3 +1,3 @@
 from localshell import LocalShell
-from shellexception import ShellException
+from shellerror import ShellError
 from shellresult import ShellResult

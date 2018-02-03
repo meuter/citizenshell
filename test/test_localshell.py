@@ -1,4 +1,23 @@
-from citizenshell import LocalShell, ShellException, ShellResult
+from citizenshell import LocalShell, ShellError
+
+
+def check_exception_is_not_raised(cmd, global_check_xc=False, local_check_xc=None,
+                                  global_check_err=False, local_check_err=None):
+    shell = LocalShell(check_xc=global_check_xc, check_err=global_check_err)
+    shell(cmd, check_xc=local_check_xc, check_err=local_check_err)
+
+
+def check_exception_is_raised(cmd, global_check_xc=False, local_check_xc=None,
+                              global_check_err=False, local_check_err=None):
+    exception_caught = None
+
+    try:
+        shell = LocalShell(check_xc=global_check_xc, check_err=global_check_err)
+        shell(cmd, check_xc=local_check_xc, check_err=local_check_err)
+    except ShellError as e:
+        exception_caught = e
+
+    assert exception_caught is not None
 
 
 def test_local_shell_can_be_instantiated():
@@ -67,23 +86,14 @@ def test_local_shell_has_environment_variable():
 
 
 def test_local_shell_result_can_throw_on_nonzero_exitcode():
-    def check_exception_is_raised(cmd, global_check_xc=False, local_check_xc=None):
-        exception_caught = None
-        shell = LocalShell(check_xc=global_check_xc)
+    check_exception_is_raised("exit 33", global_check_xc=True, local_check_xc=None)
+    check_exception_is_raised("exit 33", global_check_xc=True, local_check_xc=True)
+    check_exception_is_raised("exit 33", global_check_xc=False, local_check_xc=True)
+    check_exception_is_not_raised("exit 33", global_check_xc=False, local_check_xc=None)
 
-        try:
-            shell(cmd, check_xc=local_check_xc)
-        except ShellException as e:
-            exception_caught = e
 
-        assert exception_caught is not None
-        assert exception_caught.result == ShellResult(cmd=cmd, xc=33, out=[], err=[])
-
-    def check_exception_is_not_raised(cmd, global_check_xc=False, local_check_xc=None):
-        shell = LocalShell(check_xc=global_check_xc)
-        shell(cmd, check_xc=local_check_xc)
-
-    check_exception_is_raised("exit 33", True, None)
-    check_exception_is_raised("exit 33", True, True)
-    check_exception_is_raised("exit 33", False, True)
-    check_exception_is_not_raised("exit 33", False, None)
+def test_local_shell_result_can_throw_on_nonempty_err():
+    check_exception_is_raised(">&2 echo error", global_check_err=True, local_check_err=None)
+    check_exception_is_raised(">&2 echo error", global_check_err=True, local_check_err=True)
+    check_exception_is_raised(">&2 echo error", global_check_err=False, local_check_err=True)
+    check_exception_is_not_raised(">&2 echo error", global_check_err=False, local_check_err=None)
