@@ -75,3 +75,10 @@ def test_secure_shell_result_can_be_iterated_on():
     for line in shell("echo 'Foo\nBar'"):
         collected.append(line)
     assert collected == ['Foo', 'Bar']
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_local_shell_can_execute_multiple_commands_in_a_row():
+    sh = get_secure_shell()
+    assert sh("echo Foo") == "Foo"
+    assert sh("echo Bar") == "Bar"
