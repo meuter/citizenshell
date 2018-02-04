@@ -63,3 +63,17 @@ assert result.err == ["error"]
 assert result.xc == 13
 ```
 
+### SecureShell
+
+you can instanciate the `SecureShell` for shell over SSH:
+
+```python
+from citizenshell import SecureShell
+
+shell = SecureShell("acme.org", "john", "secretpassword", port=1022)
+assert shell("echo Hello World") == "Hello World"
+```
+
+you can then do eveything you can do with a `LocalShell`. Beware that some SSH server 
+refuse to set environment variable (see documentation of AcceptEnv of 
+[sshd_config](https://linux.die.net/man/5/sshd_config))
