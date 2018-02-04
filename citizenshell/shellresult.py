@@ -2,9 +2,19 @@ class ShellResult:
 
     def __init__(self, cmd, out, err, xc):
         self.cmd = cmd
-        self.out = [x.decode('utf-8') for x in out]
-        self.err = [x.decode('utf-8') for x in err]
+        self.out = self._convert_to_list_of_string(out)
+        self.err = self._convert_to_list_of_string(err)
         self.xc = xc
+
+    @staticmethod
+    def _convert_to_list_of_string(lines):
+        result = []
+        for line in lines:
+            if isinstance(line, bytes):
+                result.append(line.decode('utf-8'))
+            else:
+                result.append(line)
+        return result
 
     def __eq__(self, other):
         if isinstance(other, str):

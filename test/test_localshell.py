@@ -30,14 +30,14 @@ def test_local_shell_can_run_one_basic_command():
     assert result == "Foo"
 
 
-def test_builting_local_shell():
-    assert sh("echo Bar") == "Bar"
-
-
 def test_local_shell_can_run_another_basic_command():
     shell = LocalShell()
     result = shell("echo Bar")
     assert result == "Bar"
+
+
+def test_builting_local_shell():
+    assert sh("echo Bar") == "Bar"
 
 
 def test_local_shell_result_has_stdout():
