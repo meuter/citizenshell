@@ -3,16 +3,37 @@ from os import environ
 from pytest import mark
 
 from citizenshell import SecureShell
+from citizenshell import ShellError
 
 TEST_HOST_NOT_AVAILABLE = environ.get("TEST_HOST", None) is None
 
 
-def get_secure_shell():
+def get_secure_shell(check_xc=False, check_err=False):
     hostname = environ.get("TEST_HOST")
     username = environ.get("TEST_USER")
     password = environ.get("TEST_PASS", None)
     port = int(environ.get("TEST_PORT", 22))
-    return SecureShell(hostname, username=username, password=password, port=port)
+    return SecureShell(hostname, username=username, password=password, port=port,
+                       check_xc=check_xc, check_err=check_err)
+
+
+def check_exception_is_not_raised(cmd, global_check_xc=False, local_check_xc=None,
+                                  global_check_err=False, local_check_err=None):
+    shell = get_secure_shell(check_xc=global_check_xc, check_err=global_check_err)
+    shell(cmd, check_xc=local_check_xc, check_err=local_check_err)
+
+
+def check_exception_is_raised(cmd, global_check_xc=False, local_check_xc=None,
+                              global_check_err=False, local_check_err=None):
+    exception_caught = None
+
+    try:
+        shell = get_secure_shell(check_xc=global_check_xc, check_err=global_check_err)
+        shell(cmd, check_xc=local_check_xc, check_err=local_check_err)
+    except ShellError as e:
+        exception_caught = e
+
+    assert exception_caught is not None
 
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
@@ -78,7 +99,23 @@ def test_secure_shell_result_can_be_iterated_on():
 
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_local_shell_can_execute_multiple_commands_in_a_row():
+def test_secure_shell_can_execute_multiple_commands_in_a_row():
     sh = get_secure_shell()
     assert sh("echo Foo") == "Foo"
     assert sh("echo Bar") == "Bar"
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_secure_shell_result_can_throw_on_nonzero_exitcode():
+    check_exception_is_raised("exit 33", global_check_xc=True, local_check_xc=None)
+    check_exception_is_raised("exit 33", global_check_xc=True, local_check_xc=True)
+    check_exception_is_raised("exit 33", global_check_xc=False, local_check_xc=True)
+    check_exception_is_not_raised("exit 33", global_check_xc=False, local_check_xc=None)
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_secure_shell_result_can_throw_on_nonempty_err():
+    check_exception_is_raised(">&2 echo error", global_check_err=True, local_check_err=None)
+    check_exception_is_raised(">&2 echo error", global_check_err=True, local_check_err=True)
+    check_exception_is_raised(">&2 echo error", global_check_err=False, local_check_err=True)
+    check_exception_is_not_raised(">&2 echo error", global_check_err=False, local_check_err=None)

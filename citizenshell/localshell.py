@@ -1,5 +1,4 @@
-import copy
-import os
+from copy import deepcopy
 from subprocess import Popen, PIPE
 
 from .shellerror import ShellError
@@ -9,7 +8,7 @@ from .shellresult import ShellResult
 class LocalShell:
 
     def __init__(self, check_xc=False, check_err=False, **kwargs):
-        self._env = copy.deepcopy(os.environ)
+        self._env = {}
         self._check_xc = check_xc
         self._check_err = check_err
         for var, val in kwargs.items():
@@ -18,7 +17,7 @@ class LocalShell:
     def _get_env(self, **kwargs):
         if not kwargs:
             return self._env
-        env = copy.deepcopy(self._env)
+        env = deepcopy(self._env)
         for var, val in kwargs.items():
             env[var] = val
         return env

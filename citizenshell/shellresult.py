@@ -31,5 +31,8 @@ class ShellResult:
     def __bool__(self):
         return self.xc == 0
 
+    def __str__(self):
+        return "\n".join(self.out)
+
     def __repr__(self):
         return "ShellResult('%s', %s, %s, '%d')" % (self.cmd, self.out, self.err, self.xc)
