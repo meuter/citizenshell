@@ -70,7 +70,7 @@ you can instanciate the `SecureShell` for shell over SSH:
 ```python
 from citizenshell import SecureShell
 
-shell = SecureShell("acme.org", "john", "secretpassword", port=1022)
+shell = SecureShell(hostname="acme.org", username="john", password="secretpassword")
 assert shell("echo Hello World") == "Hello World"
 ```
 
