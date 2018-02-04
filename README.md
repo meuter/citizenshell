@@ -9,11 +9,12 @@ Linux and MacOS, but may be extended to work to Windows based platform in the fu
 
 #### Version 1.0
 - [x] local shell
+- [x] shell over ssh using paramiko
 - [ ] shell over telnet using telnetlib
-- [ ] shell over ssh using paramiko
 - [ ] shell over adb
 - [ ] shell over serial using pyserial
 - [ ] available from PIP repository
+- [ ] color coded logging 
 
 ## Examples
 
