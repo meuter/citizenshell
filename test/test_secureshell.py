@@ -56,6 +56,15 @@ def test_secure_shell_can_run_another_basic_command():
 
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_secure_shell_can_run_a_command_without_a_trailing_endl():
+    shell = get_secure_shell()
+    result = shell("echo -n Bar && exit 13")
+    assert result.out == ["Bar"]
+    assert result.err == []
+    assert result.xc == 13
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_secure_shell_result_has_stdout():
     shell = get_secure_shell()
     result = shell("echo Foo")
@@ -145,4 +154,5 @@ def test_readme_example_4():
 def test_local_shell_can_execute_multiple_commands_in_a_row():
     shell = get_secure_shell()
     assert shell("echo Foo") == "Foo"
+    assert shell("exit 15").xc == 15
     assert shell("echo Bar") == "Bar"

@@ -34,16 +34,18 @@ class TelnetShell(AbstractShell):
         return self._telnet.read_until(marker.encode('utf-8'))
 
     def execute_command(self, cmd, env):
-        formatted_command = r"((%s) 2>&3 | sed >&2 's/^\(.*\)/OUT \1/') 3>&1 1>&2 | sed 's/^\(.*\)/ERR \1/'" % cmd.strip()
-        self._write(formatted_command + "\n")  # BUG: does not work if cmd has an exit in there...
-        out = []
-        err = []
+        formatted_command = r"(((%s); echo +$?) 2>&3 | sed >&2 's/^\(.*\)/OUT \1/') 3>&1 1>&2 | sed 's/^\(.*\)/ERR \1/'" % cmd.strip()
+        self._write(formatted_command + "\n")
+        out, err = [], []
         for line in self._read_until(self._prompt).decode('utf-8').splitlines():
             if line.startswith("ERR "):
                 err.append(line[4:])
             elif line.startswith("OUT "):
                 out.append(line[4:])
-        self._write("echo $?\n")
-        xc = int(self._read_until(self._prompt).decode('utf-8').splitlines()[1])
+
+        splitted = out[-1].split("+")
+        out[-1], xc = "".join(splitted[:-1]), int(splitted[-1])
+        if not out[-1]:
+            out = out[:-1]
         return ShellResult(cmd, out, err, xc)
 

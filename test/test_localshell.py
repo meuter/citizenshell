@@ -140,4 +140,5 @@ def test_readme_example_4():
 
 def test_local_shell_can_execute_multiple_commands_in_a_row():
     assert sh("echo Foo") == "Foo"
+    assert sh("exit 10").xc == 10
     assert sh("echo Bar") == "Bar"
