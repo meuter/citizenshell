@@ -1,4 +1,4 @@
-from paramiko import SSHClient, WarningPolicy
+from paramiko import SSHClient, AutoAddPolicy
 
 from .abstractshell import AbstractShell
 from .shellresult import ShellResult
@@ -10,7 +10,7 @@ class SecureShell(AbstractShell):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
         self._client = SSHClient()
         self._client.load_system_host_keys()
-        self._client.set_missing_host_key_policy(WarningPolicy())
+        self._client.set_missing_host_key_policy(AutoAddPolicy())
         self._client.connect(hostname=hostname, port=port, username=username, password=password)
 
     def execute_command(self, cmd, env):
