@@ -31,25 +31,19 @@ class TelnetShell(AbstractShell):
             self._is_connected = False
 
     def _read_until(self, marker):
-        out = self._telnet.read_until(marker)
-        return out
+        return self._telnet.read_until(marker.encode('utf-8'))
 
     def _write(self, text):
-        self._telnet.write(text)
-        out = self._telnet.read_until("\n").strip()                
+        self._telnet.write(text.encode('utf-8'))
+        self._read_until("\n")
 
-    def execute_command(self, cmd, env):        
+    def execute_command(self, cmd, env):
         self._write(cmd + "; echo $?\n") # BUG: does not work if cmd has an exit in there...
         out = []
         for line in self._read_until("# ").splitlines():
-            if line.startswith("\x1b["):                 
-                while line[0] != 'm':
-                    line = line[1:]
-                line = line[1:]
-            if line.endswith("\x1b[0m"): 
-                line = line[:-4]
             out.append(line)
         out = out [0:-1]
-        out, xc = out[:-1],  int(out[-1])
-        return ShellResult(cmd, out, '', xc)
+        out, xc = out[:-1], int(out[-1])
+        err = [] # BUG: not compliant with the other shell
+        return ShellResult(cmd, out, err, xc)
 
