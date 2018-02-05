@@ -11,7 +11,6 @@ class LocalShell(AbstractShell):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
 
     def execute_command(self, cmd, env):
-        print(repr(cmd))
         process = Popen(cmd, shell=True, env=env, stdout=PIPE, stderr=PIPE)
         outlogger = Logger(process.stdout)
         errlogger = Logger(process.stderr)
