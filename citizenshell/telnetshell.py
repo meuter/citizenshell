@@ -26,7 +26,6 @@ class TelnetShell(AbstractShell):
         self._write("export PS1=%s\n" % self._prompt)
         self._read_until(self._prompt)  # first time for the PS1
         self._read_until(self._prompt)  # second for the actual prompt
-        print("connected")
 
     def _write(self, text):
         self._telnet.write(text.encode('utf-8'))
@@ -35,14 +34,16 @@ class TelnetShell(AbstractShell):
         return self._telnet.read_until(marker.encode('utf-8'))
 
     def execute_command(self, cmd, env):
-        #
-        # this sort of thing can be used to prefix every line with stderr/stdout
-        # { { echo a; echo >&2 b; } 2>&3 | sed >&2 's/^\(.*\)/OUT \1/'; } 3>&1 1>&2 | sed 's/^\(.*\)/ERR \1/'
-        #
-        formatted_command = "%s; echo $?\n" % cmd
-        self._write(formatted_command)  # BUG: does not work if cmd has an exit in there...
-        out = self._read_until(self._prompt).decode('utf-8').splitlines()
-        out, xc = out[1:-2], int(out[-2])
-        err = [] # BUG: not compliant with the other shell
+        formatted_command = r"((%s) 2>&3 | sed >&2 's/^\(.*\)/OUT \1/') 3>&1 1>&2 | sed 's/^\(.*\)/ERR \1/'" % cmd.strip()
+        self._write(formatted_command + "\n")  # BUG: does not work if cmd has an exit in there...
+        out = []
+        err = []
+        for line in self._read_until(self._prompt).decode('utf-8').splitlines():
+            if line.startswith("ERR "):
+                err.append(line[4:])
+            elif line.startswith("OUT "):
+                out.append(line[4:])
+        self._write("echo $?\n")
+        xc = int(self._read_until(self._prompt).decode('utf-8').splitlines()[1])
         return ShellResult(cmd, out, err, xc)
 

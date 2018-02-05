@@ -3,7 +3,6 @@ from os import environ
 from pytest import mark
 
 from citizenshell import TelnetShell
-from citizenshell import ShellError
 
 TEST_HOST_NOT_AVAILABLE = environ.get("TEST_TELNET_HOST", None) is None
 
@@ -36,7 +35,7 @@ def test_telnet_shell_can_run_another_basic_command():
     assert result == "Bar"
 
 
-@mark.skipif(reason="multiline does not work right now")
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_telnet_shell_can_run_command_on_multiple_lines():
     shell = get_telnet_shell()
     result = shell("echo Bar\necho Foo")
@@ -54,7 +53,16 @@ def test_telnet_shell_result_has_stdout():
     assert result.xc == 0
 
 
-@mark.skip(reason="multiline does not work right now")
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_secure_shell_result_has_stderr():
+    shell = get_telnet_shell()
+    result = shell(">&2 echo Baz")
+    assert result.out == []
+    assert result.err == ["Baz"]
+    assert result.xc == 0
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_readme_example_3():
     shell = get_telnet_shell()
     result = [int(x) for x in shell("""
@@ -63,5 +71,3 @@ def test_readme_example_3():
         done
     """)]
     assert result == [1, 2, 3, 4]
-
-    
