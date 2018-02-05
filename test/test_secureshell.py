@@ -8,13 +8,13 @@ from citizenshell import ShellError
 TEST_HOST_NOT_AVAILABLE = environ.get("TEST_SSH_HOST", None) is None
 
 
-def get_secure_shell(check_xc=False, check_err=False):
+def get_secure_shell(check_xc=False, check_err=False, **kwargs):
     hostname = environ.get("TEST_SSH_HOST")
     username = environ.get("TEST_SSH_USER")
     password = environ.get("TEST_SSH_PASS", None)
     port = int(environ.get("TEST_SSH_PORT", 22))
     return SecureShell(hostname, username=username, password=password, port=port,
-                       check_xc=check_xc, check_err=check_err)
+                       check_xc=check_xc, check_err=check_err, **kwargs)
 
 
 def check_exception_is_not_raised(cmd, global_check_xc=False, local_check_xc=None,
@@ -119,3 +119,30 @@ def test_secure_shell_result_can_throw_on_nonempty_err():
     check_exception_is_raised(">&2 echo error", global_check_err=True, local_check_err=True)
     check_exception_is_raised(">&2 echo error", global_check_err=False, local_check_err=True)
     check_exception_is_not_raised(">&2 echo error", global_check_err=False, local_check_err=None)
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_readme_example_3():
+    shell = get_secure_shell()
+    result = [int(x) for x in shell("""
+        for i in 1 2 3 4; do
+            echo $i;
+        done
+    """)]
+    assert result == [1, 2, 3, 4]
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_readme_example_4():
+    shell = get_secure_shell()
+    result = shell(">&2 echo error && echo output && exit 13")
+    assert result.out == ["output"]
+    assert result.err == ["error"]
+    assert result.xc == 13
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_local_shell_can_execute_multiple_commands_in_a_row():
+    shell = get_secure_shell()
+    assert shell("echo Foo") == "Foo"
+    assert shell("echo Bar") == "Bar"

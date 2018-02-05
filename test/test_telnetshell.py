@@ -36,6 +36,15 @@ def test_telnet_shell_can_run_another_basic_command():
     assert result == "Bar"
 
 
+@mark.skipif(reason="multiline does not work right now")
+def test_telnet_shell_can_run_command_on_multiple_lines():
+    shell = get_telnet_shell()
+    result = shell("echo Bar\necho Foo")
+    assert result.out == [ "Bar", "Foo" ]
+    assert result.err == []
+    assert result.xc == 0
+
+
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_telnet_shell_result_has_stdout():
     shell = get_telnet_shell()
@@ -43,3 +52,16 @@ def test_telnet_shell_result_has_stdout():
     assert result.out == ["Foo"]
     assert result.err == []
     assert result.xc == 0
+
+
+@mark.skip(reason="multiline does not work right now")
+def test_readme_example_3():
+    shell = get_telnet_shell()
+    result = [int(x) for x in shell("""
+        for i in 1 2 3 4; do
+            echo $i;
+        done
+    """)]
+    assert result == [1, 2, 3, 4]
+
+    
