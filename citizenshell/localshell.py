@@ -2,14 +2,19 @@ from subprocess import Popen, PIPE
 
 from .abstractshell import AbstractShell
 from .shellresult import ShellResult
-
+from .logger import Logger
 
 class LocalShell(AbstractShell):
 
     def __init__(self, check_xc=False, check_err=False, **kwargs):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
 
-    def execute_command(self, cmd, env):
-        proc = Popen(cmd, shell=True, env=env, stdout=PIPE, stderr=PIPE)
-        out, err = proc.communicate()
-        return ShellResult(cmd, out.splitlines(), err.splitlines(), proc.returncode)
+    def execute_command(self, cmd, env):        
+        process = Popen(cmd, shell=True, env=env, stdout=PIPE, stderr=PIPE)
+        print cmd
+        outlogger = Logger(process.stdout)
+        errlogger = Logger(process.stderr)
+        outlogger.join()
+        errlogger.join()
+        process.wait()    
+        return ShellResult(cmd, outlogger.get_content(), errlogger.get_content(), process.returncode)
