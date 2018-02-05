@@ -11,7 +11,6 @@ class LocalShell(AbstractShell):
 
     def execute_command(self, cmd, env):        
         process = Popen(cmd, shell=True, env=env, stdout=PIPE, stderr=PIPE)
-        print cmd
         outlogger = Logger(process.stdout)
         errlogger = Logger(process.stderr)
         outlogger.join()
