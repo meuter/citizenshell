@@ -5,14 +5,14 @@ from pytest import mark
 from citizenshell import SecureShell
 from citizenshell import ShellError
 
-TEST_HOST_NOT_AVAILABLE = environ.get("TEST_HOST", None) is None
+TEST_HOST_NOT_AVAILABLE = environ.get("TEST_SSH_HOST", None) is None
 
 
 def get_secure_shell(check_xc=False, check_err=False):
-    hostname = environ.get("TEST_HOST")
-    username = environ.get("TEST_USER")
-    password = environ.get("TEST_PASS", None)
-    port = int(environ.get("TEST_PORT", 22))
+    hostname = environ.get("TEST_SSH_HOST")
+    username = environ.get("TEST_SSH_USER")
+    password = environ.get("TEST_SSH_PASS", None)
+    port = int(environ.get("TEST_SSH_PORT", 22))
     return SecureShell(hostname, username=username, password=password, port=port,
                        check_xc=check_xc, check_err=check_err)
 
