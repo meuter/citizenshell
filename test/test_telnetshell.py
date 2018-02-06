@@ -12,7 +12,7 @@ def get_telnet_shell(check_xc=False, check_err=False):
     hostname = environ.get("TEST_TELNET_HOST")
     username = environ.get("TEST_TELNET_USER")
     password = environ.get("TEST_TELNET_PASS", None)
-    port = int(environ.get("TEST_TELNET_PORT", 22))
+    port = int(environ.get("TEST_TELNET_PORT", 23))
     return TelnetShell(hostname, username=username, password=password, port=port,
                        check_xc=check_xc, check_err=check_err)
 

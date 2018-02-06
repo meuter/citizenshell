@@ -1,5 +1,6 @@
 from telnetlib import Telnet
 from uuid import uuid4
+from time import sleep
 
 from .abstractshell import AbstractShell
 from .shellresult import ShellResult
@@ -7,22 +8,24 @@ from .shellresult import ShellResult
 
 class TelnetShell(AbstractShell):
 
-    def __init__(self, hostname, username, password=None, check_xc=False, check_err=False, **kwargs):
+    def __init__(self, hostname, username, password=None, port=0, check_xc=False, check_err=False, **kwargs):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
         self._hostname = hostname
         self._username = username
         self._password = password
+        self._port = port
         self._telnet = Telnet()
         self._prompt = str(uuid4())
         self.connect()
 
     def connect(self):
-        self._telnet.open(self._hostname)
+        self._telnet.open(self._hostname, self._port)
         self._read_until("login: ")
         self._write(self._username + "\n")
         if self._password:
             self._read_until("Password: ")
             self._write(self._password + "\n")
+        sleep(.1) # for the original prompt to appear
         self._write("export PS1=%s\n" % self._prompt)
         self._read_until(self._prompt)  # first time for the PS1
         self._read_until(self._prompt)  # second for the actual prompt
@@ -42,7 +45,6 @@ class TelnetShell(AbstractShell):
                 err.append(line[4:])
             elif line.startswith("OUT "):
                 out.append(line[4:])
-
         splitted = out[-1].split("+")
         out[-1], xc = "".join(splitted[:-1]), int(splitted[-1])
         if not out[-1]:
