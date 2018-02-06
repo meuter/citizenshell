@@ -8,13 +8,13 @@ from citizenshell import TelnetShell
 TEST_HOST_NOT_AVAILABLE = environ.get("TEST_TELNET_HOST", None) is None
 
 
-def get_telnet_shell(check_xc=False, check_err=False):
+def get_telnet_shell(check_xc=False, check_err=False, **kwargs):
     hostname = environ.get("TEST_TELNET_HOST")
     username = environ.get("TEST_TELNET_USER")
     password = environ.get("TEST_TELNET_PASS", None)
     port = int(environ.get("TEST_TELNET_PORT", 23))
     return TelnetShell(hostname, username=username, password=password, port=port,
-                       check_xc=check_xc, check_err=check_err)
+                       check_xc=check_xc, check_err=check_err, **kwargs)
 
 
 def check_exception_is_not_raised(cmd, global_check_xc=False, local_check_xc=None,
@@ -114,6 +114,28 @@ def test_telnet_shell_result_can_be_iterated_on():
     for line in shell("echo 'Foo\nBar'"):
         collected.append(line)
     assert collected == ['Foo', 'Bar']
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_local_shell_has_environment_variable():
+    shell = get_telnet_shell()
+    shell["SOME_VARIABLE"] = "value"
+    assert shell["SOME_VARIABLE"] == "value"
+    assert shell("echo $SOME_VARIABLE") == "value"
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_local_shell_can_be_constructed_with_env_as_kwargs():
+    shell = get_telnet_shell(FOO="bar")
+    assert shell("echo $FOO") == "bar"
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_local_shell_can_override_environment_variable_on_invokation():
+    shell = get_telnet_shell(VAR="foo")
+    assert shell("echo $VAR") == "foo"
+    assert shell("echo $VAR", VAR="bar") == "bar"
+    assert shell("echo $VAR") == "foo"
 
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")

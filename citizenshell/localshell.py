@@ -10,8 +10,8 @@ class LocalShell(AbstractShell):
     def __init__(self, check_xc=False, check_err=False, **kwargs):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
 
-    def execute_command(self, cmd, env):
-        process = Popen(cmd, shell=True, env=env, stdout=PIPE, stderr=PIPE)
+    def execute_command(self, cmd):
+        process = Popen(cmd, shell=True, env=self.get_merged_env(), stdout=PIPE, stderr=PIPE)
         outlogger = Logger(process.stdout)
         errlogger = Logger(process.stderr)
         outlogger.join()

@@ -12,7 +12,7 @@ but may be extended to work to Windows based platform in the future. It is distr
 #### Version 1.0
 - [x] local shell
 - [x] shell over ssh using [paramiko](http://www.paramiko.org/)
-- [ ] shell over telnet using telnetlib
+- [x] shell over telnet using telnetlib
 - [ ] shell over [adb](https://developer.android.com/studio/command-line/adb.html)
 - [ ] shell over serial using [pyserial](https://github.com/pyserial/pyserial)
 - [ ] color coded logging 
@@ -64,6 +64,19 @@ assert result.out == ["output"]
 assert result.err == ["error"]
 assert result.xc == 13
 ```
+
+### TelnetShell
+
+you can instanciate the `TelnetShell` for shell over telnet:
+
+```python
+from citizenshell import TelnetShell
+
+shell = TelnetShell(hostname="acme.org", username="john", password="secretpassword")
+assert shell("echo Hello World") == "Hello World"
+```
+
+you can then do eveything you can do with a `LocalShell`. 
 
 ### SecureShell
 

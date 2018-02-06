@@ -16,9 +16,10 @@ class TelnetShell(AbstractShell):
         self._port = port
         self._telnet = Telnet()
         self._prompt = str(uuid4())
-        self.connect()
+        self._connect()
+        self._inject_env(self.get_global_env())
 
-    def connect(self):
+    def _connect(self):
         self._telnet.open(self._hostname, self._port)
         self._read_until("login: ")
         self._write(self._username + "\n")
@@ -36,8 +37,29 @@ class TelnetShell(AbstractShell):
     def _read_until(self, marker):
         return self._telnet.read_until(marker.encode('utf-8'))
 
-    def execute_command(self, cmd, env):
-        formatted_command = r"(((%s); echo +$?) 2>&3 | sed >&2 's/^\(.*\)/OUT \1/') 3>&1 1>&2 | sed 's/^\(.*\)/ERR \1/'" % cmd.strip()
+    def _inject_env(self, env):
+        for var, val in env.items():
+            self._export_env_variable(var, val)
+
+    def _cleanup_env(self, env):
+        for var in env.keys():
+            self._unset_env_variable(var)
+
+    def _export_env_variable(self, var, val):
+        self._write("export %s=%s\n" % (var, val))
+        self._read_until(self._prompt)
+
+    def _unset_env_variable(self, var):
+        self._write("unset %s\n" % var)
+        self._read_until(self._prompt)
+
+    def __setitem__(self, key, value):
+        AbstractShell.__setitem__(self, key, value)
+        self._export_env_variable(key, value)
+
+    def execute_command(self, cmd):
+        self._inject_env(self.get_local_env())
+        formatted_command = r"(((%s); echo +$?) 2>&3 | sed >&2 's/^\(.*\)/OUT \1/') 3>&1 1>&2 | sed 's/^\(.*\)/ERR \1/'" % cmd.strip()        
         self._write(formatted_command + "\n")
         out, err = [], []
         for line in self._read_until(self._prompt).decode('utf-8').splitlines():
@@ -49,5 +71,7 @@ class TelnetShell(AbstractShell):
         out[-1], xc = "".join(splitted[:-1]), int(splitted[-1])
         if not out[-1]:
             out = out[:-1]
+        self._cleanup_env(self.get_local_env())
+        self._inject_env(self.get_global_env())
         return ShellResult(cmd, out, err, xc)
 

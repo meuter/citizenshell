@@ -13,10 +13,10 @@ class SecureShell(AbstractShell):
         self._client.set_missing_host_key_policy(AutoAddPolicy())
         self._client.connect(hostname=hostname, port=port, username=username, password=password)
 
-    def execute_command(self, cmd, env):
+    def execute_command(self, cmd):
         bufsize = 1
         chan = self._client.get_transport().open_session()
-        chan.update_environment(env)
+        chan.update_environment(self.get_merged_env())
         chan.exec_command(cmd)
         stdout = chan.makefile('r', bufsize)
         stderr = chan.makefile_stderr('r', bufsize)
