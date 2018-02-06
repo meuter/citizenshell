@@ -36,6 +36,11 @@ def test_local_shell_can_run_another_basic_command():
     assert result == "Bar"
 
 
+def test_local_shell_can_run_command_with_a_single_empty_line_of_output():
+    shell = LocalShell()
+    result = shell("echo")
+    assert result == ""
+
 def test_builting_local_shell():
     assert sh("echo Bar") == "Bar"
 
@@ -81,8 +86,14 @@ def test_local_shell_result_can_be_iterated_on():
 def test_local_shell_has_environment_variable():
     shell = LocalShell()
     shell["SOME_VARIABLE"] = "value"
+    assert shell.get("SOME_VARIABLE") == "value"
+    assert shell.get("SOME_OTHER_VARIABLE", 33) == 33
+    assert "SOME_VARIABLE" in shell
     assert shell["SOME_VARIABLE"] == "value"
     assert shell("echo $SOME_VARIABLE") == "value"
+    del shell["SOME_VARIABLE"]    
+    assert "SOME_VARIABLE" not in shell
+    assert shell("echo $SOME_VARIABLE") == ""
 
 
 def test_local_shell_can_be_constructed_with_env_as_kwargs():

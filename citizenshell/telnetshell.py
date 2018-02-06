@@ -57,6 +57,10 @@ class TelnetShell(AbstractShell):
         AbstractShell.__setitem__(self, key, value)
         self._export_env_variable(key, value)
 
+    def __delitem__(self, key):
+        AbstractShell.__delitem__(self, key)
+        self._unset_env_variable(key)
+
     def execute_command(self, cmd):
         self._inject_env(self.get_local_env())
         formatted_command = r"(((%s); echo +$?) 2>&3 | sed >&2 's/^\(.*\)/OUT \1/') 3>&1 1>&2 | sed 's/^\(.*\)/ERR \1/'" % cmd.strip()        

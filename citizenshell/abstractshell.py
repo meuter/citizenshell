@@ -43,3 +43,12 @@ class AbstractShell:
 
     def __getitem__(self, key):
         return self._global_env[key]
+
+    def __delitem__(self, key):
+        del self._global_env[key]
+    
+    def __contains__(self, key):
+        return key in self._global_env
+
+    def get(self, key, default=None):
+        return self._global_env.get(key, default)

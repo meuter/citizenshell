@@ -18,7 +18,9 @@ class ShellResult:
 
     def __eq__(self, other):
         if isinstance(other, str):
-            return other.splitlines() == self.out
+            if len(other) == 0:
+                return self.out == ['']
+            return other.splitlines() == self.out        
         return (other.cmd == self.cmd) and (other.out == self.out) and \
                (other.err == self.err) and (other.xc == self.xc)
 
