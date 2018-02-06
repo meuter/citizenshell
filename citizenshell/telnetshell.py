@@ -1,6 +1,6 @@
 from telnetlib import Telnet
-from uuid import uuid4
 from time import sleep
+from uuid import uuid4
 
 from .abstractshell import AbstractShell
 from .shellresult import ShellResult
@@ -8,7 +8,7 @@ from .shellresult import ShellResult
 
 class TelnetShell(AbstractShell):
 
-    def __init__(self, hostname, username, password=None, port=0, check_xc=False, check_err=False, **kwargs):
+    def __init__(self, hostname, username, password=None, port=23, check_xc=False, check_err=False, **kwargs):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
         self._hostname = hostname
         self._username = username
