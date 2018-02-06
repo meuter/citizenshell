@@ -89,6 +89,6 @@ shell = SecureShell(hostname="acme.org", username="john", password="secretpasswo
 assert shell("echo Hello World") == "Hello World"
 ```
 
-you can then do eveything you can do with a `LocalShell`. Beware that some SSH server 
+you can then do eveything you can do with a `LocalShell`. Beware that some SSH servers 
 refuse to set environment variable (see documentation of AcceptEnv of 
-[sshd_config](https://linux.die.net/man/5/sshd_config)) and that will fail silently 
+[sshd_config](https://linux.die.net/man/5/sshd_config) and documentation of `update_environment` of [paramiko `Channel` class](http://docs.paramiko.org/en/2.4/api/channel.html)) and that will fail silently .
