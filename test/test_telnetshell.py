@@ -1,3 +1,4 @@
+import logging
 from os import environ
 
 from pytest import mark
@@ -183,9 +184,22 @@ def test_telnet_shell_can_execute_multiple_commands_in_a_row():
     assert shell("echo Bar") == "Bar"
 
 
+def test_telnet_shell_logs(caplog):
+    cmd = ">&2 echo error && echo output && exit 13"
+    caplog.set_level(logging.INFO, logger="citizenshell.in")
+    caplog.set_level(logging.INFO, logger="citizenshell.out")
+    caplog.set_level(logging.INFO, logger="citizenshell.err")
+    shell = get_telnet_shell()
+    shell(cmd)
+    in_index = caplog.record_tuples.index(('citizenshell.in', logging.INFO, cmd))
+    out_index = caplog.record_tuples.index(('citizenshell.err', logging.ERROR, u"error"))
+    err_index = caplog.record_tuples.index(('citizenshell.out', logging.INFO, u"output"))
+    assert in_index < out_index
+    assert in_index < err_index
+
+
 if __name__ == "__main__":
     from citizenshell import configure_colored_logs
-
     configure_colored_logs()
     sh = get_telnet_shell()
     r = sh(">&2 echo error && echo output && exit 13")

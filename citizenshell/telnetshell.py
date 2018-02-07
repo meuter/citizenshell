@@ -60,19 +60,25 @@ class TelnetShell(AbstractShell):
         self._unset_env_variable(key)
 
     def execute_command(self, cmd):
+        self.log_stdin(cmd)
         self._inject_env(self.get_local_env())
-        formatted_command = r"(((%s); echo +$?) 2>&3 | sed >&2 's/^\(.*\)/OUT \1/') 3>&1 1>&2 | sed 's/^\(.*\)/ERR \1/'" % cmd.strip()        
+        formatted_command = r"(((%s); (echo XC--$? 1>&4)) 2>&3 | " % cmd.strip() + \
+                            r"sed >&2 's/^\(.*\)/OUT-\1/') 4>&2 3>&1 1>&2 | sed 's/^\(.*\)/ERR-\1/'"
         self._write(formatted_command + "\n")
         out, err = [], []
+        xc = None
         for line in self._read_until(self._prompt).decode('utf-8').splitlines():
-            if line.startswith("ERR "):
-                err.append(line[4:])
-            elif line.startswith("OUT "):
-                out.append(line[4:])
-        splitted = out[-1].split("+")
-        out[-1], xc = "".join(splitted[:-1]), int(splitted[-1])
-        if not out[-1]:
-            out = out[:-1]
+            prefix, line = line[:4], line[4:]
+            if prefix == "ERR-":
+                self.log_stderr(line)
+                err.append(line)
+            elif prefix == "OUT-":
+                self.log_stdout(line)
+                out.append(line)
+            elif prefix == "XC--":
+                xc = int(line)
+        if out and out[-1].endswith(self._prompt):
+            out[-1] = out[-1].replace(self._prompt, "")
         self._cleanup_env(self.get_local_env())
         self._inject_env(self.get_global_env())
         return ShellResult(cmd, out, err, xc)
