@@ -181,3 +181,11 @@ def test_telnet_shell_can_execute_multiple_commands_in_a_row():
     assert shell("echo Foo") == "Foo"
     assert shell("exit 15").xc == 15
     assert shell("echo Bar") == "Bar"
+
+
+if __name__ == "__main__":
+    from citizenshell import configure_colored_logs
+
+    configure_colored_logs()
+    sh = get_telnet_shell()
+    r = sh(">&2 echo error && echo output && exit 13")

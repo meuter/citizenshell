@@ -1,9 +1,23 @@
-from copy import deepcopy
-
+from .loggers import stdin_logger, stderr_logger, stdout_logger
 from .shellerror import ShellError
 
 
 class AbstractShell(dict):
+
+    @staticmethod
+    def log_stdin(lines):
+        for line in lines.splitlines():
+            stdin_logger.info(line)
+
+    @staticmethod
+    def log_stdout(lines):
+        for line in lines.splitlines():
+            stdout_logger.info(line)
+
+    @staticmethod
+    def log_stderr(lines):
+        for line in lines.splitlines():
+            stderr_logger.error(line)
 
     def __init__(self, check_xc=False, check_err=False, **kwargs):
         dict.__init__(self, kwargs)
