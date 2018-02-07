@@ -15,7 +15,7 @@ but may be extended to work to Windows based platform in the future. It is distr
 - [x] shell over telnet using telnetlib
 - [ ] shell over [adb](https://developer.android.com/studio/command-line/adb.html)
 - [ ] shell over serial using [pyserial](https://github.com/pyserial/pyserial)
-- [ ] color coded logging 
+- [x] support for logging with colored formatter 
 - [ ] available from PIP repository
 
 ## Examples

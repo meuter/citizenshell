@@ -3,8 +3,7 @@ from os import environ
 
 from pytest import mark
 
-from citizenshell import ShellError
-from citizenshell import TelnetShell
+from citizenshell import TelnetShell, ShellError
 
 TEST_HOST_NOT_AVAILABLE = environ.get("TEST_TELNET_HOST", None) is None
 
