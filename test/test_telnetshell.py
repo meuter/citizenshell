@@ -183,6 +183,7 @@ def test_telnet_shell_can_execute_multiple_commands_in_a_row():
     assert shell("echo Bar") == "Bar"
 
 
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_telnet_shell_logs(caplog):
     cmd = ">&2 echo error && echo output && exit 13"
     caplog.set_level(logging.INFO, logger="citizenshell.in")
