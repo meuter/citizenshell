@@ -1,5 +1,4 @@
 from telnetlib import Telnet
-from time import sleep
 from uuid import uuid4
 
 from .abstractshell import AbstractShell
@@ -26,7 +25,6 @@ class TelnetShell(AbstractShell):
         if self._password:
             self._read_until("Password: ")
             self._write(self._password + "\n")
-        sleep(.1) # for the original prompt to appear
         self._write("export PS1=%s\n" % self._prompt)
         self._read_until(self._prompt)  # first time for the PS1
         self._read_until(self._prompt)  # second for the actual prompt
