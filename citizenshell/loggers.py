@@ -1,5 +1,5 @@
 import sys
-from logging import getLogger, StreamHandler, Formatter, INFO
+from logging import getLogger, StreamHandler, Formatter, INFO, NullHandler
 
 from termcolor import colored
 
@@ -8,6 +8,11 @@ stdout_logger = getLogger("citizenshell.out")
 stderr_logger = getLogger("citizenshell.err")
 oob_logger = getLogger("citizenshell.oob")
 
+
+stdin_logger.addHandler(NullHandler())
+stdout_logger.addHandler(NullHandler())
+stderr_logger.addHandler(NullHandler())
+oob_logger.addHandler(NullHandler())
 
 def configure_logger(logger, stream, log_format):
     logger.propagate = False
