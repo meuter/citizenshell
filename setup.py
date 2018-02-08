@@ -9,7 +9,7 @@ except(IOError, ImportError):
 
 setup(
     name='citizenshell',
-    version='0.3.4',
+    version='0.3.5',
     packages=['citizenshell'],
     url='https://github.com/meuter/citizenshell',
     license='MIT',
@@ -19,7 +19,7 @@ setup(
     long_description=long_description,
     keywords=["shell", "telnet", "adb", "ssh", "serial"],
     classifiers=[],
-    download_url="https://github.com/meuter/citizenshell/archive/0.3.4.tar.gz",
+    download_url="https://github.com/meuter/citizenshell/archive/0.3.5.tar.gz",
     install_requires=[
         'termcolor>=1.1.0',
         'paramiko>=2.4.0'

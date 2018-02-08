@@ -1,3 +1,4 @@
 paramiko
 termcolor
 pytest-catchlog
+pypandoc
