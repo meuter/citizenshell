@@ -6,6 +6,7 @@ from termcolor import colored
 stdin_logger = getLogger("citizenshell.in")
 stdout_logger = getLogger("citizenshell.out")
 stderr_logger = getLogger("citizenshell.err")
+oob_logger = getLogger("citizenshell.oob")
 
 
 def configure_logger(logger, stream, log_format):
@@ -22,3 +23,5 @@ def configure_colored_logs():
                      colored("$ ", attrs=['bold']) + colored('%(message)s', color='cyan', attrs=['bold']))
     configure_logger(stdout_logger, sys.stdout, "%(message)s")
     configure_logger(stderr_logger, sys.stderr, colored('%(message)s', color='red', attrs=['bold']))
+    configure_logger(oob_logger, sys.stdout, 
+                     colored("> ", attrs=['bold']) + colored('%(message)s', color='yellow', attrs=['bold']))
