@@ -1,5 +1,6 @@
 from telnetlib import Telnet
 from uuid import uuid4
+from time import sleep
 
 from .abstractshell import AbstractShell
 from .shellresult import ShellResult
@@ -25,15 +26,19 @@ class TelnetShell(AbstractShell):
         if self._password:
             self._read_until("Password: ")
             self._write(self._password + "\n")
+        sleep(.1)
         self._write("export PS1=%s\n" % self._prompt)
         self._read_until(self._prompt)  # first time for the PS1
         self._read_until(self._prompt)  # second for the actual prompt
 
     def _write(self, text):
+        print "writing '%s'" % repr(text.encode('utf-8'))
         self._telnet.write(text.encode('utf-8'))
 
     def _read_until(self, marker):
-        return self._telnet.read_until(marker.encode('utf-8'))
+        out = self._telnet.read_until(marker.encode('utf-8'))
+        print "read    '%s'" % repr(out)
+        return out
 
     def _inject_env(self, env):
         for var, val in env.items():
@@ -64,10 +69,14 @@ class TelnetShell(AbstractShell):
         self._inject_env(self.get_local_env())
         formatted_command = r"(((%s); (echo XC--$? 1>&4)) 2>&3 | " % cmd.strip() + \
                             r"sed >&2 's/^\(.*\)/OUT-\1/') 4>&2 3>&1 1>&2 | sed 's/^\(.*\)/ERR-\1/'"
+        print "==="
+        print formatted_command
+        print "==="
         self._write(formatted_command + "\n")
         out, err = [], []
         xc = None
         for line in self._read_until(self._prompt).decode('utf-8').splitlines():
+            print ">> ", line
             prefix, line = line[:4], line[4:]
             if prefix == "ERR-":
                 self.log_stderr(line)
