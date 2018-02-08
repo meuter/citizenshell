@@ -9,3 +9,4 @@ build/
 .pypirc
 dist/**
 MANIFEST
+citizenshell.egg-info
