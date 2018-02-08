@@ -16,7 +16,7 @@ but may be extended to work to Windows based platform in the future. It is distr
 - [ ] shell over [adb](https://developer.android.com/studio/command-line/adb.html)
 - [ ] shell over serial using [pyserial](https://github.com/pyserial/pyserial)
 - [x] support for logging with colored formatter 
-- [ ] available from PIP repository
+- [x] available from PIP repository
 
 ## Examples
 
