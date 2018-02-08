@@ -31,14 +31,11 @@ class TelnetShell(AbstractShell):
         self._read_until(self._prompt)  # first time for the PS1
         self._read_until(self._prompt)  # second for the actual prompt
 
-    def _write(self, text):
-        print "writing '%s'" % repr(text.encode('utf-8'))
+    def _write(self, text):        
         self._telnet.write(text.encode('utf-8'))
 
     def _read_until(self, marker):
-        out = self._telnet.read_until(marker.encode('utf-8'))
-        print "read    '%s'" % repr(out)
-        return out
+        return self._telnet.read_until(marker.encode('utf-8'))
 
     def _inject_env(self, env):
         for var, val in env.items():
@@ -69,14 +66,10 @@ class TelnetShell(AbstractShell):
         self._inject_env(self.get_local_env())
         formatted_command = r"(((%s); (echo XC--$? 1>&4)) 2>&3 | " % cmd.strip() + \
                             r"sed >&2 's/^\(.*\)/OUT-\1/') 4>&2 3>&1 1>&2 | sed 's/^\(.*\)/ERR-\1/'"
-        print "==="
-        print formatted_command
-        print "==="
         self._write(formatted_command + "\n")
         out, err = [], []
         xc = None
         for line in self._read_until(self._prompt).decode('utf-8').splitlines():
-            print ">> ", line
             prefix, line = line[:4], line[4:]
             if prefix == "ERR-":
                 self.log_stderr(line)
