@@ -6,3 +6,6 @@ venv3/
 .vscode/
 build/
 **/*.pyc
+.pypirc
+dist/**
+MANIFEST
