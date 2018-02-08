@@ -151,7 +151,7 @@ def test_readme_example_4():
 
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_local_shell_can_execute_multiple_commands_in_a_row():
+def test_secure_shell_can_execute_multiple_commands_in_a_row():
     shell = get_secure_shell()
     assert shell("echo Foo") == "Foo"
     assert shell("exit 15").xc == 15

@@ -117,7 +117,7 @@ def test_telnet_shell_result_can_be_iterated_on():
 
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_local_shell_has_environment_variable():
+def test_telnet_shell_has_environment_variable():
     shell = get_telnet_shell()
     shell["SOME_VARIABLE"] = "value"
     assert "SOME_VARIABLE" in shell
@@ -127,14 +127,15 @@ def test_local_shell_has_environment_variable():
     assert "SOME_VARIABLE" not in shell
     assert shell("echo $SOME_VARIABLE") == ""
 
+
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_local_shell_can_be_constructed_with_env_as_kwargs():
+def test_telnet_shell_can_be_constructed_with_env_as_kwargs():
     shell = get_telnet_shell(FOO="bar")
     assert shell("echo $FOO") == "bar"
 
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_local_shell_can_override_environment_variable_on_invokation():
+def test_telnet_shell_can_override_environment_variable_on_invokation():
     shell = get_telnet_shell(VAR="foo")
     assert shell("echo $VAR") == "foo"
     assert shell("echo $VAR", VAR="bar") == "bar"
