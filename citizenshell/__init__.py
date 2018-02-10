@@ -4,7 +4,8 @@ from .secureshell import SecureShell
 from .shellerror import ShellError
 from .shellresult import ShellResult
 from .telnetshell import TelnetShell
-from .urishell import Shell
+from .shell import Shell
+from .parseduri import ParsedUri
 
 sh = Shell()
 
