@@ -1,26 +1,24 @@
 # citizenshell [![Build Status](https://travis-ci.org/meuter/citizenshell.svg?branch=master)](https://travis-ci.org/meuter/citizenshell)
 
-__citizenshell__ is (or rather will be) a python library allowing to execute shell commands
-either locally or remotely over several protocols (telnet, ssh, serial or adb) using a consistent
-and uniform API. This library is compatible with both python 2 (2.7) and 3 (>=3.4) as well as 
-with [PyPy](https://pypy.org/). For now, it focuses on POSIX platforms like Linux and MacOS, 
-but may be extended to work to Windows based platform in the future. It is distributed under
+__citizenshell__ is (or rather will be) a python library allowing to execute shell commands either locally or remotely over several protocols (telnet, ssh, serial or adb) using a simple and consistent API. This library is compatible with both python 2 (2.7) and 3 (>=3.4) as well as with [PyPy](https://pypy.org/). For now, it focuses on POSIX platforms like Linux and MacOS, but may be extended to work to Windows based platform in the future. It is distributed under
 [MIT](https://opensource.org/licenses/MIT) license.
 
 ## Roadmap
 
-#### Version 1.0
+### Version 1.0
+
 - [x] local shell
 - [x] shell over ssh using [paramiko](http://www.paramiko.org/)
-- [x] shell over telnet using telnetlib
+- [x] shell over telnet using [telnetlib](https://docs.python.org/2/library/telnetlib.html)
 - [ ] shell over [adb](https://developer.android.com/studio/command-line/adb.html)
 - [ ] shell over serial using [pyserial](https://github.com/pyserial/pyserial)
-- [x] support for logging with colored formatter 
+- [ ] possibility to open shell by uri
+- [x] support for logging with colored formatter
 - [x] available from PIP repository
 
 ## Examples
 
-#### LocalShell
+### LocalShell
 
 you can use the built-in `sh` command for simple commands:
 
