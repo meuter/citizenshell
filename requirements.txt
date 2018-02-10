@@ -2,3 +2,4 @@ paramiko
 termcolor
 pytest-catchlog
 pypandoc
+uritools

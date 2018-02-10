@@ -4,6 +4,7 @@ from .secureshell import SecureShell
 from .shellerror import ShellError
 from .shellresult import ShellResult
 from .telnetshell import TelnetShell
+from .urishell import Shell
 
-sh = LocalShell()
+sh = Shell()
 

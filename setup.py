@@ -9,7 +9,7 @@ except(IOError, ImportError):
 
 setup(
     name='citizenshell',
-    version='0.4',
+    version='0.5',
     packages=['citizenshell'],
     url='https://github.com/meuter/citizenshell',
     license='MIT',
@@ -22,6 +22,7 @@ setup(
     download_url="https://github.com/meuter/citizenshell/archive/0.4.tar.gz",
     install_requires=[
         'termcolor>=1.1.0',
-        'paramiko>=2.4.0'
+        'paramiko>=2.4.0',
+        'uritools>=2.1.0'
     ],
 )
