@@ -10,3 +10,4 @@ build/
 dist/**
 MANIFEST
 citizenshell.egg-info
+env/**
