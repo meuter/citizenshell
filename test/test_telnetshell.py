@@ -143,13 +143,6 @@ def test_telnet_shell_can_override_environment_variable_on_invokation():
 
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_telnet_shell_can_execute_multiple_commands_in_a_row():
-    sh = get_telnet_shell()
-    assert sh("echo Foo") == "Foo"
-    assert sh("echo Bar") == "Bar"
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_telnet_shell_result_can_throw_on_nonzero_exitcode():
     check_exception_is_raised("exit 33", global_check_xc=True, local_check_xc=None)
     check_exception_is_raised("exit 33", global_check_xc=True, local_check_xc=True)
@@ -204,3 +197,5 @@ if __name__ == "__main__":
     configure_colored_logs()
     sh = get_telnet_shell()
     r = sh(">&2 echo error && echo output && exit 13")
+
+

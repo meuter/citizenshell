@@ -11,3 +11,4 @@ dist/**
 MANIFEST
 citizenshell.egg-info
 env/**
+.envrc
