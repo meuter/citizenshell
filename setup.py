@@ -19,7 +19,7 @@ setup(
     long_description=long_description,
     keywords=["shell", "telnet", "adb", "ssh", "serial"],
     classifiers=[],
-    download_url="https://github.com/meuter/citizenshell/archive/0.4.tar.gz",
+    download_url="https://github.com/meuter/citizenshell/archive/0.5.tar.gz",
     install_requires=[
         'termcolor>=1.1.0',
         'paramiko>=2.4.0',

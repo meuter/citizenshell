@@ -1,11 +1,17 @@
 from os import environ
 from citizenshell import Shell, TelnetShell, LocalShell, SecureShell
+from pytest import mark
+
+TEST_TELNET_HOST_NOT_AVAILABLE = environ.get("TEST_TELNET_HOST", None) is None
+TEST_SSH_HOST_NOT_AVAILABLE = environ.get("TEST_SSH_HOST", None) is None
+
 
 def test_localshell_by_uri():
     shell = Shell()
     assert isinstance(shell, LocalShell)
     assert shell("echo Hello World") == "Hello World"
 
+@mark.skipif(TEST_TELNET_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_telnetshell_by_uri():
     hostname = environ.get("TEST_TELNET_HOST")
     username = environ.get("TEST_TELNET_USER")
@@ -16,6 +22,7 @@ def test_telnetshell_by_uri():
     assert isinstance(shell, TelnetShell)
     assert shell("echo Hello World") == "Hello World"
 
+@mark.skipif(TEST_SSH_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_secureshell_by_uri():
     hostname = environ.get("TEST_SSH_HOST")
     username = environ.get("TEST_SSH_USER")
