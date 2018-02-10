@@ -1,5 +1,6 @@
 from uritools import urisplit
 
+
 class ParsedUri:
 
     def __init__(self, uri, **kwargs):
@@ -7,6 +8,7 @@ class ParsedUri:
         self.scheme = parsed_uri.scheme
         self.parse_userinfo(parsed_uri, kwargs)
         self.parse_hostinfo(parsed_uri, kwargs)
+        self.validate()
 
     def parse_hostinfo(self, parsed_uri, kwargs):
         hostname_from_uri = parsed_uri.gethost(default=None)
@@ -30,6 +32,11 @@ class ParsedUri:
         self.username = self.get_uri_part("username", username_from_uri, kwargs)
         self.password = self.get_uri_part("password", password_from_uri, kwargs)
 
+    def validate(self):
+        if self.scheme in ["telnet", "ssh"]:
+            if not self.hostname or not self.username:
+                raise RuntimeError("scheme '%s' requires 'hostname' and 'username'", self.scheme)
+
     @staticmethod
     def get_uri_part(argname, from_uri, kwargs):
         from_kwargs = kwargs.get(argname, None)
@@ -38,5 +45,3 @@ class ParsedUri:
         elif from_uri and not from_kwargs:
             return from_uri
         return from_kwargs
-
-       
