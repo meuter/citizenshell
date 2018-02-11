@@ -74,8 +74,8 @@ class TelnetShell(AbstractShell):
     def execute_command(self, cmd):
         self.log_stdin(cmd)
         self._inject_env(self.get_local_env())
-        formatted_command = r"(((%s); (echo XC--$? 1>&4)) 2>&3 | " % cmd.strip() + \
-                            r"sed >&2 's/^\(.*\)/OUT-\1/') 4>&2 3>&1 1>&2 | sed 's/^\(.*\)/ERR-\1/'"
+
+        formatted_command = r"{ { { (%s) 2>&3; echo XC--$? >&4; } | sed 's/^/OUT-/' >&2; } 3>&1 4>&2 1>&2 | sed 's/^/ERR-/'; } 2>&1" % cmd.strip()
         self._write(formatted_command + "\n")
         out, err = [], []
         xc = None
