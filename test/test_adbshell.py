@@ -1,6 +1,8 @@
 from os import environ
-from citizenshell import AdbShell, ShellError
+from citizenshell import AdbShell, ShellError, configure_colored_logs
 from pytest import mark, raises
+
+configure_colored_logs()
 
 TEST_HOST_NOT_AVAILABLE = environ.get("TEST_ADB_HOST", None) is None
 
@@ -19,6 +21,7 @@ def test_adb_shell_can_run_one_basic_command():
     shell = get_adb_shell()
     result = shell("echo Foo")
     assert result == "Foo"
+    
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_adb_shell_can_run_another_basic_command():
@@ -34,13 +37,13 @@ def test_adb_shell_can_run_a_command_without_a_trailing_endl():
     assert result.err == []
     assert result.xc == 13
 
-# @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-# def test_adb_shell_can_run_command_on_multiple_lines():
-#     shell = get_adb_shell()
-#     result = shell("echo Bar\necho Foo")
-#     assert result.out == [ "Bar", "Foo" ]
-#     assert result.err == []
-#     assert result.xc == 0
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_adb_shell_can_run_command_on_multiple_lines():
+    shell = get_adb_shell()
+    result = shell("echo Bar\necho Foo")
+    assert result.out == [ "Bar", "Foo" ]
+    assert result.err == []
+    assert result.xc == 0
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_adb_shell_result_has_stdout():
@@ -67,11 +70,11 @@ def test_adb_shell_result_has_exit_code():
     assert result.err == []
     assert result.xc == 15
 
-# @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-# def test_adb_shell_result_can_be_compared_for_boolean():
-#     shell = get_adb_shell()
-#     assert shell("exit 0")
-#     assert not shell("exit 10")
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_adb_shell_result_can_be_compared_for_boolean():
+    shell = get_adb_shell()
+    assert shell("exit 0")
+    assert not shell("exit 10")
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_adb_shell_result_can_be_iterated_on():
