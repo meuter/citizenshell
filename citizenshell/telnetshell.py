@@ -5,6 +5,7 @@ from time import sleep
 from .abstractshell import AbstractShell
 from .shellresult import ShellResult
 
+import sys
 
 class TelnetShell(AbstractShell):
 
@@ -29,7 +30,7 @@ class TelnetShell(AbstractShell):
             if self._password:
                 self._read_until("Password: ")
                 self._write(self._password + "\n")
-            sleep(.1)
+            self._write("export COLUMNS=500\n")
             self._write("export PS1=%s\n" % self._prompt)
             self._read_until(self._prompt)  # first time for the PS1
             self._read_until(self._prompt)  # second for the actual prompt
@@ -42,10 +43,13 @@ class TelnetShell(AbstractShell):
             self._is_connected = False
 
     def _write(self, text):        
+        #sys.stdout.write(">>>" + text)
         self._telnet.write(text.encode('utf-8'))
 
     def _read_until(self, marker):
-        return self._telnet.read_until(marker.encode('utf-8'))
+        out = self._telnet.read_until(marker.encode('utf-8'))
+        #sys.stdout.write("<<<" + out)
+        return out
 
     def _inject_env(self, env):
         for var, val in env.items():
