@@ -1,25 +1,7 @@
 import logging
+from pytest import mark, raises
 
 from citizenshell import LocalShell, ShellError, sh
-
-
-def check_exception_is_not_raised(cmd, global_check_xc=False, local_check_xc=None,
-                                  global_check_err=False, local_check_err=None):
-    shell = LocalShell(check_xc=global_check_xc, check_err=global_check_err)
-    shell(cmd, check_xc=local_check_xc, check_err=local_check_err)
-
-
-def check_exception_is_raised(cmd, global_check_xc=False, local_check_xc=None,
-                              global_check_err=False, local_check_err=None):
-    exception_caught = None
-
-    try:
-        shell = LocalShell(check_xc=global_check_xc, check_err=global_check_err)
-        shell(cmd, check_xc=local_check_xc, check_err=local_check_err)
-    except ShellError as e:
-        exception_caught = e
-
-    assert exception_caught is not None
 
 
 def test_local_shell_can_be_instantiated():
@@ -111,18 +93,26 @@ def test_local_shell_can_override_environment_variable_on_invokation():
     assert shell("echo $VAR") == "foo"
 
 
-def test_local_shell_result_can_throw_on_nonzero_exitcode():
-    check_exception_is_raised("exit 33", global_check_xc=True, local_check_xc=None)
-    check_exception_is_raised("exit 33", global_check_xc=True, local_check_xc=True)
-    check_exception_is_raised("exit 33", global_check_xc=False, local_check_xc=True)
-    check_exception_is_not_raised("exit 33", global_check_xc=False, local_check_xc=None)
+@mark.parametrize("global_check_xc,local_check_xc", [ (True, False), (False, True), (True, True) ])
+def test_local_shell_check_xc_raises(global_check_xc, local_check_xc):
+    shell = LocalShell(check_xc=global_check_xc)
+    with raises(ShellError):
+        shell("exit 13", check_xc=local_check_xc)
+
+def test_local_shell_check_xc_not_raises():
+    shell = LocalShell(check_xc=False)
+    shell("exit 13", check_xc=False)
 
 
-def test_local_shell_result_can_throw_on_nonempty_err():
-    check_exception_is_raised(">&2 echo error", global_check_err=True, local_check_err=None)
-    check_exception_is_raised(">&2 echo error", global_check_err=True, local_check_err=True)
-    check_exception_is_raised(">&2 echo error", global_check_err=False, local_check_err=True)
-    check_exception_is_not_raised(">&2 echo error", global_check_err=False, local_check_err=None)
+@mark.parametrize("global_check_err,local_check_err", [ (True, False), (False, True), (True, True) ])
+def test_local_shell_check_err_raises(global_check_err, local_check_err):
+    shell = LocalShell(check_err=global_check_err)
+    with raises(ShellError):
+        shell(">&2 echo error", check_err=local_check_err)
+
+def test_local_shell_check_err_not_raises():
+    shell = LocalShell(check_err=False)
+    shell(">&2 echo error", check_err=False)
 
 
 def test_readme_example_1():
@@ -170,10 +160,3 @@ def test_local_shell_logs(caplog):
     err_index = caplog.record_tuples.index(('citizenshell.out', logging.INFO, u"output"))
     assert in_index < out_index
     assert in_index < err_index
-
-
-if __name__ == "__main__":
-    from citizenshell import configure_colored_logs
-
-    configure_colored_logs()
-    sh(">&2 echo error && echo output && exit 13")
