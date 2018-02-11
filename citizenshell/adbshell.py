@@ -20,8 +20,10 @@ class AdbShell(AbstractShell):
 
     def execute_command(self, cmd):
         self.log_stdin(cmd)
-        adb_command = 'adb -s %s shell "%s"' % (self._hostname, cmd)
-        process = Popen(adb_command, shell=True, env=self.get_merged_env(), stdout=PIPE, stderr=PIPE)
+        for var, val in self.get_merged_env().items():
+            cmd = "%s=%s; " % (var, val) + cmd
+        adb_command = "adb -s %s shell '%s'" % (self._hostname, cmd)
+        process = Popen(adb_command, shell=True, stdout=PIPE, stderr=PIPE)
         out_thread = LoggerThread(process.stdout, self.log_stdout)
         err_thread = LoggerThread(process.stderr, self.log_stderr)
         out_thread.join()
