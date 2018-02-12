@@ -6,16 +6,16 @@ from .adbshell import AdbShell
 
 def Shell(uri=None, **kwargs):
     if not uri:
-        return LocalShell()
+        return LocalShell(**kwargs)
 
-    parsed_uri = ParsedUri(uri, *kwargs)
+    parsed_uri = ParsedUri(uri, **kwargs)
     if parsed_uri.scheme == "telnet":
         return TelnetShell(hostname=parsed_uri.hostname, username=parsed_uri.username, 
-                           password=parsed_uri.password, port=parsed_uri.port)
+                           password=parsed_uri.password, port=parsed_uri.port, **parsed_uri.kwargs)
     elif parsed_uri.scheme == "ssh":
         return SecureShell(hostname=parsed_uri.hostname, username=parsed_uri.username, 
-                           password=parsed_uri.password, port=parsed_uri.port)
+                           password=parsed_uri.password, port=parsed_uri.port, **parsed_uri.kwargs)
     elif parsed_uri.scheme == "adb":
-        return AdbShell(hostname=parsed_uri.hostname, port=parsed_uri.port)
+        return AdbShell(hostname=parsed_uri.hostname, port=parsed_uri.port, **parsed_uri.kwargs)
             
     raise RuntimeError("unknwon scheme '%s'" % parsed_uri.scheme)

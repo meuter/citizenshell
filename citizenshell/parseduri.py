@@ -6,20 +6,21 @@ class ParsedUri:
     def __init__(self, uri, **kwargs):
         parsed_uri = urisplit(uri)
         self.scheme = parsed_uri.scheme
-        self.parse_userinfo(parsed_uri, kwargs)
-        self.parse_hostinfo(parsed_uri, kwargs)
+        self.kwargs = dict(kwargs)
+        self.parse_userinfo(parsed_uri)
+        self.parse_hostinfo(parsed_uri)
         self.validate()
         self.fill_defaults()
 
-    def parse_hostinfo(self, parsed_uri, kwargs):
+    def parse_hostinfo(self, parsed_uri):
         hostname_from_uri = parsed_uri.gethost(default=None)
         if not hostname_from_uri or str(hostname_from_uri) == '':
             self.hostname = None
         else:
             self.hostname = str(hostname_from_uri)
-        self.port = self.get_uri_part("port", parsed_uri.getport(default=None), kwargs)
+        self.port = self.get_uri_part("port", parsed_uri.getport(default=None))
 
-    def parse_userinfo(self, parsed_uri, kwargs):
+    def parse_userinfo(self, parsed_uri):
         username_from_uri = None
         password_from_uri = None
         userinfo = parsed_uri.getuserinfo()
@@ -30,8 +31,8 @@ class ParsedUri:
                     username_from_uri = None                    
             else:
                 username_from_uri = userinfo
-        self.username = self.get_uri_part("username", username_from_uri, kwargs)
-        self.password = self.get_uri_part("password", password_from_uri, kwargs)
+        self.username = self.get_uri_part("username", username_from_uri)
+        self.password = self.get_uri_part("password", password_from_uri)
 
     def validate(self):
         if self.scheme in ["telnet", "ssh" ]:
@@ -49,9 +50,12 @@ class ParsedUri:
         elif self.scheme == "adb" and self.port is None:
             self.port = 5555
 
-    @staticmethod
-    def get_uri_part(argname, from_uri, kwargs):
-        from_kwargs = kwargs.get(argname, None)
+    def get_uri_part(self, argname, from_uri):
+        from_kwargs = self.kwargs.get(argname, None)
+        
+        if argname in self.kwargs:
+            del self.kwargs[argname]
+
         if from_kwargs and from_uri:
             raise RuntimeError("'%s' provided both in uri and as argument")
         elif from_uri and not from_kwargs:

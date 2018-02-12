@@ -1,45 +1,106 @@
 from os import environ
-from citizenshell import SecureShell, TelnetShell, Shell, LocalShell, AdbShell
-from pytest import mark
+from citizenshell import SecureShell, TelnetShell, Shell, LocalShell, AdbShell, ShellError
+from pytest import mark, raises
 
-TEST_TELNET_HOST_NOT_AVAILABLE = environ.get("TEST_TELNET_HOST", None) is None
-TEST_SSH_HOST_NOT_AVAILABLE = environ.get("TEST_SSH_HOST", None) is None
-TEST_ADB_HOSTNAME_NOT_AVAILABLE = environ.get("TEST_ADB_HOST", None) is None
+###################################################################################################
 
 def test_localshell_by_uri():
     shell = Shell()
     assert isinstance(shell, LocalShell)
     assert shell("echo Hello World") == "Hello World"
 
-@mark.skipif(TEST_TELNET_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_telnetshell_by_uri():
+def test_localshell_by_uri_with_env():
+    shell = Shell(FOO="foo")
+    assert isinstance(shell, LocalShell)
+    assert shell("echo $FOO") == "foo"
+
+def test_localshell_by_uri_with_check_xc():
+    shell = Shell(check_xc=True)
+    assert isinstance(shell, LocalShell)
+    with raises(ShellError):
+        shell("exit 44")
+
+###################################################################################################
+
+TEST_TELNET_HOST_NOT_AVAILABLE = environ.get("TEST_TELNET_HOST", None) is None
+
+def get_telnet_shell_by_uri(**kwargs):
     hostname = environ.get("TEST_TELNET_HOST")
     username = environ.get("TEST_TELNET_USER")
     password = environ.get("TEST_TELNET_PASS", None)
     port = int(environ.get("TEST_TELNET_PORT", 23))
     assert hostname and username and password and port
-    shell = Shell("telnet://%s:%s@%s:%d" % (username, password, hostname, port))
+    shell =  Shell("telnet://%s:%s@%s:%d" % (username, password, hostname, port), **kwargs)
     assert isinstance(shell, TelnetShell)
+    return shell
+
+@mark.skipif(TEST_TELNET_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_telnetshell_by_uri_with_check_xc():
+    shell = Shell(check_xc=True)
+    with raises(ShellError):
+        shell("exit 10")
+
+@mark.skipif(TEST_TELNET_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_telnetshell_by_uri():
+    shell = get_telnet_shell_by_uri()
     assert shell("echo Hello World") == "Hello World"
 
-@mark.skipif(TEST_SSH_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_secureshell_by_uri():
+@mark.skipif(TEST_TELNET_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_telnetshell_by_uri_with_env():
+    shell = get_telnet_shell_by_uri(BAR="bar")
+    assert shell("echo Hello $BAR") == "Hello bar"
+
+###################################################################################################
+
+TEST_SSH_HOST_NOT_AVAILABLE = environ.get("TEST_SSH_HOST", None) is None
+
+def get_secureshell_by_uri(**kwargs):
     hostname = environ.get("TEST_SSH_HOST")
     username = environ.get("TEST_SSH_USER")
     password = environ.get("TEST_SSH_PASS", None)
     port = int(environ.get("TEST_SSH_PORT", 23))
     assert hostname and username and password and port
-    shell = Shell("ssh://%s:%s@%s:%d" % (username, password, hostname, port))
+    shell = Shell("ssh://%s:%s@%s:%d" % (username, password, hostname, port), **kwargs)
     assert isinstance(shell, SecureShell)
+    return shell
+
+@mark.skipif(TEST_SSH_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_secureshell_by_uri():
+    shell = get_secureshell_by_uri()
     assert shell("echo Hello World") == "Hello World"
+
+@mark.skipif(TEST_SSH_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_secureshell_by_uri_with_check_xc():
+    shell = get_secureshell_by_uri(check_xc=True)
+    with raises(ShellError):
+        shell("exit 14")
+
+###################################################################################################
+
+TEST_ADB_HOSTNAME_NOT_AVAILABLE = environ.get("TEST_ADB_HOST", None) is None
+
+def get_adbshell_by_uri(**kwargs):
+    hostname = environ.get("TEST_ADB_HOST")
+    assert hostname
+    shell = Shell("adb://%s" % hostname, **kwargs)
+    assert isinstance(shell, AdbShell)
+    return shell
 
 @mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
 def test_adbshell_by_uri():
-    hostname = environ.get("TEST_ADB_HOST")
-    assert hostname
-    shell = Shell("adb://%s" % hostname)
-    assert isinstance(shell, AdbShell)
+    shell = get_adbshell_by_uri()
     assert shell("echo Hello World") == "Hello World"
+
+@mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
+def test_adbshell_by_uri_with_env():
+    shell = get_adbshell_by_uri(FOO="foo")
+    assert shell("echo $FOO World") == "foo World"
+
+@mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
+def test_adbshell_by_uri_with_check_xc():
+    shell = get_adbshell_by_uri(check_xc=True)
+    with raises(ShellError):
+        shell("exit 46")
 
 @mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
 def test_adbshell_by_uri_with_port():
