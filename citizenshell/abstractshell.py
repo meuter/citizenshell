@@ -56,4 +56,3 @@ class AbstractShell(dict):
 
     def execute_command(self, cmd):
         raise NotImplementedError("this method must be implemented by the subclass")
-
