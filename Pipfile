@@ -12,6 +12,8 @@ pypandoc = "*"
 bpython = "*"
 pytest = "*"
 pylint = "*"
+wheel = "*"
+twine = "*"
 
 
 [packages]

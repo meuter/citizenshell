@@ -9,7 +9,7 @@ except(IOError, ImportError):
 
 setup(
     name='citizenshell',
-    version='1.0b',
+    version='1.1',
     packages=['citizenshell'],
     url='https://github.com/meuter/citizenshell',
     license='MIT',
@@ -18,27 +18,25 @@ setup(
     description='Interact with shell locally or over different connection types (telnet, ssh, serial, adb)',
     long_description=long_description,
     keywords=["shell", "telnet", "adb", "ssh", "serial"],
-    download_url="https://github.com/meuter/citizenshell/archive/1.0b.tar.gz",
+    download_url="https://github.com/meuter/citizenshell/archive/1.1.tar.gz",
     install_requires=[
         'termcolor>=1.1.0',
         'paramiko>=2.4.0',
         'uritools>=2.1.0',
-        'pyserial==3.4'
+        'pyserial>=3.4'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'Intended Audience :: Information Technology'
-        'License :: OSI Approved :: MIT License'
+        'Intended Audience :: Information Technology',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
