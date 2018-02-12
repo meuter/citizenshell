@@ -167,3 +167,13 @@ def test_adb_shell_logs(caplog):
     err_index = caplog.record_tuples.index(('citizenshell.out', logging.INFO, u"output"))
     assert in_index < out_index
     assert in_index < err_index
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_adb_shell_command_with_single_quotes():
+    sh = get_adb_shell()
+    assert sh("echo '$FOO'", FOO="foo") == "$FOO"
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_adb_shell_command_with_double_quotes():
+    sh = get_adb_shell()    
+    assert sh('echo "$FOO"', FOO="foo") == "foo"

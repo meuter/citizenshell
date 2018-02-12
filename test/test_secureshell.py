@@ -155,3 +155,12 @@ def test_secure_shell_logs(caplog):
     assert in_index < out_index
     assert in_index < err_index
 
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_secure_shell_command_with_single_quotes():
+    sh = get_secure_shell()
+    assert sh("FOO=foo echo '$FOO'") == "$FOO"
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_secure_shell_command_with_double_quotes():
+    sh = get_secure_shell()
+    assert sh('FOO=foo echo "xx$FOO"', FOO="foo") == "xx"

@@ -160,3 +160,9 @@ def test_local_shell_logs(caplog):
     err_index = caplog.record_tuples.index(('citizenshell.out', logging.INFO, u"output"))
     assert in_index < out_index
     assert in_index < err_index
+
+def test_local_shell_command_with_single_quotes():
+    assert sh("echo '$FOO'", FOO="foo") == "$FOO"
+
+def test_local_shell_command_with_double_quotes():
+    assert sh('echo "$FOO"', FOO="foo") == "foo"
