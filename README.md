@@ -3,25 +3,13 @@
 __citizenshell__ is (or rather will be) a python library allowing to execute shell commands either locally or remotely over several protocols (telnet, ssh, serial or adb) using a simple and consistent API. This library is compatible with both python 2 (2.7) and 3 (>=3.4) as well as with [PyPy](https://pypy.org/). For now, it focuses on POSIX platforms like Linux and MacOS, but may be extended to work to Windows based platform in the future. It is distributed under
 [MIT](https://opensource.org/licenses/MIT) license.
 
-## Roadmap
+## Installing 
 
-### Version 1.0
+__citizenshell__ can simply installed using [`pip`](https://pypi.python.org/pypi/pip)
 
-- [x] local shell
-- [x] shell over ssh using [paramiko](http://www.paramiko.org/)
-- [x] shell over telnet using [telnetlib](https://docs.python.org/2/library/telnetlib.html)
-- [x] shell over [adb](https://developer.android.com/studio/command-line/adb.html)
-- [x] shell over serial using [pyserial](https://github.com/pyserial/pyserial)
-- [x] possibility to open shell by uri
-- [x] support for logging with colored formatter
-- [x] available from PIP repository
-
-### Version 1.1
-
-- [ ] add support for pushing (upload) and pulling (download) files for `AdbShell` using [adb](https://developer.android.com/studio/command-line/adb.html)
-- [ ] add support for pushing (upload) and pulling (download) files for `TelnetShell` using [netcat](https://linux.die.net/man/1/nc)
-- [ ] add support for pushing (upload) and pulling (download) files for `SecureShell` using [paramiko](http://www.paramiko.org/)
-- [ ] add support for pushing (upload) and pulling (download) files for `SerialShell` using [rz](https://linux.die.net/man/1/rz)
+```bash
+pip install citizenshell
+```
 
 ## Examples
 
@@ -152,5 +140,3 @@ serialshell = Shell("serial://jogn:secretpassword@/dev/ttyUSB3", baudrate=115200
 ```
 
 you can then use the shell objects as you would any other.
-
-
