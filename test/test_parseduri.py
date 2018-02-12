@@ -118,6 +118,10 @@ def test_parsed_uri_ssh_no_username():
 def test_parsed_uri_ssh_username_as_arg():
     ParsedUri("ssh://hostname", username="john")
 
+def test_parsed_uri_fill_in_default_port():
+    assert ParsedUri("ssh://john@hostname").port == 22
+    assert ParsedUri("telnet://john@hostname").port == 23
+    assert ParsedUri("adb://hostname").port == 5555
 
 def test_parse_uri_username_in_uri_and_as_arg():
     with raises(RuntimeError):

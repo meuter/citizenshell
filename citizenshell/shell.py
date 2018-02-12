@@ -16,6 +16,6 @@ def Shell(uri=None, **kwargs):
         return SecureShell(hostname=parsed_uri.hostname, username=parsed_uri.username, 
                            password=parsed_uri.password, port=parsed_uri.port)
     elif parsed_uri.scheme == "adb":
-        return AdbShell(hostname=parsed_uri.hostname)        
+        return AdbShell(hostname=parsed_uri.hostname, port=parsed_uri.port)
             
     raise RuntimeError("unknwon scheme '%s'" % parsed_uri.scheme)

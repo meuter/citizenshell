@@ -40,3 +40,11 @@ def test_adbshell_by_uri():
     shell = Shell("adb://%s" % hostname)
     assert isinstance(shell, AdbShell)
     assert shell("echo Hello World") == "Hello World"
+
+@mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
+def test_adbshell_by_uri_with_port():
+    hostname = environ.get("TEST_ADB_HOST")
+    assert hostname
+    shell = Shell("adb://%s:5555" % hostname)
+    assert isinstance(shell, AdbShell)
+    assert shell("echo Hello World") == "Hello World"

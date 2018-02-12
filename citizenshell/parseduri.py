@@ -9,6 +9,7 @@ class ParsedUri:
         self.parse_userinfo(parsed_uri, kwargs)
         self.parse_hostinfo(parsed_uri, kwargs)
         self.validate()
+        self.fill_defaults()
 
     def parse_hostinfo(self, parsed_uri, kwargs):
         hostname_from_uri = parsed_uri.gethost(default=None)
@@ -33,9 +34,20 @@ class ParsedUri:
         self.password = self.get_uri_part("password", password_from_uri, kwargs)
 
     def validate(self):
-        if self.scheme in ["telnet", "ssh"]:
+        if self.scheme in ["telnet", "ssh" ]:
             if not self.hostname or not self.username:
                 raise RuntimeError("scheme '%s' requires 'hostname' and 'username'", self.scheme)
+        if self.scheme in ["adb"]:
+            if not self.hostname:
+                raise RuntimeError("scheme '%s' requires 'hostname'", self.scheme)
+
+    def fill_defaults(self):
+        if self.scheme == "telnet" and self.port is None:
+            self.port = 23
+        elif self.scheme == "ssh" and self.port is None:
+            self.port = 22
+        elif self.scheme == "adb" and self.port is None:
+            self.port = 5555
 
     @staticmethod
     def get_uri_part(argname, from_uri, kwargs):
@@ -45,3 +57,5 @@ class ParsedUri:
         elif from_uri and not from_kwargs:
             return from_uri
         return from_kwargs
+
+    
