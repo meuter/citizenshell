@@ -39,7 +39,9 @@ class TelnetShell(AbstractShell):
 
     def disconnect(self):
         if self._is_connected:
+            self.log_oob("disconnecting from '%s'..." % self._hostname)
             self._telnet.close()
+            self.log_oob("disconnected!")
             self._is_connected = False
 
     def _write(self, text):        

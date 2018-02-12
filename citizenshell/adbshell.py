@@ -10,13 +10,24 @@ class AdbShell(AbstractShell):
     def __init__(self, hostname, check_xc=False, check_err=False, **kwargs):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
         self._hostname = hostname        
-        self._connect()
+        self._localshell = LocalShell()
+        self._connected = False
+        self.connect()
 
-    def _connect(self):
-        self.log_oob("connecting to %s" % self._hostname)
-        sh = LocalShell()
-        sh("adb connect %s:5555" % self._hostname, check_err=True)
-        self.log_oob("connected")
+    def connect(self):
+        if not self._connected:
+            self.log_oob("connecting to '%s'..." % self._hostname)            
+            self._localshell("adb connect %s:5555" % self._hostname, check_err=True)
+            self.log_oob("connected!")
+            self._connected = True
+
+    def disconnect(self):
+        if self._connected:
+            self.log_oob("disconnecting from '%s'..." % self._hostname)
+            self._localshell("adb disconnect %s:5555" % self._hostname, check_err=True)
+            self.log_oob("disconnected!")
+            self._connected = False
+            
 
     def execute_command(self, cmd):
         self.log_stdin(cmd)
