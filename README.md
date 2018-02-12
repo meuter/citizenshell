@@ -3,13 +3,9 @@
 __citizenshell__ is (or rather will be) a python library allowing to execute shell commands either locally or remotely over several protocols (telnet, ssh, serial or adb) using a simple and consistent API. This library is compatible with both python 2 (2.7) and 3 (>=3.4) as well as with [PyPy](https://pypy.org/). For now, it focuses on POSIX platforms like Linux and MacOS, but may be extended to work to Windows based platform in the future. It is distributed under
 [MIT](https://opensource.org/licenses/MIT) license.
 
-## Installing 
+## Installing
 
-__citizenshell__ can simply installed using [`pip`](https://pypi.python.org/pypi/pip)
-
-```bash
-pip install citizenshell
-```
+__citizenshell__ can simply installed using `pip install citizenshell`
 
 ## Examples
 
