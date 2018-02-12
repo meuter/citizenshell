@@ -2,6 +2,7 @@ from .parseduri import ParsedUri
 from .telnetshell import TelnetShell
 from .localshell import LocalShell
 from .secureshell import SecureShell
+from .adbshell import AdbShell
 
 def Shell(uri=None, **kwargs):
     if not uri:
@@ -14,5 +15,7 @@ def Shell(uri=None, **kwargs):
     elif parsed_uri.scheme == "ssh":
         return SecureShell(hostname=parsed_uri.hostname, username=parsed_uri.username, 
                            password=parsed_uri.password, port=parsed_uri.port)
+    elif parsed_uri.scheme == "adb":
+        return AdbShell(hostname=parsed_uri.hostname)        
             
     raise RuntimeError("unknwon scheme '%s'" % parsed_uri.scheme)
