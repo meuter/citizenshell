@@ -29,7 +29,8 @@ class TelnetShell(AbstractShell):
             self._write(self._username + "\n")
             if self._password:
                 self._read_until("Password: ")
-                self._write(self._password + "\n")
+                self._write(self._password + "\n")            
+            sleep(.1) # wait for the login to complete
             self._write("export COLUMNS=500\n")
             self._write("export PS1=%s\n" % self._prompt)
             self._read_until(self._prompt)  # first time for the PS1
@@ -45,7 +46,7 @@ class TelnetShell(AbstractShell):
             self._is_connected = False
 
     def _write(self, text):        
-        #sys.stdout.write(">>>" + text)
+        #sys.stdout.write(">>>" + text) 
         self._telnet.write(text.encode('utf-8'))
 
     def _read_until(self, marker):
