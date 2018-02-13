@@ -7,7 +7,7 @@ name = "pypi"
 
 [dev-packages]
 
-pytest-catchlog = "*"
+pytest-sugar="*"
 pypandoc = "*"
 
 [packages]

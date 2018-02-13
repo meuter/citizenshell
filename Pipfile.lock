@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ecff77242d2098648fed8337c9e39dc5eb6e9f899ec9901417b9047b83a7057e"
+            "sha256": "870ede3ae73ec75b573dd367b60ea77c0b25832edf2e0b938cac913a14b7b57e"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -100,7 +100,6 @@
                 "sha256:87f837459c3c78d75cb4f5aadf08a7104db15e8c7618a5c732e60f252279c7a6",
                 "sha256:df9083a992b17a28cd4251a3f5c879e0198bb26c9e808c4647e0a18739f1d11d"
             ],
-            "markers": "platform_python_implementation != 'PyPy'",
             "version": "==1.11.4"
         },
         "cryptography": {
@@ -152,7 +151,7 @@
             "hashes": [
                 "sha256:200d8686011d470b5e4de207d803445deee427455cd0cb7c982b68cf82524f81"
             ],
-            "markers": "python_version < '3'",
+            "markers": "python_version == '2.7'",
             "version": "==1.0.19"
         },
         "paramiko": {
@@ -276,12 +275,11 @@
             ],
             "version": "==3.4.0"
         },
-        "pytest-catchlog": {
+        "pytest-sugar": {
             "hashes": [
-                "sha256:a692966da726b918197cabd20dc0ad4da5503fbdc99baaa192e62579c8a45773",
-                "sha256:4be15dc5ac1750f83960897f591453040dff044b5966fe24a91c2f7d04ecfcf0"
+                "sha256:ab8cc42faf121344a4e9b13f39a51257f26f410e416c52ea11078cdd00d98a2c"
             ],
-            "version": "==1.2.2"
+            "version": "==0.9.1"
         },
         "six": {
             "hashes": [
@@ -289,6 +287,12 @@
                 "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
             ],
             "version": "==1.11.0"
+        },
+        "termcolor": {
+            "hashes": [
+                "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"
+            ],
+            "version": "==1.1.0"
         },
         "wheel": {
             "hashes": [
