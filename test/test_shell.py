@@ -29,8 +29,10 @@ def get_telnet_shell_by_uri(**kwargs):
     username = environ.get("TEST_TELNET_USER")
     password = environ.get("TEST_TELNET_PASS", None)
     port = int(environ.get("TEST_TELNET_PORT", 23))
-    assert hostname and username and password and port
-    shell =  Shell("telnet://%s:%s@%s:%d" % (username, password, hostname, port), **kwargs)
+    if hostname and username and password and port:
+        shell =  Shell("telnet://%s:%s@%s:%d" % (username, password, hostname, port), **kwargs)
+    elif hostname and username: 
+        shell =  Shell("telnet://%s@%s:%d" % (username, hostname, port), **kwargs)
     assert isinstance(shell, TelnetShell)
     return shell
 
@@ -58,9 +60,13 @@ def get_secureshell_by_uri(**kwargs):
     hostname = environ.get("TEST_SSH_HOST")
     username = environ.get("TEST_SSH_USER")
     password = environ.get("TEST_SSH_PASS", None)
-    port = int(environ.get("TEST_SSH_PORT", 23))
-    assert hostname and username and password and port
-    shell = Shell("ssh://%s:%s@%s:%d" % (username, password, hostname, port), **kwargs)
+    port = int(environ.get("TEST_SSH_PORT", 22))
+    if (hostname and username and password and port):
+        shell = Shell("ssh://%s:%s@%s:%d" % (username, password, hostname, port), **kwargs)
+    elif (hostname and username and port):
+        shell = Shell("ssh://%s@%s:%d" % (username, hostname, port), **kwargs)
+    else:
+        assert False, "missing username and or hostname"
     assert isinstance(shell, SecureShell)
     return shell
 
