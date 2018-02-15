@@ -38,12 +38,27 @@ class AdbShell(AbstractShell):
         self.log_stdin(cmd)
         for var, val in self.get_merged_env().items():
             cmd = "%s=%s; " % (var, val) + cmd
+
+        formatted_command = r"{ { { (%s) 2>&3; echo XC--$? >&4; } | sed 's/^/OUT-/' >&2; } 3>&1 4>&2 1>&2 | sed 's/^/ERR-/'; } 2>&1" % cmd.strip()
+        formatted_command = ". /system/etc/mkshrc; " + formatted_command
         adb_command = "adb -s %s:%d shell '%s'" % (self._hostname, self._port, formatted_command.replace('\'', '\'"\'"\''))
         process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
-        out_thread = LoggerThread(process.stdout, self.log_stdout)
-        err_thread = LoggerThread(process.stderr, self.log_stderr)
-        out_thread.join()
-        err_thread.join()
+
+        out, err = [], []
+        xc = None
+        while True:
+            line = process.stdout.readline().rstrip()
+            if line == '':
+                break
+            prefix, line = line[:4], line[4:]
+            if prefix == "ERR-":
+                self.log_stderr(line)
+                err.append(line)
+            elif prefix == "OUT-":
+                self.log_stdout(line)
+                out.append(line)
+            elif prefix == "XC--":
+                xc = int(line)
         process.wait()
-        return ShellResult(cmd, out_thread.get_content(), err_thread.get_content(), process.returncode)
+        return ShellResult(cmd, out, err, xc)
 
