@@ -38,7 +38,7 @@ class AdbShell(AbstractShell):
         self.log_stdin(cmd)
         for var, val in self.get_merged_env().items():
             cmd = "%s=%s; " % (var, val) + cmd
-        adb_command = "adb -s %s:%d shell '%s'" % (self._hostname, self._port, cmd.replace('\'', '\'"\'"\''))
+        adb_command = "adb -s %s:%d shell '%s'" % (self._hostname, self._port, formatted_command.replace('\'', '\'"\'"\''))
         process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
         out_thread = LoggerThread(process.stdout, self.log_stdout)
         err_thread = LoggerThread(process.stderr, self.log_stderr)
