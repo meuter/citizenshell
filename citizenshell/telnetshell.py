@@ -82,7 +82,13 @@ class TelnetShell(AbstractShell):
         self.log_stdin(cmd)
         self._inject_env(self.get_local_env())
 
-        formatted_command = r"{ { { (%s) 2>&3; echo XC--$? >&4; } | sed 's/^/OUT-/' >&2; } 3>&1 4>&2 1>&2 | sed 's/^/ERR-/'; } 2>&1" % cmd.strip()
+        def prefix_filter_sh_command(prefix):
+            return 'while read line || [ -n "$line" ]; do echo %s$line; done' % prefix
+
+        out_filter = prefix_filter_sh_command("OUT-")
+        err_filter = prefix_filter_sh_command("ERR-")
+
+        formatted_command = r"{ { { (%s) 2>&3; echo XC--$? >&4; } | %s >&2; } 3>&1 4>&2 1>&2 | %s; } 2>&1" % (cmd.strip(), out_filter, err_filter)
         self._write(formatted_command + "\n")
         out, err = [], []
         xc = None

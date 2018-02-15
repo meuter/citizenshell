@@ -37,6 +37,15 @@ def test_adb_shell_can_run_a_command_without_a_trailing_endl():
     assert result.xc == 13
 
 @mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_adb_shell_can_run_a_command_without_a_trailing_endl_to_stderr():
+    shell = get_adb_shell()
+    result = shell("echo -n Bar >&2 && exit 13")
+    assert result.out == []
+    assert result.err == ["Bar"]
+    assert result.xc == 13
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
 def test_adb_shell_can_run_command_on_multiple_lines():
     shell = get_adb_shell()
     result = shell("echo Bar\necho Foo")
