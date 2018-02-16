@@ -35,16 +35,13 @@ class AbstractShell(dict):
         check_err = check_err if check_err else self._check_err
         self._local_env = kwargs
 
-        result = self.run_execute_command(cmd)
+        result = self.execute_command(cmd)
 
         if check_xc and result.xc != 0:
             raise ShellError(result)
         if check_err and result.err:
             raise ShellError(result)
         return result
-
-    def run_execute_command(self, cmd):
-        return 
 
     def get_global_env(self):
         return self

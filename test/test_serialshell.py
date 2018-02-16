@@ -1,13 +1,16 @@
 from os import environ
 from pytest import mark, raises
-from citizenshell import SerialShell, configure_colored_logs, ShellError
+from citizenshell import SerialShell, ShellError
 import logging
 
 TEST_SERIAL_PORT_AVAILABLE = environ.get("TEST_SERIAL_PORT", None) is None
 
 def get_serial_shell(check_xc=False, check_err=False, **kwargs):
     TEST_SERIAL_PORT = environ.get("TEST_SERIAL_PORT")
-    return SerialShell(port=TEST_SERIAL_PORT, check_xc=check_xc, check_err=check_err, **kwargs)
+    TEST_SERIAL_USER = environ.get("TEST_SERIAL_USER", None)
+    TEST_SERIAL_PASS = environ.get("TEST_SERIAL_PASS", None)
+    return SerialShell(port=TEST_SERIAL_PORT, username=TEST_SERIAL_USER, password=TEST_SERIAL_PASS,
+                       check_xc=check_xc, check_err=check_err, **kwargs)
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
 def test_serial_shell_can_be_instanciated():
