@@ -11,10 +11,17 @@ __citizenshell__ is (or rather will be) a python library allowing to execute she
 - [x] shell over ssh using [paramiko](http://www.paramiko.org/)
 - [x] shell over telnet using [telnetlib](https://docs.python.org/2/library/telnetlib.html)
 - [x] shell over [adb](https://developer.android.com/studio/command-line/adb.html)
-- [ ] shell over serial using [pyserial](https://github.com/pyserial/pyserial)
-- [ ] possibility to open shell by uri
+- [x] shell over serial using [pyserial](https://github.com/pyserial/pyserial)
+- [x] possibility to open shell by uri
 - [x] support for logging with colored formatter
 - [x] available from PIP repository
+
+### Version 1.1
+
+- [ ] add support for pushing (upload) and pulling (download) files for `AdbShell` using [adb](https://developer.android.com/studio/command-line/adb.html)
+- [ ] add support for pushing (upload) and pulling (download) files for `TelnetShell` using [netcat](https://linux.die.net/man/1/nc)
+- [ ] add support for pushing (upload) and pulling (download) files for `SecureShell` using [paramiko](http://www.paramiko.org/)
+- [ ] add support for pushing (upload) and pulling (download) files for `SerialShell` using [rz](https://linux.die.net/man/1/rz)
 
 ## Examples
 
@@ -104,3 +111,46 @@ assert shell("echo Hello World") == "Hello World"
 ```
 
 you can then do eveything you can do with a `LocalShell`.
+
+### SerialShell
+
+you can instanciate the `SerialShell` for shell over serial line:
+
+
+```python
+from serial import EIGHTBITS, PARITY_NONE
+from citizenshell import SerialShell
+
+shell = SerialShell(port="/dev/ttyUSB3", username="john", password="secretpassword", baudrate=115200, parity=PARITY_NONE, bytesize=EIGHTBITS)
+assert shell("echo Hello World") == "Hello World"
+```
+
+you can then do eveything you can do with a `LocalShell`.
+
+### Shell
+
+you can also obtain shell objects by URI using the `Shell` function:
+
+```python
+from citizenshell import Shell
+
+localshell = Shell() 
+telnetshell = Shell("telnet://john:secretpassword@acme.org:1234")
+secureshell = Shell("ssh://john:secretpassword@acme.org:1234")
+adbshell = Shell("adb://myandroiddevice:5555")
+serialshell = Shell("serial://jogn:secretpassword@/dev/ttyUSB3?baudrate=115200")
+```
+
+you can mix and match betweens providing arguments in the URI or via kwargs:
+
+```python
+from citizenshell import Shell
+
+localshell = Shell() 
+telnetshell = Shell("telnet://john@acme.org", password="secretpassword", port=1234)
+serialshell = Shell("serial://jogn:secretpassword@/dev/ttyUSB3", baudrate=115200)
+```
+
+you can then use the shell objects as you would any other.
+
+
