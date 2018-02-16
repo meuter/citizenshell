@@ -115,3 +115,33 @@ def test_adbshell_by_uri_with_port():
     shell = Shell("adb://%s:5555" % hostname)
     assert isinstance(shell, AdbShell)
     assert shell("echo Hello World") == "Hello World"
+
+###################################################################################################
+
+TEST_SERIAL_PORT_AVAILABLE = environ.get("TEST_SERIAL_PORT", None) is None
+
+def get_serialshell_by_uri(**kwargs):
+    port = environ.get("TEST_SERIAL_PORT")
+    username = environ.get("TEST_SERIAL_USER", None)
+    password = environ.get("TEST_SERIAL_PASS", None)
+    baudrate = int(environ.get("TEST_SERIAL_BAUDRATE", "115200"))   
+    if username and password:
+        return Shell("serial://%s:%s@%d?baudrate=%d" % (username, password, port, baudrate), **kwargs)
+    else:
+        return Shell("serial://%s?baudrate=%d" % (port, baudrate), **kwargs)
+
+@mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
+def test_serialshell_by_uri():
+    shell = get_serialshell_by_uri()
+    assert shell("echo Hello World") == "Hello World"
+
+@mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
+def test_serialshell_by_uri_with_env():
+    shell = get_serialshell_by_uri(FOO="foo")
+    assert shell("echo $FOO World") == "foo World"
+
+@mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
+def test_serialshell_by_uri_with_check_xc():
+    shell = get_serialshell_by_uri(check_xc=True)
+    with raises(ShellError):
+        shell("exit 46")

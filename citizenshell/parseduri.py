@@ -7,18 +7,27 @@ class ParsedUri:
         parsed_uri = urisplit(uri)
         self.scheme = parsed_uri.scheme
         self.kwargs = dict(kwargs)
+        self.baudrate = None
         self.parse_userinfo(parsed_uri)
         self.parse_hostinfo(parsed_uri)
         self.validate()
         self.fill_defaults()
 
     def parse_hostinfo(self, parsed_uri):
-        hostname_from_uri = parsed_uri.gethost(default=None)
-        if not hostname_from_uri or str(hostname_from_uri) == '':
-            self.hostname = None
+        if self.scheme == "serial":            
+            path_from_uri = parsed_uri.getpath()
+            hostname_from_uri = parsed_uri.gethost(default=None).upper()
+            port_from_uri = path_from_uri if path_from_uri else hostname_from_uri
+            self.port = self.get_uri_part("port", port_from_uri)
+            baudrate_from_uri = parsed_uri.getquerydict().get("baudrate", [None])[0]
+            self.baudrate = int(self.get_uri_part("baudrate", baudrate_from_uri))            
         else:
-            self.hostname = str(hostname_from_uri)
-        self.port = self.get_uri_part("port", parsed_uri.getport(default=None))
+            hostname_from_uri = parsed_uri.gethost(default=None)
+            if not hostname_from_uri or str(hostname_from_uri) == '':
+                self.hostname = None
+            else:
+                self.hostname = str(hostname_from_uri)
+            self.port = self.get_uri_part("port", parsed_uri.getport(default=None))
 
     def parse_userinfo(self, parsed_uri):
         username_from_uri = None

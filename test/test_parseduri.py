@@ -131,3 +131,53 @@ def test_parse_uri_password_in_uri_and_as_arg():
     with raises(RuntimeError):
         ParsedUri("myscheme://bender:futurama@thehostname.com", password="futurama")
 
+
+def test_parse_uri_serial_baudrate_no_username():
+    result = ParsedUri("serial:///dev/ttyUSB3?baudrate=115200")
+    assert result.scheme == "serial"
+    assert result.port == "/dev/ttyUSB3"
+    assert result.baudrate == 115200
+
+
+def test_parse_uri_serial_baudrate_no_username_baudrate_kwargs():
+    result = ParsedUri("serial:///dev/ttyUSB3", baudrate=5252)
+    assert result.scheme == "serial"
+    assert result.port == "/dev/ttyUSB3"
+    assert result.baudrate == 5252
+
+def test_parse_uri_serial_baudrate_with_username():
+    result = ParsedUri("serial://bender@/dev/ttyUSB3?baudrate=115200")
+    assert result.scheme == "serial"
+    assert result.port == "/dev/ttyUSB3"
+    assert result.baudrate == 115200
+    assert result.username == "bender"
+
+def test_parse_uri_serial_baudrate_with_username_and_password():
+    result = ParsedUri("serial://bender:futurama@/dev/ttyUSB3?baudrate=115200")
+    assert result.scheme == "serial"
+    assert result.port == "/dev/ttyUSB3"
+    assert result.baudrate == 115200
+    assert result.username == "bender"
+    assert result.password == "futurama"
+
+def test_parse_uri_serial_baudrate_with_username_and_password_kwargs():
+    result = ParsedUri("serial:///dev/ttyUSB3?baudrate=115200", username="bender", password="futurama")
+    assert result.scheme == "serial"
+    assert result.port == "/dev/ttyUSB3"
+    assert result.baudrate == 115200
+    assert result.username == "bender"
+    assert result.password == "futurama"
+
+def test_parse_uri_serial_baudrate_with_username_and_password_windows_style():
+    result = ParsedUri("serial://bender:futurama@COM33?baudrate=115200")
+    assert result.scheme == "serial"
+    assert result.port == "COM33"
+    assert result.baudrate == 115200
+    assert result.username == "bender"
+    assert result.password == "futurama"
+
+def test_parse_uri_check_xc():
+    result = ParsedUri("scheme://something", check_xc=True)
+    assert result.scheme == "scheme"
+    assert result.hostname == "something"
+    assert result.kwargs["check_xc"] == True
