@@ -22,7 +22,7 @@ setup(
     install_requires=[
         'termcolor>=1.1.0',
         'paramiko>=2.4.0',
-        'uritools>=2.1.0'
+        'uritools>=2.1.0',
         'pyserial==3.4'
     ],
     classifiers=[
