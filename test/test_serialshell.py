@@ -3,10 +3,10 @@ from pytest import mark, raises
 from citizenshell import SerialShell, configure_colored_logs, ShellError
 import logging
 
-TEST_SERIAL_PORT_AVAILABLE = environ.get("TEST_SERIAL_HOST", None) is None
+TEST_SERIAL_PORT_AVAILABLE = environ.get("TEST_SERIAL_PORT", None) is None
 
 def get_serial_shell(check_xc=False, check_err=False, **kwargs):
-    TEST_SERIAL_PORT = environ.get("TEST_SERIAL_HOST")
+    TEST_SERIAL_PORT = environ.get("TEST_SERIAL_PORT")
     return SerialShell(port=TEST_SERIAL_PORT, check_xc=check_xc, check_err=check_err, **kwargs)
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")

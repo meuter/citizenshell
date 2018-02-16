@@ -1,27 +1,37 @@
 from .abstractshell import AbstractShell
 from .shellresult import ShellResult
-from uuid import uuid4
-from time import sleep # TODO(cme): ugly hack
 
 from serial import serial_for_url, PARITY_NONE, EIGHTBITS
+from uuid import uuid4
 
 
 class SerialShell(AbstractShell):
 
     def __init__(self, port, check_xc=False, check_err=False, **kwargs):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
-        self._defice = port
+        # TODO(cme): inject all serial param
+        self._port = port
         self._prompt = str(uuid4())
-        self._serial = serial_for_url("/dev/ttyUSB3", baudrate=115200, parity=PARITY_NONE, bytesize=EIGHTBITS)
+        self._connected = False
+        self.connect()
 
-        # # spawn a new shell and change prompt
-        self._write("export COLUMNS=500\n")
-        self._write("export PS1=%s\n" % self._prompt)
+    def connect(self):
+        if not self._connected:
+            self._serial = serial_for_url(self._port, baudrate=115200, parity=PARITY_NONE, bytesize=EIGHTBITS)
+            self._write("$SHELL")
+            self._write("export COLUMNS=500\n")
+            self._write("export PS1=%s\n" % self._prompt)
+            self._read_until(self._prompt)
+            self._read_until(self._prompt)
+            self._inject_env(self.get_global_env())
+            self._connected = True
 
-        self._read_until(self._prompt)
-        self._read_until(self._prompt)
-        self._inject_env(self.get_global_env())
-
+    def disconnect(self):
+        if self._connected:
+            self._cleanup_env(self.get_global_env())
+            self._write("exit\n")
+            self._serial.close()
+            self._connected = False
         
     def _write(self, text):
         self._serial.write(text.encode("utf-8"))
