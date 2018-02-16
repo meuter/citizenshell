@@ -1,28 +1,28 @@
-from .loggers import stdin_logger, stderr_logger, stdout_logger, oob_logger
+from .loggers import *
 from .shellerror import ShellError
 
 
 class AbstractShell(dict):
 
     @staticmethod
-    def log_stdin(lines):
-        for line in lines.splitlines():
-            stdin_logger.info(line)
+    def log_stdin(line):        
+        stdin_logger.info(line)
 
     @staticmethod
-    def log_stdout(lines):
-        for line in lines.splitlines():
-            stdout_logger.info(line)
+    def log_stdout(line):
+        stdout_logger.info(line)
 
     @staticmethod
-    def log_stderr(lines):
-        for line in lines.splitlines():
-            stderr_logger.error(line)
+    def log_stderr(line):
+        stderr_logger.error(line)
 
     @staticmethod
-    def log_oob(lines):
-        for line in lines.splitlines():
-            oob_logger.info(line)
+    def log_oob(line):
+        oob_logger.info(line)
+
+    @staticmethod
+    def log_spy(line):
+        spy_logger.info(line)
 
     def __init__(self, check_xc=False, check_err=False, **kwargs):        
         dict.__init__(self, kwargs)

@@ -45,12 +45,12 @@ class TelnetShell(AbstractCharacterBasedShell):
             self._is_connected = False
 
     def _write(self, text):        
-        #sys.stdout.write(">>>" + text) 
+        self.log_spy(">>> " + text)
         self._telnet.write(text.encode('utf-8'))
 
     def _read_until(self, marker):
         out = self._telnet.read_until(marker.encode('utf-8'))
-        #sys.stdout.write("<<<" + out)
+        self.log_spy("<<< " + out)
         return out
 
     def reboot_wait_and_reconnect(self, reboot_delay=40):
