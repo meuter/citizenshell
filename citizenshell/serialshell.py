@@ -51,14 +51,14 @@ class SerialShell(AbstractCharacterBasedShell):
             self._connected = False
         
     def _write(self, text):
-        #self.log_in_spy(text)
+        #print ">>>", text
         self._serial.write(text.encode("utf-8"))
 
     def _read_available(self):
         out = ''
         while self._serial.in_waiting:
             out += self._serial.read(self._serial.in_waiting)
-        #self.log_out_spy(out)
+        #print "<<<", out
         return out
 
     def _read_until(self, marker):
@@ -67,6 +67,6 @@ class SerialShell(AbstractCharacterBasedShell):
             out += self._serial.read(1)
             if out.endswith(marker):
                 break
-        #self.log_out_spy(out)
+        #print "<<<", out
         return out
 

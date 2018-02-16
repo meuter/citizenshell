@@ -24,7 +24,7 @@ class AbstractShell(dict):
         for line in lines.splitlines():
             oob_logger.info(line)
 
-    def __init__(self, check_xc=False, check_err=False, **kwargs):
+    def __init__(self, check_xc=False, check_err=False, **kwargs):        
         dict.__init__(self, kwargs)
         self._local_env = {}
         self._check_xc = check_xc
