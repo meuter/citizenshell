@@ -14,20 +14,20 @@ def test_serial_shell_can_be_instanciated():
     get_serial_shell()
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_local_shell_can_run_one_basic_command():
+def test_serial_shell_can_run_one_basic_command():
     shell = get_serial_shell()
     result = shell("echo Foo")
     assert result == "Foo"
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_local_shell_can_run_another_basic_command():
+def test_serial_shell_can_run_another_basic_command():
     shell = get_serial_shell()
     result = shell("echo Bar")
     assert result == "Bar"
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_can_run_a_command_without_a_trailing_endl():
+def test_serial_shell_can_run_a_command_without_a_trailing_endl():
     shell = get_serial_shell()
     result = shell("echo -n Bar && exit 13")
     assert result.out == ["Bar"]
@@ -36,7 +36,7 @@ def test_telnet_shell_can_run_a_command_without_a_trailing_endl():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_can_run_command_on_multiple_lines():
+def test_serial_shell_can_run_command_on_multiple_lines():
     shell = get_serial_shell()
     result = shell("echo Bar\necho Foo")
     assert result.out == [ "Bar", "Foo" ]
@@ -45,7 +45,7 @@ def test_telnet_shell_can_run_command_on_multiple_lines():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_result_has_stdout():
+def test_serial_shell_result_has_stdout():
     shell = get_serial_shell()
     result = shell("echo Foo")
     assert result.out == ["Foo"]
@@ -54,7 +54,7 @@ def test_telnet_shell_result_has_stdout():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_result_has_stderr():
+def test_serial_shell_result_has_stderr():
     shell = get_serial_shell()
     result = shell(">&2 echo Baz")
     assert result.out == []
@@ -63,7 +63,7 @@ def test_telnet_shell_result_has_stderr():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_result_has_exit_code():
+def test_serial_shell_result_has_exit_code():
     shell = get_serial_shell()
     result = shell("exit 15")
     assert result.out == []
@@ -72,14 +72,14 @@ def test_telnet_shell_result_has_exit_code():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_result_can_be_compared_for_boolean():
+def test_serial_shell_result_can_be_compared_for_boolean():
     shell = get_serial_shell()
     assert shell("exit 0")
     assert not shell("exit 10")
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_result_can_be_iterated_on():
+def test_serial_shell_result_can_be_iterated_on():
     shell = get_serial_shell()
     collected = []
     for line in shell("echo 'Foo\nBar'"):
@@ -88,7 +88,7 @@ def test_telnet_shell_result_can_be_iterated_on():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_has_environment_variable():
+def test_serial_shell_has_environment_variable():
     shell = get_serial_shell()
     shell["SOME_VARIABLE"] = "value"
     assert "SOME_VARIABLE" in shell
@@ -100,13 +100,13 @@ def test_telnet_shell_has_environment_variable():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_can_be_constructed_with_env_as_kwargs():
+def test_serial_shell_can_be_constructed_with_env_as_kwargs():
     shell = get_serial_shell(FOO="bar")
     assert shell("echo $FOO") == "bar"
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_can_override_environment_variable_on_invokation():
+def test_serial_shell_can_override_environment_variable_on_invokation():
     shell = get_serial_shell(VAR="foo")
     assert shell("echo $VAR") == "foo"
     assert shell("echo $VAR", VAR="bar") == "bar"
@@ -115,26 +115,26 @@ def test_telnet_shell_can_override_environment_variable_on_invokation():
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
 @mark.parametrize("global_check_xc,local_check_xc", [ (True, False), (False, True), (True, True) ])
-def test_telnet_shell_check_xc_raises(global_check_xc, local_check_xc):
+def test_serial_shell_check_xc_raises(global_check_xc, local_check_xc):
     shell = get_serial_shell(check_xc=global_check_xc)
     with raises(ShellError):
         shell("exit 13", check_xc=local_check_xc)
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_check_xc_not_raises():
+def test_serial_shell_check_xc_not_raises():
     shell = get_serial_shell(check_xc=False)
     shell("exit 13", check_xc=False)
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
 @mark.parametrize("global_check_err,local_check_err", [ (True, False), (False, True), (True, True) ])
-def test_telnet_shell_check_err_raises(global_check_err, local_check_err):
+def test_serial_shell_check_err_raises(global_check_err, local_check_err):
     shell = get_serial_shell(check_err=global_check_err)
     with raises(ShellError):
         shell(">&2 echo error", check_err=local_check_err)
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_check_err_not_raises():
+def test_serial_shell_check_err_not_raises():
     shell = get_serial_shell(check_err=False)
     shell(">&2 echo error", check_err=False)
 
@@ -151,7 +151,7 @@ def test_readme_example_3():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_can_execute_multiple_commands_in_a_row():
+def test_serial_shell_can_execute_multiple_commands_in_a_row():
     shell = get_serial_shell()
     assert shell("echo Foo") == "Foo"
     assert shell("exit 15").xc == 15
@@ -159,7 +159,7 @@ def test_telnet_shell_can_execute_multiple_commands_in_a_row():
 
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_logs(caplog):
+def test_serial_shell_logs(caplog):
     cmd = ">&2 echo error && echo output && exit 13"
     caplog.set_level(logging.INFO, logger="citizenshell.in")
     caplog.set_level(logging.INFO, logger="citizenshell.out")
@@ -173,11 +173,11 @@ def test_telnet_shell_logs(caplog):
     assert in_index < err_index
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_command_with_single_quotes():
+def test_serial_shell_command_with_single_quotes():
     sh = get_serial_shell()
     assert sh("echo '$FOO'", FOO="foo") == "$FOO"
 
 @mark.skipif(TEST_SERIAL_PORT_AVAILABLE, reason="test serial port not available")
-def test_telnet_shell_command_with_double_quotes():
+def test_serial_shell_command_with_double_quotes():
     sh = get_serial_shell()
     assert sh('echo "$FOO"', FOO="foo") == "foo"
