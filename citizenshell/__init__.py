@@ -6,8 +6,8 @@ from .telnetshell import TelnetShell
 from .adbshell import AdbShell
 from .serialshell import SerialShell
 from .shell import Shell
-from .loggers import configure_colored_logs
 from .parseduri import ParsedUri
+from .loggers import configure_all_loggers
 
 sh = Shell()
 

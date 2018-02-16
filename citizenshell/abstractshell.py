@@ -22,7 +22,7 @@ class AbstractShell(dict):
 
     @staticmethod
     def log_spy(line):
-        spy_logger.info(line)
+        spy_logger.debug(line)
 
     def __init__(self, check_xc=False, check_err=False, **kwargs):        
         dict.__init__(self, kwargs)
