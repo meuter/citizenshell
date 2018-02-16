@@ -7,14 +7,17 @@ name = "pypi"
 
 [dev-packages]
 
-pytest-sugar="*"
+pytest-sugar = "*"
 pypandoc = "*"
+bpython = "*"
+
 
 [packages]
 
 paramiko = "*"
 termcolor = "*"
 uritools = "*"
+pyserial = "*"
 
 
 [requires]
