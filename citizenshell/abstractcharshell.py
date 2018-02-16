@@ -8,19 +8,11 @@ class AbstractCharacterBasedShell(AbstractShell):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
         self._prompt = str(uuid4())
 
-    def disconnect(self):
-        if self._is_connected:
-            self.log_oob("disconnecting from '%s'..." % self._hostname)
-            self._telnet.close()
-            self.log_oob("disconnected!")
-            self._is_connected = False
-
-    def _write(self, text):        
-        self._telnet.write(text.encode('utf-8'))
+    def _write(self, text):
+        raise NotImplementedError("this method must be implemented by the subclass")
 
     def _read_until(self, marker):
-        out = self._telnet.read_until(marker.encode('utf-8'))
-        return out
+        raise NotImplementedError("this method must be implemented by the subclass")
 
     def _inject_env(self, env):
         for var, val in env.items():
