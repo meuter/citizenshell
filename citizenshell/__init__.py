@@ -1,11 +1,12 @@
 from .localshell import LocalShell
-from .loggers import configure_colored_logs
 from .secureshell import SecureShell
 from .shellerror import ShellError
 from .shellresult import ShellResult
 from .telnetshell import TelnetShell
 from .adbshell import AdbShell
+from .serialshell import SerialShell
 from .shell import Shell
+from .loggers import configure_colored_logs
 from .parseduri import ParsedUri
 
 sh = Shell()
