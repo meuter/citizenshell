@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7268f313c3807d31e7ad227aa89fdbfc0a2390e2bc58c22725856ad5776a57d1"
+            "sha256": "50c6994224dae4598e8e196c878b7fd3125c9364c7a609f06e135c6b46cd3fb8"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -151,7 +151,7 @@
             "hashes": [
                 "sha256:200d8686011d470b5e4de207d803445deee427455cd0cb7c982b68cf82524f81"
             ],
-            "markers": "python_version == '2.7'",
+            "markers": "python_version < '3'",
             "version": "==1.0.19"
         },
         "paramiko": {
@@ -260,8 +260,22 @@
                 "sha256:f0b0e4eba956de51238e17573b7087e852dfe9854afd2e9c873f73fc0ca0a6dd",
                 "sha256:9d98697f088eb1b0fa451391f91afb5e3ebde16bbdb272819fd091151fda4f1a"
             ],
-            "markers": "python_version < '3.4'",
+            "markers": "python_version == '2.7'",
             "version": "==1.5"
+        },
+        "backports.tempfile": {
+            "hashes": [
+                "sha256:05aa50940946f05759696156a8c39be118169a0e0f94a49d0bb106503891ff54",
+                "sha256:1c648c452e8770d759bdc5a5e2431209be70d25484e1be24876cf2168722c762"
+            ],
+            "version": "==1.0"
+        },
+        "backports.weakref": {
+            "hashes": [
+                "sha256:81bc9b51c0abc58edc76aefbbc68c62a787918ffe943a37947e162c3f8e19e82",
+                "sha256:bc4170a29915f8b22c9e7c4939701859650f2eb84184aee80da329ac0b9825c2"
+            ],
+            "version": "==1.0.post1"
         },
         "blessings": {
             "hashes": [

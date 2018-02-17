@@ -1,6 +1,8 @@
-from os import environ
+from os import environ, path
 from citizenshell import AdbShell, ShellError
 from pytest import mark, raises
+from backports.tempfile import TemporaryDirectory
+from tempfile import NamedTemporaryFile
 import logging
 
 TEST_HOST_NOT_AVAILABLE = environ.get("TEST_ADB_HOST", None) is None
@@ -186,3 +188,36 @@ def test_adb_shell_command_with_single_quotes():
 def test_adb_shell_command_with_double_quotes():
     sh = get_adb_shell()    
     assert sh('echo "$FOO"', FOO="foo") == "foo"
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_adb_shell_can_push_file():
+    shell = get_adb_shell()
+    content = "this is a file\n"
+    remote_path = "/data/local/citizenshell.test"
+    assert not shell("cat %s" % remote_path)
+    with NamedTemporaryFile() as temp_file:
+        temp_file.write(content)
+        temp_file.flush()
+        shell.push(temp_file.name, remote_path)
+    try:
+        assert shell("cat %s" % remote_path) == content
+    finally:
+        shell("rm %s" % remote_path)
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_adb_shell_can_pull_file():
+    shell = get_adb_shell()
+    content = "this is a file\n"
+    remote_path = "/data/local/citizenshell.test"
+    assert not shell("cat %s" % remote_path)
+    assert shell("echo -n '%s' >> %s" % (content, remote_path))
+
+    try:
+        with TemporaryDirectory() as sandbox:
+            local_path = path.join(sandbox, path.split(remote_path)[-1])
+            shell.pull(local_path, remote_path)
+            assert open(local_path, "r").read() == content
+    finally:
+        shell("rm %s" % remote_path)
+

@@ -68,3 +68,14 @@ class AdbShell(AbstractShell):
         process.wait()
         return ShellResult(cmd, out, err, xc)
 
+    def push(self, local_path, remote_path):
+        self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))
+        self._localshell("adb push '%s' '%s'" % (local_path, remote_path))
+        self.log_oob("done!")
+
+    def pull(self, local_path, remote_path):
+        self.log_oob("pulling '%s' <- '%s'..." % (local_path, remote_path))
+        self._localshell("adb pull '%s' '%s'" % (remote_path, local_path))
+        self.log_oob("done!")
+
+
