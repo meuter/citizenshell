@@ -1,7 +1,8 @@
 import logging
-from os import environ
+from os import environ, path
 from pytest import mark, raises
 from citizenshell import TelnetShell, ShellError
+from backports.tempfile import TemporaryDirectory
 
 TEST_HOST_NOT_AVAILABLE = environ.get("TEST_TELNET_HOST", None) is None
 
@@ -189,3 +190,20 @@ def test_telnet_shell_command_with_single_quotes():
 def test_telnet_shell_command_with_double_quotes():
     sh = get_telnet_shell()
     assert sh('echo "$FOO"', FOO="foo") == "foo"
+
+
+@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
+def test_adb_shell_can_pull_file():
+    shell = get_telnet_shell()
+    content = "this is a file\n"
+    remote_path = "/tmp/citizenshell.test"
+    assert not shell("cat %s" % remote_path)
+    assert shell("echo -n '%s' >> %s" % (content, remote_path))
+
+    try:
+        with TemporaryDirectory() as sandbox:
+            local_path = path.join(sandbox, path.split(remote_path)[-1])
+            shell.pull(local_path, remote_path)
+            assert open(local_path, "r").read() == content
+    finally:
+        shell("rm %s" % remote_path)
