@@ -1,11 +1,11 @@
-from .abstractshell import AbstractShell
+from .abstractconnectedshell import AbstractConnectedShell
 from .shellresult import ShellResult
 from uuid import uuid4
 
-class AbstractCharacterBasedShell(AbstractShell):
+class AbstractCharacterBasedShell(AbstractConnectedShell):
 
-    def __init__(self, check_xc=False, check_err=False, **kwargs):
-        AbstractShell.__init__(self, check_xc, check_err, **kwargs)
+    def __init__(self, target, *args, **kwargs):
+        super(AbstractCharacterBasedShell, self).__init__(target, *args, **kwargs)
         self._prompt = str(uuid4())
 
     def _write(self, text):
@@ -31,11 +31,11 @@ class AbstractCharacterBasedShell(AbstractShell):
         self._read_until(self._prompt)
 
     def __setitem__(self, key, value):
-        AbstractShell.__setitem__(self, key, value)
+        super(AbstractCharacterBasedShell, self).__setitem__(key, value)
         self._export_env_variable(key, value)
 
     def __delitem__(self, key):
-        AbstractShell.__delitem__(self, key)
+        super(AbstractCharacterBasedShell, self).__delitem__(key)
         self._unset_env_variable(key)
 
     def format_command(self, cmd):

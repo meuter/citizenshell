@@ -5,18 +5,17 @@ from logging import INFO, ERROR
 
 class AbstractShellTester:
 
-    def get_shell(self, **kwargs):
+    def get_shell(self, *args, **kwargs):
         if not hasattr(self, "shell_cache"):
             self.shell_cache = {}
-
         if repr(kwargs) not in self.shell_cache:            
-            new_shell = self.instanciate_new_shell(**kwargs)
+            new_shell = self.instanciate_new_shell(*args, **kwargs)
             self.shell_cache[repr(kwargs)] = new_shell
         else:
             new_shell = self.shell_cache[repr(kwargs)]
         return new_shell
 
-    def instanciate_new_shell(self, **kwargs):
+    def instanciate_new_shell(self, *args, **kwargs):
         raise NotImplementedError("This should be implemented for each shell class")
 
     def test_shell_can_be_instantiated(self):

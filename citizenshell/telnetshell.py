@@ -10,8 +10,8 @@ import sys
 
 class TelnetShell(AbstractCharacterBasedShell):
 
-    def __init__(self, hostname, username, password=None, port=23, check_xc=False, check_err=False, **kwargs):
-        AbstractCharacterBasedShell.__init__(self, check_xc, check_err, **kwargs)
+    def __init__(self, hostname, username, password=None, port=23, *args, **kwargs):
+        super(TelnetShell, self).__init__(hostname, *args, **kwargs)
         self._hostname = hostname
         self._username = username
         self._password = password
@@ -21,29 +21,21 @@ class TelnetShell(AbstractCharacterBasedShell):
         self.connect()
         self._inject_env(self.get_global_env())
 
-    def connect(self):
-        if not self._is_connected:
-            self.log_oob("connecting to '%s'..." % self._hostname)
-            self._telnet.open(self._hostname, self._port)
-            self._read_until("login: ")
-            self._write(self._username + "\n")
-            if self._password:
-                self._read_until("Password: ")
-                self._write(self._password + "\n")            
-            sleep(.1) # wait for the login to complete
-            self._write("export COLUMNS=500\n")
-            self._write("export PS1=%s\n" % self._prompt)
-            self._read_until(self._prompt)  # first time for the PS1
-            self._read_until(self._prompt)  # second for the actual prompt
-            self.log_oob("connected!")
-            self._is_connected = True
+    def do_connect(self):
+        self._telnet.open(self._hostname, self._port)
+        self._read_until("login: ")
+        self._write(self._username + "\n")
+        if self._password:
+            self._read_until("Password: ")
+            self._write(self._password + "\n")            
+        sleep(.1) # wait for the login to complete
+        self._write("export COLUMNS=500\n")
+        self._write("export PS1=%s\n" % self._prompt)
+        self._read_until(self._prompt)  # first time for the PS1
+        self._read_until(self._prompt)  # second for the actual prompt
 
-    def disconnect(self):
-        if self._is_connected:
-            self.log_oob("disconnecting from '%s'..." % self._hostname)
-            self._telnet.close()
-            self.log_oob("disconnected!")
-            self._is_connected = False
+    def do_disconnect(self):
+        self._telnet.close()
 
     def _write(self, text):        
         self.log_spy(">>> " + text)

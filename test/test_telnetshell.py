@@ -11,13 +11,12 @@ class TestTelnetShell(AbstractShellTester):
         if "TEST_TELNET_HOST" not in environ:
             skip("need to define TEST_TELNET_HOST environment variable")
 
-    def instanciate_new_shell(self, check_xc=False, check_err=False, **kwargs):
+    def instanciate_new_shell(self, *args, **kwargs):
         hostname = environ.get("TEST_TELNET_HOST")
         username = environ.get("TEST_TELNET_USER")
         password = environ.get("TEST_TELNET_PASS", None)
         port = int(environ.get("TEST_TELNET_PORT", 23))
-        return TelnetShell(hostname, username=username, password=password, port=port,
-                           check_xc=check_xc, check_err=check_err, **kwargs)        
+        return TelnetShell(hostname, username=username, password=password, port=port, *args, **kwargs)        
 
     def test_shell_can_pull_file(self):
         shell = self.get_shell()

@@ -8,8 +8,8 @@ from threading import Thread
 
 class LocalShell(AbstractShell):
 
-    def __init__(self, check_xc=False, check_err=False, **kwargs):
-        AbstractShell.__init__(self, check_xc, check_err, **kwargs)
+    def __init__(self, *args, **kwargs):
+        AbstractShell.__init__(self, *args, **kwargs)
         
     def execute_command(self, command):
         process = Popen(command, env=self.get_merged_env(), shell=True, stdout=PIPE, stderr=PIPE)
