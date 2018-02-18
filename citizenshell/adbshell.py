@@ -1,8 +1,9 @@
 from .abstractconnectedshell import AbstractConnectedShell
 from .streamreader import PrefixedStreamReader
-from .shellresult import ShellResult
+from .shellresult import IterableShellResult
 from .localshell import LocalShell
 from .loggerthread import LoggerThread
+from .queue import Queue
 from subprocess import Popen, PIPE
 
 
@@ -25,29 +26,13 @@ class AdbShell(AbstractConnectedShell):
     def disconnect(self):
         self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=True)
             
-    def execute_command(self, cmd, env):
-        self.log_stdin(cmd)
-        formatted_command = PrefixedStreamReader.wrap_command(cmd, env)
+    def execute_command(self, command, env):
+        formatted_command = PrefixedStreamReader.wrap_command(command, env)
         adb_command = "adb -s %s:%d shell '%s'" % (self._hostname, self._port, formatted_command.replace('\'', '\'"\'"\''))
         process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
-
-        out, err = [], []
-        xc = None
-        while True:
-            line = process.stdout.readline().rstrip()
-            if line == '':
-                break
-            prefix, line = line[:4], line[4:]
-            if prefix == "ERR-":
-                self.log_stderr(line)
-                err.append(line)
-            elif prefix == "OUT-":
-                self.log_stdout(line)
-                out.append(line)
-            elif prefix == "XC--":
-                xc = int(line)
-        process.wait()
-        return ShellResult(cmd, out, err, xc)
+        queue = Queue()
+        PrefixedStreamReader(process.stdout, queue)
+        return IterableShellResult(command, queue)
 
     def push(self, local_path, remote_path):
         self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))

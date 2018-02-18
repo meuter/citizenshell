@@ -124,8 +124,12 @@ class IterableShellResult():
         return "\n".join(self.stdout())
 
     def __eq__(self, other):
-        if isinstance(other, str):
-            return str(self) == other
+        if isinstance(other, list):
+            return self.stdout() == other
+        elif isinstance(other, str):
+            if len(other) == 0:
+                return self.stdout() == ['']
+            return other.splitlines() == self.stdout()
         return (other.command() == self.command()) and (other.stdout()    == self.stdout()) and \
                (other.stderr()  == self.stderr())  and (other.exit_code() == self.exit_code())
 
