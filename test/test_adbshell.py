@@ -11,9 +11,9 @@ class TestAbdShell(AbstractShellTester):
         if "TEST_ADB_HOST" not in environ:
             skip("need to define TEST_ADB_HOST environment variable")
 
-    def instanciate_new_shell(self, check_xc=False, check_err=False, **kwargs):
+    def instanciate_new_shell(self, *args, **kwargs):
         hostname = environ.get("TEST_ADB_HOST")    
-        return AdbShell(hostname, check_xc=check_xc, check_err=check_err, **kwargs)
+        return AdbShell(hostname, *args, **kwargs)
 
     def test_adb_shell_can_push_file(self):
         shell = self.get_shell()
