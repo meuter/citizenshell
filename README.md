@@ -49,9 +49,9 @@ from citizenshell import LocalShell
 
 shell = LocalShell()
 result = shell(">&2 echo error && echo output && exit 13")
-assert result.out == ["output"]
-assert result.err == ["error"]
-assert result.xc == 13
+assert result.stdout() == ["output"]
+assert result.stderr() == ["error"]
+assert result.exit_code() == 13
 ```
 
 ### TelnetShell

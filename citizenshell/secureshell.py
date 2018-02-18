@@ -1,8 +1,10 @@
 from paramiko import SSHClient, AutoAddPolicy
 
 from .abstractshell import AbstractShell
-from .loggerthread import LoggerThread
-from .shellresult import ShellResult
+from .shellresult import IterableShellResult
+from .queue import Queue
+from .streamreader import StandardStreamReader
+from threading import Thread
 
 
 class SecureShell(AbstractShell):
@@ -13,15 +15,15 @@ class SecureShell(AbstractShell):
         self._port = port
         self._username = username
         self._password = password
-        self._client = SSHClient()
-        self._client.load_system_host_keys()
-        self._client.set_missing_host_key_policy(AutoAddPolicy())
         self._connected = False
         self.connect()
 
     def connect(self):
         if not self._connected:
             self.log_oob("connecting to '%s'..." % self._hostname)
+            self._client = SSHClient()
+            self._client.load_system_host_keys()
+            self._client.set_missing_host_key_policy(AutoAddPolicy())
             self._client.connect(hostname=self._hostname, port=self._port, username=self._username, password=self._password)
             self.log_oob("connected!")
             self._connected = True
@@ -33,16 +35,17 @@ class SecureShell(AbstractShell):
             self.log_oob("disconnected!")
             self._connected = False
 
-    def execute_command(self, cmd):
-        bufsize = 1
-        self.log_stdin(cmd)
+    def execute_command(self, command):
         for var, val in self.get_merged_env().items():
-            cmd = "%s=%s; " % (var, val) + cmd
-
+            command = "%s=%s; " % (var, val) + command
         chan = self._client.get_transport().open_session()
-        chan.exec_command(cmd)
-        out_thread = LoggerThread(chan.makefile('r', bufsize), self.log_stdout)
-        err_thread = LoggerThread(chan.makefile_stderr('r', bufsize), self.log_stderr)
-        out_thread.join()
-        err_thread.join()
-        return ShellResult(cmd, out_thread.get_content(), err_thread.get_content(), chan.recv_exit_status())
+        chan.update_environment(self.get_merged_env())
+        chan.exec_command(command)
+        queue = Queue()
+        StandardStreamReader(chan.makefile("r"), 1, queue)
+        StandardStreamReader(chan.makefile_stderr("r"), 2, queue)
+        def post_process_exit_code():
+            queue.put( (None, chan.recv_exit_status()) )
+        Thread(target=post_process_exit_code).start()
+        return IterableShellResult(command, queue, collect=True)
+
