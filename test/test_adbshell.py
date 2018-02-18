@@ -1,223 +1,46 @@
 from os import environ, path
-from citizenshell import AdbShell, ShellError
-from pytest import mark, raises
+from citizenshell import AdbShell
+from pytest import mark, raises, skip
 from backports.tempfile import TemporaryDirectory
 from tempfile import NamedTemporaryFile
-import logging
+from shelltester import AbstractShellTester
 
-TEST_HOST_NOT_AVAILABLE = environ.get("TEST_ADB_HOST", None) is None
+class TestAbdShell(AbstractShellTester):
 
-def get_adb_shell(check_xc=False, check_err=False, **kwargs):
-    hostname = environ.get("TEST_ADB_HOST")    
-    return AdbShell(hostname, check_xc=check_xc, check_err=check_err, **kwargs)
+    def setup_method(self):
+        if "TEST_ADB_HOST" not in environ:
+            skip("need to define TEST_ADB_HOST environment variable")
 
+    def instanciate_new_shell(self, check_xc=False, check_err=False, **kwargs):
+        hostname = environ.get("TEST_ADB_HOST")    
+        return AdbShell(hostname, check_xc=check_xc, check_err=check_err, **kwargs)
 
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_be_instantiated():
-    get_adb_shell()
+    def test_adb_shell_can_push_file(self):
+        shell = self.get_shell()
+        content = "this is a file\n"
+        remote_path = "/data/local/citizenshell.test"
+        assert not shell("cat %s" % remote_path)
+        with NamedTemporaryFile() as temp_file:
+            temp_file.write(content)
+            temp_file.flush()
+            shell.push(temp_file.name, remote_path)
+        try:
+            assert shell("cat %s" % remote_path) == content
+        finally:
+            shell("rm %s" % remote_path)
 
+    def test_adb_shell_can_pull_file(self):
+        shell = self.get_shell()
+        content = "this is a file\n"
+        remote_path = "/data/local/citizenshell.test"
+        assert not shell("cat %s" % remote_path)
+        assert shell("echo -n '%s' >> %s" % (content, remote_path))
 
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_run_one_basic_command():
-    shell = get_adb_shell()
-    result = shell("echo Foo")
-    assert result == "Foo"
-    
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_run_another_basic_command():
-    shell = get_adb_shell()
-    result = shell("echo Bar")
-    assert result == "Bar"
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_run_a_command_without_a_trailing_endl():
-    shell = get_adb_shell()
-    result = shell("echo -n Bar && exit 13")
-    assert result.out == ["Bar"]
-    assert result.err == []
-    assert result.xc == 13
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_run_a_command_without_a_trailing_endl_to_stderr():
-    shell = get_adb_shell()
-    result = shell("echo -n Bar >&2 && exit 13")
-    assert result.out == []
-    assert result.err == ["Bar"]
-    assert result.xc == 13
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_run_command_on_multiple_lines():
-    shell = get_adb_shell()
-    result = shell("echo Bar\necho Foo")
-    assert result.out == [ "Bar", "Foo" ]
-    assert result.err == []
-    assert result.xc == 0
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_result_has_stdout():
-    shell = get_adb_shell()
-    result = shell("echo Foo")
-    assert result.out == ["Foo"]
-    assert result.err == []
-    assert result.xc == 0
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_result_has_stderr():
-    shell = get_adb_shell()
-    result = shell("echo Baz >&2")
-    assert result.out == []
-    assert result.err == ["Baz"]
-    assert result.xc == 0
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_result_has_exit_code():
-    shell = get_adb_shell()
-    result = shell("exit 15")
-    assert result.out == []
-    assert result.err == []
-    assert result.xc == 15
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_result_can_be_compared_for_boolean():
-    shell = get_adb_shell()
-    assert shell("exit 0")
-    assert not shell("exit 10")
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_result_can_be_iterated_on():
-    shell = get_adb_shell()
-    collected = []
-    for line in shell('echo "Foo\nBar"'):
-        collected.append(line)
-    assert collected == ['Foo', 'Bar']
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_has_environment_variable():
-    shell = get_adb_shell()
-    shell["SOME_VARIABLE"] = "value"
-    assert "SOME_VARIABLE" in shell
-    assert shell["SOME_VARIABLE"] == "value"
-    assert shell("echo $SOME_VARIABLE") == "value"
-    del shell["SOME_VARIABLE"]    
-    assert "SOME_VARIABLE" not in shell
-    assert shell("echo $SOME_VARIABLE") == ""
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_be_constructed_with_env_as_kwargs():
-    shell = get_adb_shell(FOO="bar")
-    assert shell("echo $FOO") == "bar"
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_override_environment_variable_on_invokation():
-    shell = get_adb_shell(VAR="foo")
-    assert shell("echo $VAR") == "foo"
-    assert shell("echo $VAR", VAR="bar") == "bar"
-    assert shell("echo $VAR") == "foo"
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-@mark.parametrize("global_check_xc,local_check_xc", [ (True, False), (False, True), (True, True) ])
-def test_adb_shell_check_xc_raises(global_check_xc, local_check_xc):
-    shell = get_adb_shell(check_xc=global_check_xc)
-    with raises(ShellError):
-        shell("exit 13", check_xc=local_check_xc)
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_check_xc_not_raises():
-    shell = get_adb_shell(check_xc=False)
-    shell("exit 13", check_xc=False)
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-@mark.parametrize("global_check_err,local_check_err", [ (True, False), (False, True), (True, True) ])
-def test_adb_shell_check_err_raises(global_check_err, local_check_err):
-    shell = get_adb_shell(check_err=global_check_err)
-    with raises(ShellError):
-        shell(">&2 echo error", check_err=local_check_err)
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_check_err_not_raises():
-    shell = get_adb_shell(check_err=False)
-    shell(">&2 echo error", check_err=False)
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_readme_example_3():
-    shell = get_adb_shell()
-    result = [int(x) for x in shell("""
-        for i in 1 2 3 4; do
-            echo $i;
-        done
-    """)]
-    assert result == [1, 2, 3, 4]
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_execute_multiple_commands_in_a_row():
-    shell = get_adb_shell()
-    assert shell("echo Foo") == "Foo"
-    assert shell("exit 15").xc == 15
-    assert shell("echo Bar") == "Bar"
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_logs(caplog):
-    cmd = ">&2 echo error && echo output && exit 13"
-    caplog.set_level(logging.INFO, logger="citizenshell.in")
-    caplog.set_level(logging.INFO, logger="citizenshell.out")
-    caplog.set_level(logging.INFO, logger="citizenshell.err")
-    shell = get_adb_shell()
-    shell(cmd)
-    in_index = caplog.record_tuples.index(('citizenshell.in', logging.INFO, cmd))
-    out_index = caplog.record_tuples.index(('citizenshell.err', logging.ERROR, u"error"))
-    err_index = caplog.record_tuples.index(('citizenshell.out', logging.INFO, u"output"))
-    assert in_index < out_index
-    assert in_index < err_index
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_command_with_single_quotes():
-    sh = get_adb_shell()
-    assert sh("echo '$FOO'", FOO="foo") == "$FOO"
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_command_with_double_quotes():
-    sh = get_adb_shell()    
-    assert sh('echo "$FOO"', FOO="foo") == "foo"
-
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_push_file():
-    shell = get_adb_shell()
-    content = "this is a file\n"
-    remote_path = "/data/local/citizenshell.test"
-    assert not shell("cat %s" % remote_path)
-    with NamedTemporaryFile() as temp_file:
-        temp_file.write(content)
-        temp_file.flush()
-        shell.push(temp_file.name, remote_path)
-    try:
-        assert shell("cat %s" % remote_path) == content
-    finally:
-        shell("rm %s" % remote_path)
-
-@mark.skipif(TEST_HOST_NOT_AVAILABLE, reason="test host not available")
-def test_adb_shell_can_pull_file():
-    shell = get_adb_shell()
-    content = "this is a file\n"
-    remote_path = "/data/local/citizenshell.test"
-    assert not shell("cat %s" % remote_path)
-    assert shell("echo -n '%s' >> %s" % (content, remote_path))
-
-    try:
-        with TemporaryDirectory() as sandbox:
-            local_path = path.join(sandbox, path.split(remote_path)[-1])
-            shell.pull(local_path, remote_path)
-            assert open(local_path, "r").read() == content
-    finally:
-        shell("rm %s" % remote_path)
+        try:
+            with TemporaryDirectory() as sandbox:
+                local_path = path.join(sandbox, path.split(remote_path)[-1])
+                shell.pull(local_path, remote_path)
+                assert open(local_path, "r").read() == content
+        finally:
+            shell("rm %s" % remote_path)
 

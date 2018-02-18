@@ -15,6 +15,7 @@ pylint = "*"
 wheel = "*"
 twine = "*"
 "backports.tempfile" = "*"
+pytest-watch = "*"
 
 
 [packages]

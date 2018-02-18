@@ -36,8 +36,10 @@ class SecureShell(AbstractShell):
     def execute_command(self, cmd):
         bufsize = 1
         self.log_stdin(cmd)
+        for var, val in self.get_merged_env().items():
+            cmd = "%s=%s; " % (var, val) + cmd
+
         chan = self._client.get_transport().open_session()
-        chan.update_environment(self.get_merged_env())
         chan.exec_command(cmd)
         out_thread = LoggerThread(chan.makefile('r', bufsize), self.log_stdout)
         err_thread = LoggerThread(chan.makefile_stderr('r', bufsize), self.log_stderr)
