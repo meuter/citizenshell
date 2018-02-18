@@ -33,9 +33,10 @@ class AbstractShell(dict):
     def __call__(self, cmd, check_xc=None, check_err=None, **kwargs):
         check_xc = check_xc if check_xc else self._check_xc
         check_err = check_err if check_err else self._check_err
-        self._local_env = kwargs
 
-        result = self.execute_command(cmd)
+        env = dict(self)
+        env.update(kwargs)
+        result = self.execute_command(cmd, env)
 
         if check_xc and result.exit_code() != 0:
             raise ShellError(result)
@@ -43,16 +44,5 @@ class AbstractShell(dict):
             raise ShellError(result)
         return result
 
-    def get_global_env(self):
-        return self
-
-    def get_local_env(self):
-        return self._local_env
-
-    def get_merged_env(self):
-        env = dict(self)
-        env.update(self._local_env)
-        return env
-
-    def execute_command(self, cmd):
+    def execute_command(self, cmd, env):
         raise NotImplementedError("this method must be implemented by the subclass")

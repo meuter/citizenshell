@@ -40,10 +40,8 @@ class SerialShell(AbstractCharacterBasedShell):
         self._write("export PS1=%s\n" % self._prompt)
         self._read_until(self._prompt)
         self._read_until(self._prompt)
-        self._inject_env(self.get_global_env())
 
     def disconnect(self):
-        self._cleanup_env(self.get_global_env())
         self._write("exit\n")
         self._serial.close()
         

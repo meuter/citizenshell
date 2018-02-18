@@ -19,7 +19,6 @@ class TelnetShell(AbstractCharacterBasedShell):
         self._telnet = Telnet()
         self._is_connected = False
         self.connect()
-        self._inject_env(self.get_global_env())
 
     def do_connect(self):
         self._telnet.open(self._hostname, self._port)
@@ -49,9 +48,9 @@ class TelnetShell(AbstractCharacterBasedShell):
     def pull(self, local_path, remote_path):
         # TODO(cme): add oob logging
         # TODO(cme): self.execute_command leaves trail in the stdin_log
-        result = self.execute_command("md5sum '%s'" % remote_path)
+        result = self.execute_command("md5sum '%s'" % remote_path, env={})
         remote_md5 = str(result).split()[0].strip() if result else None
-        result = self.execute_command("od -t x1 -An %s" % remote_path)
+        result = self.execute_command("od -t x1 -An %s" % remote_path, env={})
         content = str(result).replace(" ", "").decode('hex')
         if remote_md5 and  md5(content).hexdigest() != remote_md5:
             raise RuntimeError("file transfer error")

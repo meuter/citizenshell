@@ -1,4 +1,5 @@
 from .abstractconnectedshell import AbstractConnectedShell
+from .streamreader import PrefixedStreamReader
 from .shellresult import ShellResult
 from .localshell import LocalShell
 from .loggerthread import LoggerThread
@@ -24,20 +25,10 @@ class AdbShell(AbstractConnectedShell):
     def disconnect(self):
         self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=True)
             
-    def execute_command(self, cmd):
+    def execute_command(self, cmd, env):
         self.log_stdin(cmd)
-        for var, val in self.get_merged_env().items():
-            cmd = "%s=%s; " % (var, val) + cmd
-
-        def prefix_filter_sh_command(prefix):
-            return 'while read line || [ -n "$line" ]; do echo %s$line; done' % prefix
-
-        out_filter = prefix_filter_sh_command("OUT-")
-        err_filter = prefix_filter_sh_command("ERR-")
-
-        formatted_command = r"{ { { (%s) 2>&3; echo XC--$? >&4; } | %s >&2; } 3>&1 4>&2 1>&2 | %s; } 2>&1" % (cmd.strip(), out_filter, err_filter)
+        formatted_command = PrefixedStreamReader.wrap_command(cmd, env)
         adb_command = "adb -s %s:%d shell '%s'" % (self._hostname, self._port, formatted_command.replace('\'', '\'"\'"\''))
-
         process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
 
         out, err = [], []

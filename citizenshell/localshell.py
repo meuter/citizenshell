@@ -11,8 +11,8 @@ class LocalShell(AbstractShell):
     def __init__(self, *args, **kwargs):
         AbstractShell.__init__(self, *args, **kwargs)
         
-    def execute_command(self, command):
-        process = Popen(command, env=self.get_merged_env(), shell=True, stdout=PIPE, stderr=PIPE)
+    def execute_command(self, command, env):
+        process = Popen(command, env=env, shell=True, stdout=PIPE, stderr=PIPE)
         queue = Queue()
         StandardStreamReader(process.stdout, 1, queue)
         StandardStreamReader(process.stderr, 2, queue)

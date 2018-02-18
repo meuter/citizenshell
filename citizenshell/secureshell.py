@@ -27,11 +27,10 @@ class SecureShell(AbstractConnectedShell):
     def do_disconnect(self):
         self._client.close()
 
-    def execute_command(self, command):
-        for var, val in self.get_merged_env().items():
+    def execute_command(self, command, env):
+        for var, val in env.items():
             command = "%s=%s; " % (var, val) + command
         chan = self._client.get_transport().open_session()
-        chan.update_environment(self.get_merged_env())
         chan.exec_command(command)
         queue = Queue()
         StandardStreamReader(chan.makefile("r"), 1, queue)
