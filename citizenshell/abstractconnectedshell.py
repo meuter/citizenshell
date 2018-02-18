@@ -19,7 +19,9 @@ class AbstractConnectedShell(AbstractShell):
 
     def disconnect(self):
         if self._connected:
+            self.log_oob("disconnected from '%s'..." % self._target)
             self.do_disconnect()
+            self.log_oob("disconnected!")
 
     def do_connect(self):
         raise NotImplementedError("this method should be implemented by subclass")
