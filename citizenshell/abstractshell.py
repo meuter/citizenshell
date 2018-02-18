@@ -37,9 +37,9 @@ class AbstractShell(dict):
 
         result = self.execute_command(cmd)
 
-        if check_xc and result.xc != 0:
+        if check_xc and result.exit_code() != 0:
             raise ShellError(result)
-        if check_err and result.err:
+        if check_err and result.stderr():
             raise ShellError(result)
         return result
 

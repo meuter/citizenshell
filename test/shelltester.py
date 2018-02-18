@@ -40,44 +40,44 @@ class AbstractShellTester:
     def test_shell_result_has_stdout(self):
         shell = self.get_shell()
         result = shell("echo Foo")
-        assert result.out == ["Foo"]
-        assert result.err == []
-        assert result.xc == 0
+        assert result.stdout() == ["Foo"]
+        assert result.stderr() == []
+        assert result.exit_code() == 0
 
     def test_shell_result_has_stderr(self):
         shell = self.get_shell()
         result = shell(">&2 echo Baz")
-        assert result.out == []
-        assert result.err == ["Baz"]
-        assert result.xc == 0
+        assert result.stdout() == []
+        assert result.stderr() == ["Baz"]
+        assert result.exit_code() == 0
 
     def test_shell_result_has_exit_code(self):
         shell = self.get_shell()
         result = shell("exit 15")
-        assert result.out == []
-        assert result.err == []
-        assert result.xc == 15
+        assert result.stdout() == []
+        assert result.stderr() == []
+        assert result.exit_code() == 15
 
     def test_shell_can_run_command_on_multiple_lines(self):
         shell = self.get_shell()
         result = shell("echo Bar\necho Foo")
-        assert result.out == [ "Bar", "Foo" ]
-        assert result.err == []
-        assert result.xc == 0
+        assert result.stdout() == [ "Bar", "Foo" ]
+        assert result.stderr() == []
+        assert result.exit_code() == 0
 
     def test_shell_can_run_a_command_without_a_trailing_endl(self):
         shell = self.get_shell()
         result = shell("echo -n Bar && exit 13")
-        assert result.out == ["Bar"]
-        assert result.err == []
-        assert result.xc == 13
+        assert result.stdout() == ["Bar"]
+        assert result.stderr() == []
+        assert result.exit_code() == 13
 
     def test_shell_can_run_a_command_without_a_trailing_endl_to_stderr(self):
         shell = self.get_shell()
         result = shell("echo -n Bar >&2 && exit 13")
-        assert result.out == []
-        assert result.err == ["Bar"]
-        assert result.xc == 13
+        assert result.stdout() == []
+        assert result.stderr() == ["Bar"]
+        assert result.exit_code() == 13
 
     def test_shell_result_can_be_compared_for_boolean(self):
         shell = self.get_shell()
@@ -147,14 +147,14 @@ class AbstractShellTester:
     def test_readme_example_4(self):
         shell = self.get_shell()
         result = shell(">&2 echo error && echo output && exit 13")
-        assert result.out == ["output"]
-        assert result.err == ["error"]
-        assert result.xc == 13
+        assert result.stdout() == ["output"]
+        assert result.stderr() == ["error"]
+        assert result.exit_code() == 13
 
     def test_shell_can_execute_multiple_commands_in_a_row(self):
         shell = self.get_shell()
         assert shell("echo Foo") == "Foo"
-        assert shell("exit 10").xc == 10
+        assert shell("exit 10").exit_code() == 10
         assert shell("echo Bar") == "Bar"
 
     def test_shell_logs(self, caplog):
