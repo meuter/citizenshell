@@ -1,39 +1,31 @@
 from paramiko import SSHClient, AutoAddPolicy
 
 from .abstractshell import AbstractShell
+from .abstractconnectedshell import AbstractConnectedShell
 from .shellresult import IterableShellResult
 from .queue import Queue
 from .streamreader import StandardStreamReader
 from threading import Thread
 
 
-class SecureShell(AbstractShell):
+class SecureShell(AbstractConnectedShell):
 
-    def __init__(self, hostname, username, password=None, port=22, check_xc=False, check_err=False, **kwargs):
-        AbstractShell.__init__(self, check_xc, check_err, **kwargs)
+    def __init__(self, hostname, username, password=None, port=22, **kwargs):        
+        super(SecureShell, self).__init__(hostname, **kwargs)
         self._hostname = hostname
         self._port = port
         self._username = username
         self._password = password
-        self._connected = False
         self.connect()
 
-    def connect(self):
-        if not self._connected:
-            self.log_oob("connecting to '%s'..." % self._hostname)
-            self._client = SSHClient()
-            self._client.load_system_host_keys()
-            self._client.set_missing_host_key_policy(AutoAddPolicy())
-            self._client.connect(hostname=self._hostname, port=self._port, username=self._username, password=self._password)
-            self.log_oob("connected!")
-            self._connected = True
+    def do_connect(self):
+        self._client = SSHClient()
+        self._client.load_system_host_keys()
+        self._client.set_missing_host_key_policy(AutoAddPolicy())
+        self._client.connect(hostname=self._hostname, port=self._port, username=self._username, password=self._password)
 
-    def disconnect(self):
-        if self._connected:
-            self.log_oob("disconnecting from '%s'..." % self._hostname)
-            self._client.close()
-            self.log_oob("disconnected!")
-            self._connected = False
+    def do_disconnect(self):
+        self._client.close()
 
     def execute_command(self, command):
         for var, val in self.get_merged_env().items():
