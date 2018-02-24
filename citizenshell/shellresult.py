@@ -75,19 +75,19 @@ class IterableShellResult():
             for entry in self._combined:
                 yield entry
         else:
-            out_left, err_left = True, True        
-            while out_left or err_left or (self._xc is None):
+            out_left, err_left, process_finished = True, True, False
+            while out_left or err_left or not process_finished:
                 fd, line = self._queue.get()
-                if fd is None:
-                    self._xc = line
-                    continue
                 if line is None:
                     if fd == 1: out_left = False
                     if fd == 2: err_left = False
+                    if fd == 0: process_finished = True
                     continue
-                if fd == 1:
+                elif fd == 0:
+                    self._xc = line
+                elif fd == 1:
                     stdout_logger.info(line)
-                if fd == 2:                    
+                elif fd == 2:                    
                     stderr_logger.error(line)
                     if self._check_err:
                         raise ShellError(self.command(), "stderr '%s'" % line)

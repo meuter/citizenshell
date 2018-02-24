@@ -36,7 +36,8 @@ class SecureShell(AbstractConnectedShell):
         StandardStreamReader(chan.makefile("r"), 1, queue)
         StandardStreamReader(chan.makefile_stderr("r"), 2, queue)
         def post_process_exit_code():
-            queue.put( (None, chan.recv_exit_status()) )
+            queue.put( (0, chan.recv_exit_status()) )
+            queue.put( (0, None) )
         Thread(target=post_process_exit_code).start()
         return IterableShellResult(command, queue, wait, check_err)
 

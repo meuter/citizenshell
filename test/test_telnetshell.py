@@ -1,4 +1,3 @@
-import logging
 from os import environ, path
 from pytest import mark, raises, skip
 from citizenshell import TelnetShell, ShellError

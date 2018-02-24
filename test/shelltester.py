@@ -1,7 +1,9 @@
 from pytest import mark, raises, skip
-from citizenshell import ShellError
+from citizenshell import ShellError, configure_all_loggers
 from itertools import product
-from logging import INFO, ERROR
+from logging import INFO, ERROR, DEBUG
+
+configure_all_loggers(DEBUG)
 
 class AbstractShellTester:
 

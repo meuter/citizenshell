@@ -1,4 +1,4 @@
-from .loggers import stdin_logger, stdout_logger, stderr_logger, oob_logger, spy_logger
+from .loggers import stdin_logger, stdout_logger, stderr_logger, oob_logger, spy_read_logger, spy_write_logger
 from .shellerror import ShellError
 
 
@@ -21,8 +21,13 @@ class AbstractShell(dict):
         oob_logger.info(line)
 
     @staticmethod
-    def log_spy(line):
-        spy_logger.debug(line)
+    def log_spy_read(line):
+        spy_read_logger.debug(line)
+
+    @staticmethod
+    def log_spy_write(line):
+        spy_write_logger.debug(line)
+    
 
     def __init__(self, check_xc=False, check_err=False, wait=True, **kwargs):        
         dict.__init__(self, kwargs)
@@ -41,7 +46,7 @@ class AbstractShell(dict):
         result = self.execute_command(cmd, env, wait, check_err)
 
         if check_xc and result.exit_code() != 0:
-            raise ShellError(cmd, "exit code '%d'" % result.exit_code())
+            raise ShellError(cmd, "exit code '%s'" % str(result.exit_code()))
         return result
 
     def execute_command(self, cmd, env, wait, check_xc):

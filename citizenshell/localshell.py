@@ -17,6 +17,7 @@ class LocalShell(AbstractShell):
         StandardStreamReader(process.stdout, 1, queue)
         StandardStreamReader(process.stderr, 2, queue)
         def post_process_exit_code():
-            queue.put( (None, process.wait()) )
+            queue.put( (0, process.wait()) )
+            queue.put( (0, None) )
         Thread(target=post_process_exit_code).start()
         return IterableShellResult(command, queue, wait, check_err)
