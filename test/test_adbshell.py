@@ -54,7 +54,7 @@ class TestAbdShell(AbstractShellTester):
         for line in result:
             collected.append( (time(), line))
         
-        for i in xrange(3,0,-1):
+        for i in range(3,0,-1):
             assert collected[i][1] == "bloop"
             diff = collected[i][0] - collected[i-1][0]
             assert (delta*0.75 < diff) and (diff < delta*1.25)
