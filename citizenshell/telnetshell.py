@@ -2,16 +2,17 @@ from telnetlib import Telnet
 from uuid import uuid4
 from time import sleep
 from hashlib import md5
-
-from .abstractcharshell import AbstractCharacterBasedShell
+from .streamreader import PrefixedStreamReader
+from .abstractconnectedshell import AbstractConnectedShell
 from .shellresult import ShellResult
 
 import sys
 
-class TelnetShell(AbstractCharacterBasedShell):
+class TelnetShell(AbstractConnectedShell):
 
     def __init__(self, hostname, username, password=None, port=23, *args, **kwargs):
         super(TelnetShell, self).__init__(hostname, *args, **kwargs)
+        self._prompt = str(uuid4())
         self._hostname = hostname
         self._username = username
         self._password = password
@@ -44,6 +45,23 @@ class TelnetShell(AbstractCharacterBasedShell):
         out = self._telnet.read_until(marker.encode('utf-8'))
         self.log_spy("<<< " + out)
         return out
+
+    def execute_command(self, command, env):
+        self.log_stdin(command)
+        self._write(PrefixedStreamReader.wrap_command(command, env) + "\n")
+        out, err = [], []
+        xc = None
+        for line in self._read_until(self._prompt).decode('utf-8').splitlines():
+            prefix, line = line[:4], line[4:]
+            if prefix == "ERR-":
+                self.log_stderr(line)
+                err.append(line)
+            elif prefix == "OUT-":
+                self.log_stdout(line)
+                out.append(line)
+            elif prefix == "XC--":
+                xc = int(line)
+        return ShellResult(command, out, err, xc)
 
     def pull(self, local_path, remote_path):
         # TODO(cme): add oob logging

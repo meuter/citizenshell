@@ -5,15 +5,22 @@ from logging import INFO, ERROR
 
 class AbstractShellTester:
 
+    shell_cache = {}
+
+    @classmethod
+    def get_shell_from_cache(cls, args, kwargs):
+        return cls.shell_cache.get(repr(cls)+repr(args)+repr(kwargs), None)
+
+    @classmethod
+    def add_shell_to_cache(cls, args, kwargs, shell):
+        cls.shell_cache[repr(cls)+repr(args)+repr(kwargs)] = shell
+        return shell
+
     def get_shell(self, *args, **kwargs):
-        if not hasattr(self, "shell_cache"):
-            self.shell_cache = {}
-        if repr(kwargs) not in self.shell_cache:            
-            new_shell = self.instanciate_new_shell(*args, **kwargs)
-            self.shell_cache[repr(kwargs)] = new_shell
-        else:
-            new_shell = self.shell_cache[repr(kwargs)]
-        return new_shell
+        result = self.get_shell_from_cache(args, kwargs)
+        if result is None:
+            result = self.add_shell_to_cache(args, kwargs, self.instanciate_new_shell(*args, **kwargs))
+        return result
 
     def instanciate_new_shell(self, *args, **kwargs):
         raise NotImplementedError("This should be implemented for each shell class")
