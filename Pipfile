@@ -7,15 +7,15 @@ name = "pypi"
 
 [dev-packages]
 
+pytest = "*"
 pytest-sugar = "*"
+pytest-watch = "*"
 pypandoc = "*"
 bpython = "*"
-pytest = "*"
 pylint = "*"
 wheel = "*"
 twine = "*"
 "backports.tempfile" = "*"
-pytest-watch = "*"
 
 
 [packages]
