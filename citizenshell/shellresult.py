@@ -91,7 +91,7 @@ class IterableShellResult():
                     stderr_logger.error(line)
                     if self._check_err:
                         raise ShellError(self.command(), "stderr '%s'" % line)
-                if self._wait: self._combined.append( (fd, line) )
+                self._combined.append( (fd, line) )
                 yield (fd, line)
             self._finished = True
 
