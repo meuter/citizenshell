@@ -4,7 +4,7 @@ from itertools import product
 from logging import INFO, ERROR, DEBUG
 from backports.tempfile import TemporaryDirectory
 from tempfile import NamedTemporaryFile
-from os import path
+from os import path, stat
 from uuid import uuid4
 from time import time
 
@@ -213,12 +213,15 @@ class AbstractShellTester:
         content = "this is a file\n"
         assert not shell("cat %s" % remote_path)
         assert shell("echo -n '%s' >> %s" % (content, remote_path))
+        assert shell("chmod 777 %s" % remote_path)
+        assert str(shell("ls -la %s" % remote_path)).split()[0] == "-rwxrwxrwx"
 
         try:
             with TemporaryDirectory() as sandbox:
                 local_path = path.join(sandbox, path.split(remote_path)[-1])
                 shell.pull(local_path, remote_path)
                 assert open(local_path, "r").read() == content
+                assert "%o" % (stat(local_path).st_mode & 0777) == "777"
         finally:
             shell("rm %s" % remote_path)
 

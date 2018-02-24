@@ -2,20 +2,22 @@ from telnetlib import Telnet
 from uuid import uuid4
 from time import sleep
 from hashlib import md5
+from os import chmod
+from re import compile as compile_regex
 
 from .abstractshell import AbstractShell
 from .shellresult import IterableShellResult
 from .streamreader import PrefixedStreamReader
 from .queue import Queue
-import re
+from .utils import convert_permissions
 
 class TelnetShell(AbstractShell):
 
     def __init__(self, hostname, username, password=None, port=23, check_xc=False, check_err=False, **kwargs):
         AbstractShell.__init__(self, check_xc, check_err, **kwargs)
         self._prompt = str(uuid4())
-        self._prompt_re = re.compile(self._prompt)
-        self._endl_re = re.compile("\n")
+        self._prompt_re = compile_regex(self._prompt)
+        self._endl_re = compile_regex("\n")
         self._hostname = hostname
         self._username = username
         self._password = password
@@ -72,8 +74,9 @@ class TelnetShell(AbstractShell):
         return IterableShellResult(command, queue, wait, check_err)
 
     def pull(self, local_path, remote_path):
-        # TODO(cme): add oob logging
-        # TODO(cme): self.execute_command leaves trail in the stdin_log
+        self.log_oob("pulling '%s' <- '%s'..." % (local_path, remote_path))
+        result = self.execute_command("ls -la %s" % remote_path)
+        permissions = convert_permissions(str(result).split()[0])
         result = self.execute_command("md5sum '%s'" % remote_path)
         remote_md5 = str(result).split()[0].strip() if result else None
         result = self.execute_command("od -t x1 -An %s" % remote_path)
@@ -81,8 +84,8 @@ class TelnetShell(AbstractShell):
         if remote_md5 and  md5(content).hexdigest() != remote_md5:
             raise RuntimeError("file transfer error")
         open(local_path, "wb").write(content)
-        # TODO(cme): take care of permission
-        # TODO(cme): add oob logging
+        chmod(local_path, permissions)
+        self.log_oob("done!")
         
     def reboot_wait_and_reconnect(self, reboot_delay=40):
         # TODO(cme): add oob logging

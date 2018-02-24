@@ -4,7 +4,9 @@ from .shellresult import IterableShellResult
 from .localshell import LocalShell
 from .loggerthread import LoggerThread
 from .queue import Queue
+from .utils import convert_permissions
 from subprocess import Popen, PIPE
+from os import chmod
 
 
 class AdbShell(AbstractConnectedShell):
@@ -26,7 +28,7 @@ class AdbShell(AbstractConnectedShell):
     def disconnect(self):
         self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=True)
             
-    def execute_command(self, command, env, wait, check_err):
+    def execute_command(self, command, env={}, wait=True, check_err=False):
         formatted_command = PrefixedStreamReader.wrap_command(command, env)
         adb_command = "adb -s %s:%d shell '%s'" % (self._hostname, self._port, formatted_command.replace('\'', '\'"\'"\''))
         process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
@@ -41,7 +43,10 @@ class AdbShell(AbstractConnectedShell):
 
     def pull(self, local_path, remote_path):
         self.log_oob("pulling '%s' <- '%s'..." % (local_path, remote_path))
+        result = self.execute_command("ls -la %s" % remote_path)
+        permissions = convert_permissions(str(result).split()[0])
         self._localshell("adb pull '%s' '%s'" % (remote_path, local_path))
+        chmod(local_path, permissions)
         self.log_oob("done!")
 
 
