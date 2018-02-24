@@ -5,3 +5,4 @@ pypandoc
 uritools
 pyserial
 backports.tempfile
+scp
