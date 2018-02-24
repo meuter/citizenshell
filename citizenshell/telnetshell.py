@@ -5,6 +5,7 @@ from hashlib import md5
 from .streamreader import PrefixedStreamReader
 from .abstractconnectedshell import AbstractConnectedShell
 from .shellresult import ShellResult
+from .shellerror import ShellError
 
 import sys
 
@@ -46,7 +47,7 @@ class TelnetShell(AbstractConnectedShell):
         self.log_spy("<<< " + out)
         return out
 
-    def execute_command(self, command, env):
+    def execute_command(self, command, env={}, wait=True, check_err=False):
         self.log_stdin(command)
         self._write(PrefixedStreamReader.wrap_command(command, env) + "\n")
         out, err = [], []
@@ -55,6 +56,8 @@ class TelnetShell(AbstractConnectedShell):
             prefix, line = line[:4], line[4:]
             if prefix == "ERR-":
                 self.log_stderr(line)
+                if check_err: 
+                    raise ShellError(command, "stderr '%s'" % line)
                 err.append(line)
             elif prefix == "OUT-":
                 self.log_stdout(line)
@@ -66,9 +69,9 @@ class TelnetShell(AbstractConnectedShell):
     def pull(self, local_path, remote_path):
         # TODO(cme): add oob logging
         # TODO(cme): self.execute_command leaves trail in the stdin_log
-        result = self.execute_command("md5sum '%s'" % remote_path, env={})
+        result = self.execute_command("md5sum '%s'" % remote_path)
         remote_md5 = str(result).split()[0].strip() if result else None
-        result = self.execute_command("od -t x1 -An %s" % remote_path, env={})
+        result = self.execute_command("od -t x1 -An %s" % remote_path)
         content = str(result).replace(" ", "").decode('hex')
         if remote_md5 and  md5(content).hexdigest() != remote_md5:
             raise RuntimeError("file transfer error")

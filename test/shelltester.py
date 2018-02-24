@@ -122,20 +122,28 @@ class AbstractShellTester:
     @mark.parametrize("global_check_xc,local_check_xc", [ (True, True), (True, False), (False, True), (False, False) ])
     def test_shell_check_xc_raises(self, global_check_xc, local_check_xc):
         shell = self.get_shell(check_xc=global_check_xc)
-        if local_check_xc or global_check_xc:
+
+        if global_check_xc:
+            with raises(ShellError):
+                shell("exit 13")
+        elif not global_check_xc and local_check_xc:
             with raises(ShellError):
                 shell("exit 13", check_xc=local_check_xc)
-        else:
+        elif global_check_xc and not local_check_xc:
             shell("exit 13", check_xc=local_check_xc)        
 
     @mark.parametrize("global_check_err,local_check_err", [ (True, True), (True, False), (False, True), (False, False) ])
     def test_shell_check_err_raises(self, global_check_err, local_check_err):    
         shell =self.get_shell(check_err=global_check_err)
-        if local_check_err or global_check_err:
+
+        if global_check_err:
+            with raises(ShellError):
+                shell(">&2 echo error")
+        elif not global_check_err and local_check_err:
             with raises(ShellError):
                 shell(">&2 echo error", check_err=local_check_err)
-        else:
-            shell(">&2 echo error", check_err=local_check_err)
+        elif global_check_err and not local_check_err:
+            shell(">&2 echo error", check_err=local_check_err)        
 
     def test_readme_example_2(self):
         shell = self.get_shell(GREET="Hello")

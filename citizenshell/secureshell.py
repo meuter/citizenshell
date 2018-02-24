@@ -27,7 +27,7 @@ class SecureShell(AbstractConnectedShell):
     def do_disconnect(self):
         self._client.close()
 
-    def execute_command(self, command, env):
+    def execute_command(self, command, env, wait, check_err):
         for var, val in env.items():
             command = "%s=%s; " % (var, val) + command
         chan = self._client.get_transport().open_session()
@@ -38,5 +38,5 @@ class SecureShell(AbstractConnectedShell):
         def post_process_exit_code():
             queue.put( (None, chan.recv_exit_status()) )
         Thread(target=post_process_exit_code).start()
-        return IterableShellResult(command, queue, collect=True)
+        return IterableShellResult(command, queue, wait, check_err)
 

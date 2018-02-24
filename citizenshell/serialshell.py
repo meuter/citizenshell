@@ -1,5 +1,7 @@
 from .abstractconnectedshell import AbstractConnectedShell
+from .streamreader import PrefixedStreamReader
 from .shellresult import ShellResult
+from .shellerror import ShellError
 
 from time import sleep
 from serial import serial_for_url, EIGHTBITS, PARITY_NONE
@@ -66,7 +68,7 @@ class SerialShell(AbstractConnectedShell):
         self.log_spy("<<< " + out)
         return out
 
-    def execute_command(self, command, env):
+    def execute_command(self, command, env, wait, check_err):
         self.log_stdin(command)
         self._write(PrefixedStreamReader.wrap_command(command, env) + "\n")
         out, err = [], []

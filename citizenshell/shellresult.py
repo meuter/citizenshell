@@ -1,4 +1,5 @@
 from .loggers import stdin_logger, stdout_logger, stderr_logger
+from .shellerror import ShellError
 
 class ShellResult:
 
@@ -58,14 +59,16 @@ class ShellResult:
 
 class IterableShellResult():
 
-    def __init__(self, command, queue, collect=True):
+    def __init__(self, command, queue, wait, check_err):
         stdin_logger.info(command)
         self._command = command
         self._queue = queue
         self._combined = []
         self._xc = None
         self._finished = False
-        if collect: self.wait()
+        self._wait = wait
+        self._check_err = check_err
+        if wait: self.wait()
 
     def iter_combined(self):
         if self._finished:
@@ -84,9 +87,11 @@ class IterableShellResult():
                     continue
                 if fd == 1:
                     stdout_logger.info(line)
-                if fd == 2:
+                if fd == 2:                    
                     stderr_logger.error(line)
-                self._combined.append( (fd, line) )
+                    if self._check_err:
+                        raise ShellError(self.command(), "stderr '%s'" % line)
+                if self._wait: self._combined.append( (fd, line) )
                 yield (fd, line)
             self._finished = True
 

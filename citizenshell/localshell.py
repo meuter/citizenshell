@@ -11,7 +11,7 @@ class LocalShell(AbstractShell):
     def __init__(self, *args, **kwargs):
         AbstractShell.__init__(self, *args, **kwargs)
         
-    def execute_command(self, command, env):
+    def execute_command(self, command, env, wait, check_err):
         process = Popen(command, env=env, shell=True, stdout=PIPE, stderr=PIPE)
         queue = Queue()
         StandardStreamReader(process.stdout, 1, queue)
@@ -19,4 +19,4 @@ class LocalShell(AbstractShell):
         def post_process_exit_code():
             queue.put( (None, process.wait()) )
         Thread(target=post_process_exit_code).start()
-        return IterableShellResult(command, queue, collect=True)
+        return IterableShellResult(command, queue, wait, check_err)
