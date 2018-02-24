@@ -1,4 +1,4 @@
-from abstractshell import AbstractShell
+from .abstractshell import AbstractShell
 
 class AbstractConnectedShell(AbstractShell):
 
