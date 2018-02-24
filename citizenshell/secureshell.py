@@ -6,6 +6,7 @@ from .shellresult import IterableShellResult
 from .queue import Queue
 from .streamreader import StandardStreamReader
 from threading import Thread
+from scp import SCPClient
 
 
 class SecureShell(AbstractConnectedShell):
@@ -23,6 +24,7 @@ class SecureShell(AbstractConnectedShell):
         self._client.load_system_host_keys()
         self._client.set_missing_host_key_policy(AutoAddPolicy())
         self._client.connect(hostname=self._hostname, port=self._port, username=self._username, password=self._password)
+        self._scp_client = SCPClient(self._client.get_transport())
 
     def do_disconnect(self):
         self._client.close()
@@ -40,4 +42,15 @@ class SecureShell(AbstractConnectedShell):
             queue.put( (0, None) )
         Thread(target=post_process_exit_code).start()
         return IterableShellResult(command, queue, wait, check_err)
+
+    def pull(self, local_path, remote_path):
+        self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))
+        self._scp_client.get(remote_path, local_path)
+        self.log_oob("done!")
+
+    def push(self, local_path, remote_path):
+        self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))
+        self._scp_client.put(local_path, remote_path)
+        self.log_oob("done!")
+
 

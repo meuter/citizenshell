@@ -1,7 +1,12 @@
 from pytest import mark, raises, skip
-from citizenshell import ShellError, configure_all_loggers
+from citizenshell import ShellError, configure_all_loggers, AdbShell
 from itertools import product
 from logging import INFO, ERROR, DEBUG
+from backports.tempfile import TemporaryDirectory
+from tempfile import NamedTemporaryFile
+from os import path
+from uuid import uuid4
+from time import time
 
 configure_all_loggers(DEBUG)
 
@@ -193,3 +198,75 @@ class AbstractShellTester:
     def test_shell_command_with_double_quotes(self):
         shell = self.get_shell()
         assert shell('echo "$FOO"', FOO="foo") == "foo"
+
+    def get_test_remote_path(self, shell):
+        if isinstance(shell, AdbShell):
+            return path.join("/data", "local", str(uuid4()))
+        else:
+            return path.join("/tmp", str(uuid4()))
+
+    def test_shell_can_pull_file(self):
+        shell = self.get_shell()
+        if not hasattr(shell, "pull"):
+            skip("Shell '%s' does not have a push method" % shell.__class__.__name__)
+        remote_path = self.get_test_remote_path(shell)
+        content = "this is a file\n"
+        assert not shell("cat %s" % remote_path)
+        assert shell("echo -n '%s' >> %s" % (content, remote_path))
+
+        try:
+            with TemporaryDirectory() as sandbox:
+                local_path = path.join(sandbox, path.split(remote_path)[-1])
+                shell.pull(local_path, remote_path)
+                assert open(local_path, "r").read() == content
+        finally:
+            shell("rm %s" % remote_path)
+
+    def test_shell_can_push_file(self):
+        shell = self.get_shell()
+        if not hasattr(shell, "push"):
+            skip("Shell '%s' does not have a push method" % shell.__class__.__name__)
+        content = "this is a file\n"
+        remote_path = self.get_test_remote_path(shell)
+        assert not shell("cat %s" % remote_path)
+        with NamedTemporaryFile() as temp_file:
+            temp_file.write(content)
+            temp_file.flush()
+            shell.push(temp_file.name, remote_path)
+        try:
+            assert shell("cat %s" % remote_path) == content
+        finally:
+            shell("rm %s" % remote_path)
+
+    def test_shell_execute_command_no_wait(self):
+        shell = self.get_shell()
+        collected = []
+        delta=.2
+        result = shell("for i in 1 2 3 4; do echo bloop; sleep %s; done" % delta, wait=False)
+        for line in result:
+            collected.append( (time(), line))
+        
+        for i in range(3,0,-1):
+            assert collected[i][1] == "bloop"
+            diff = collected[i][0] - collected[i-1][0]
+            assert (delta*0.75 < diff) and (diff < delta*1.25)
+
+        assert result.exit_code() == 0
+        assert result.stderr() == []
+        assert result.stdout() == [ "bloop" for _ in range(4) ]
+
+    def test_shell_execute_command_wait(self):
+        shell = self.get_shell()
+        collected = []
+        delta=.2
+        result = shell("for i in 1 2 3 4; do echo bloop; sleep %s; done" % delta, wait=True)
+        for line in result:
+            collected.append( (time(), line))
+        
+        diff = collected[-1][0] - collected[0][0]
+        assert diff < delta
+
+        assert result.exit_code() == 0
+        assert result.stderr() == []
+        assert result.stdout() == [ "bloop" for _ in range(4) ]
+
