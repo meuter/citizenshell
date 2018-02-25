@@ -221,7 +221,7 @@ class AbstractShellTester:
                 local_path = path.join(sandbox, path.split(remote_path)[-1])
                 shell.pull(local_path, remote_path)
                 assert open(local_path, "r").read() == content
-                assert "%o" % (stat(local_path).st_mode & 0777) == "777"
+                assert "%o" % (stat(local_path).st_mode & 0o777) == "777"
         finally:
             shell("rm %s" % remote_path)
 
