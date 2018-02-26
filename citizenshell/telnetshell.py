@@ -5,16 +5,16 @@ from hashlib import md5
 from os import chmod
 from re import compile as compile_regex
 
-from .abstractshell import AbstractShell
+from .abstractconnectedshell import AbstractConnectedShell
 from .shellresult import IterableShellResult
 from .streamreader import PrefixedStreamReader
 from .queue import Queue
 from .utils import convert_permissions
 
-class TelnetShell(AbstractShell):
+class TelnetShell(AbstractConnectedShell):
 
-    def __init__(self, hostname, username, password=None, port=23, check_xc=False, check_err=False, **kwargs):
-        AbstractShell.__init__(self, check_xc, check_err, **kwargs)
+    def __init__(self, hostname, username, password=None, port=23, *args, **kwargs):
+        super(TelnetShell, self).__init__(hostname, *args, **kwargs)
         self._prompt = str(uuid4())
         self._prompt_re = compile_regex(self._prompt)
         self._endl_re = compile_regex("\n")
@@ -27,28 +27,21 @@ class TelnetShell(AbstractShell):
         self._buffer = ""
         self.connect()
 
-    def connect(self):
-        if not self._is_connected:
-            self.log_oob("connecting to '%s'..." % self._hostname)
-            self._telnet.open(self._hostname, self._port)
-            self._read_until("login: ")
-            self._write(self._username + "\n")
-            if self._password:
-                self._read_until("Password: ")
-                self._write(self._password + "\n")            
-            self._write("export PS1=%s\n" % self._prompt)
-            self._write("export COLUMNS=500\n")
-            self._read_until("COLUMNS=500")
-            self._read_until(self._prompt)  # second for the actual prompt
-            self.log_oob("connected!")
-            self._is_connected = True
+    def do_connect(self):
+        self._telnet.open(self._hostname, self._port)
+        self._read_until("login: ")
+        self._write(self._username + "\n")
+        if self._password:
+            self._read_until("Password: ")
+            self._write(self._password + "\n")            
+        sleep(.1)
+        self._write("export PS1=%s\n" % self._prompt)
+        self._write("export COLUMNS=500\n")
+        self._read_until("COLUMNS=500")
+        self._read_until(self._prompt)  # second for the actual prompt
 
-    def disconnect(self):
-        if self._is_connected:
-            self.log_oob("disconnecting from '%s'..." % self._hostname)
-            self._telnet.close()
-            self.log_oob("disconnected!")
-            self._is_connected = False
+    def do_disconnect(self):
+        self._telnet.close()
 
     def _write(self, text):        
         self.log_spy_write(text)
@@ -81,7 +74,7 @@ class TelnetShell(AbstractShell):
         remote_md5 = str(result).split()[0].strip() if result else None
         result = self.execute_command("od -t x1 -An %s" % remote_path)
         content = str(result).replace(" ", "").decode('hex')
-        if remote_md5 and  md5(content).hexdigest() != remote_md5:
+        if remote_md5 and (md5(content).hexdigest() != remote_md5):
             raise RuntimeError("file transfer error")
         open(local_path, "wb").write(content)
         chmod(local_path, permissions)

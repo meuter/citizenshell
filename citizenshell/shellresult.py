@@ -145,5 +145,5 @@ class IterableShellResult():
         return self.exit_code() == 0
 
     def __repr__(self):
-        return "%s('%s', %s, %s, '%d')" % (self.__class__, self.command(), self.stdout(), self.stderr(), self.exit_code())
+        return "%s('%s', %s, %s, %s)" % (self.__class__, self.command(), self.stdout(), self.stderr(), str(self.exit_code()))
 

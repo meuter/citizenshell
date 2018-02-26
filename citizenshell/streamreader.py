@@ -29,7 +29,7 @@ class PrefixedStreamReader(Thread):
         prefix_filter = 'while read line || [ -n "$line" ]; do echo %s$line; done'
         out_filter = prefix_filter % "OUT-"
         err_filter = prefix_filter % "ERR-"
-        return "{ { { (%s) 2>&3; XC=$?; echo >&4; echo XC--$XC >&4; } | %s >&2; } 3>&1 4>&2 1>&2 | %s; } 2>&1" % (result.strip(), out_filter, err_filter)
+        return "{ { { (%s) 2>&3; echo XC--$? >&4; } | %s >&2; } 3>&1 4>&2 1>&2 | %s; } 2>&1" % (result.strip(), out_filter, err_filter)
         
     def __init__(self, input_stream, output_queue):
         super(PrefixedStreamReader, self).__init__()
