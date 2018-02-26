@@ -26,7 +26,7 @@ class TelnetShell(AbstractConnectedShell):
         self._is_connected = False
         self._buffer = ""
         self.connect()
-        self.detect_available()
+        self._available_commands = None
 
     def do_connect(self):
         self._telnet.open(self._hostname, self._port)
@@ -68,12 +68,14 @@ class TelnetShell(AbstractConnectedShell):
         return IterableShellResult(command, queue, wait, check_err)
 
     def detect_available(self):
-        self._available_commands = []
-        for command in [ "md5", "md5sum", "hexdump", "od" ]:
-            if self.execute_command("which %s" % command).exit_code() == 0:
-                self._available_commands.append(command)
+        if self._available_commands is None:
+            self._available_commands = []
+            for command in [ "md5", "md5sum", "hexdump", "od" ]:
+                if self.execute_command("which %s" % command).exit_code() == 0:
+                    self._available_commands.append(command)
 
     def compute_md5(self, remote_path):
+        self.detect_available()
         if "md5sum" in self._available_commands:
             result = self.execute_command("md5sum '%s'" % remote_path)
             return str(result).split()[0].strip() if result else None
@@ -83,6 +85,7 @@ class TelnetShell(AbstractConnectedShell):
         return None
 
     def hexdump(self, remote_path):
+        self.detect_available()
         if "hexdump" in self._available_commands:
             result = self.execute_command("hexdump -C %s | cut -c 10-60" % remote_path)
             return str(result).replace(" ", "").rstrip("\r\n")
