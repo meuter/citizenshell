@@ -38,14 +38,14 @@ class AdbShell(AbstractConnectedShell):
 
     def push(self, local_path, remote_path):
         self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))
-        self._localshell("adb push '%s' '%s'" % (local_path, remote_path))
+        self._localshell("adb push '%s' '%s'" % (local_path, remote_path), check_err=False)
         self.log_oob("done!")
 
     def pull(self, local_path, remote_path):
         self.log_oob("pulling '%s' <- '%s'..." % (local_path, remote_path))
         result = self.execute_command("ls -la %s" % remote_path)
         permissions = convert_permissions(str(result).split()[0])
-        self._localshell("adb pull '%s' '%s'" % (remote_path, local_path))
+        self._localshell("adb pull '%s' '%s'" % (remote_path, local_path), check_err=False)
         chmod(local_path, permissions)
         self.log_oob("done!")
 
