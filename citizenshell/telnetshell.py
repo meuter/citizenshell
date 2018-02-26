@@ -39,7 +39,7 @@ class TelnetShell(AbstractConnectedShell):
         self._write("export PS1=%s\n" % self._prompt)
         self._write("export COLUMNS=500\n")
         self._read_until("COLUMNS=500")
-        self._read_until(self._prompt)  # second for the actual prompt
+        self._read_until(self._prompt)
 
     def do_disconnect(self):
         self._telnet.close()

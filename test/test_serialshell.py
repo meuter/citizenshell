@@ -9,7 +9,7 @@ class TestSerialShell(AbstractShellTester):
         if "TEST_SERIAL_PORT" not in environ:
             skip("need to define TEST_SERIAL_PORT environment variable")
 
-    def instanciate_new_shell(self, check_xc=False, check_err=False, **kwargs):
+    def get_shell(self, check_xc=False, check_err=False, **kwargs):
         TEST_SERIAL_PORT = environ.get("TEST_SERIAL_PORT")
         TEST_SERIAL_USER = environ.get("TEST_SERIAL_USER", None)
         TEST_SERIAL_PASS = environ.get("TEST_SERIAL_PASS", None)
