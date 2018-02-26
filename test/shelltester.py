@@ -8,7 +8,7 @@ from os import path, stat
 from uuid import uuid4
 from time import time
 
-configure_all_loggers(DEBUG)
+configure_all_loggers(INFO)
 
 class AbstractShellTester:
 
