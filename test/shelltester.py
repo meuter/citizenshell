@@ -296,17 +296,17 @@ class AbstractShellTester:
         assert result.stdout() == [ "bloop" for _ in range(4) ]
 
 
-    # def test_shell_execute_command_no_wait_and_check_err(self):
-    #     shell = self.get_shell()
-    #     collected = []
-    #     with raises(ShellError):
-    #         for (fd, line) in shell("echo line; sleep .1; echo error >&2; sleep .1; echo otherline", wait=False, check_err=True).iter_combined():
-    #             collected.append( (fd, line) )
-    #     shell.wait()
-    #     assert collected == [
-    #         (1, "line"),
-    #         (2, "error")
-    #     ]
+    def test_shell_execute_command_no_wait_and_check_err(self):
+        shell = self.get_shell()
+        collected = []
+        with raises(ShellError):
+            for (fd, line) in shell("echo line; sleep .1; echo error >&2; sleep .1; echo otherline", wait=False, check_err=True).iter_combined():
+                collected.append( (fd, line) )
+        shell.wait()
+        assert collected == [
+            (1, "line"),
+            (2, "error")
+        ]
 
     def test_shell_execute_command_wait_and_check_err(self):
         shell = self.get_shell()

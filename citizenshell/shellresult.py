@@ -15,31 +15,39 @@ class ShellResult():
         if wait: self.wait()
 
     def iter_combined(self):
-        err_detected = None
         if self._finished:
             for entry in self._combined:
                 yield entry
         else:
+            err_detected = None
             out_left, err_left, process_finished = True, True, False
             while out_left or err_left or not process_finished:
                 fd, line = self._queue.get()
+
                 if line is None:
                     if fd == 1: out_left = False
                     if fd == 2: err_left = False
                     if fd == 0: process_finished = True
-                    continue
-                elif fd == 0:
+                    continue                
+                    
+                if fd == 0:
                     self._xc = line
-                elif fd == 1:
+                    continue
+
+                self._combined.append( (fd, line) )
+                yield (fd, line)
+
+                if fd == 1:
                     stdout_logger.info(line)
                 elif fd == 2:                    
                     stderr_logger.error(line)
-                    if self._check_err:
+                    if self._check_err:                        
                         err_detected = ShellError(self.command(), "stderr '%s'" % line)
-                self._combined.append( (fd, line) )
-                yield (fd, line)
+                        if not self._wait:
+                            raise err_detected
+
             self._finished = True
-            if err_detected is not None: raise err_detected
+            if err_detected: raise err_detected
 
     def iter_stdout(self):
         for fd, line in self.iter_combined():
