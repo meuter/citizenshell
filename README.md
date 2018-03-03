@@ -78,12 +78,11 @@ shell = SecureShell(hostname="acme.org", username="john", password="secretpasswo
 assert shell("echo Hello World") == "Hello World"
 ```
 
-you can then do eveything you can do with a `LocalShell`. 
+you can then do eveything you can do with a `LocalShell`.
 
 ### AdbShell
 
 you can instanciate the `AdbShell` for shell over ADB:
-
 
 ```python
 from citizenshell import AdbShell
@@ -97,7 +96,6 @@ you can then do eveything you can do with a `LocalShell`.
 ### SerialShell
 
 you can instanciate the `SerialShell` for shell over serial line:
-
 
 ```python
 from serial import EIGHTBITS, PARITY_NONE
@@ -116,7 +114,7 @@ you can also obtain shell objects by URI using the `Shell` function:
 ```python
 from citizenshell import Shell
 
-localshell = Shell() 
+localshell = Shell()
 telnetshell = Shell("telnet://john:secretpassword@acme.org:1234")
 secureshell = Shell("ssh://john:secretpassword@acme.org:1234")
 adbshell = Shell("adb://myandroiddevice:5555")
@@ -128,9 +126,9 @@ you can mix and match betweens providing arguments in the URI or via kwargs:
 ```python
 from citizenshell import Shell
 
-localshell = Shell() 
+localshell = Shell()
 telnetshell = Shell("telnet://john@acme.org", password="secretpassword", port=1234)
-serialshell = Shell("serial://jogn:secretpassword@/dev/ttyUSB3", baudrate=115200)
+serialshell = Shell("serial://john:secretpassword@/dev/ttyUSB3", baudrate=115200)
 ```
 
 you can then use the shell objects as you would any other.
