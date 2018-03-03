@@ -8,7 +8,7 @@ from os import path, stat
 from uuid import uuid4
 from time import time
 
-configure_all_loggers(level=CRITICAL, spylevel=DEBUG)
+configure_all_loggers(level=INFO, spylevel=DEBUG)
 
 
 class AbstractShellTester:
