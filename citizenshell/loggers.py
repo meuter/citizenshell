@@ -1,5 +1,5 @@
 import sys
-from logging import getLogger, StreamHandler, Formatter, NullHandler, INFO
+from logging import getLogger, StreamHandler, Formatter, NullHandler, INFO, CRITICAL
 
 from termcolor import colored
 
@@ -24,10 +24,11 @@ def configure_logger(logger, stream, level, prefix="", color=None, attrs=["bold"
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-def configure_all_loggers(level=INFO):
+def configure_all_loggers(level=INFO, spylevel=CRITICAL):
     configure_logger(stdin_logger, sys.stdout, level, prefix="$ ", color="cyan")
     configure_logger(stdout_logger, sys.stdout, level, attrs=[])
     configure_logger(stderr_logger, sys.stderr, level, color="red")
     configure_logger(oob_logger, sys.stdout, level, prefix="> ", color="yellow")
-    configure_logger(spy_write_logger, sys.stdout, level, prefix=">>> ", color="magenta")
-    configure_logger(spy_read_logger, sys.stdout, level, prefix=">>> ", color="blue")
+    configure_logger(spy_write_logger, sys.stdout, spylevel, prefix=">>> ", color="magenta")
+    configure_logger(spy_read_logger, sys.stdout, spylevel, prefix="<<< ", color="green")
+
