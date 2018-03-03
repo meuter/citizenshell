@@ -43,11 +43,14 @@ class AbstractShell(dict):
 
         env = dict(self)
         env.update(kwargs)
-        result = self.execute_command(cmd, env, wait, check_err)
+        self._result = self.execute_command(cmd, env, wait, check_err)
 
-        if check_xc and result.exit_code() != 0:
-            raise ShellError(cmd, "exit code '%s'" % str(result.exit_code()))
-        return result
+        if check_xc and self._result.exit_code() != 0:
+            raise ShellError(cmd, "exit code '%s'" % str(self._result.exit_code()))
+        return self._result
+
+    def wait(self):
+        self._result.wait()
 
     def execute_command(self, cmd, env, wait, check_xc):
         raise NotImplementedError("this method must be implemented by the subclass")

@@ -64,6 +64,9 @@ class ShellResult():
     def stderr(self):
         return list(self.iter_stderr())
 
+    def combined(self):
+        return list(self.iter_combined())
+
     def exit_code(self):
         self.wait()
         return self._xc
