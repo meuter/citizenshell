@@ -1,14 +1,15 @@
 from pytest import mark, raises, skip
 from citizenshell import ShellError, configure_all_loggers, AdbShell
 from itertools import product
-from logging import INFO, ERROR, DEBUG
+from logging import INFO, ERROR, DEBUG, CRITICAL
 from backports.tempfile import TemporaryDirectory
 from tempfile import NamedTemporaryFile
 from os import path, stat
 from uuid import uuid4
 from time import time
 
-configure_all_loggers(DEBUG)
+configure_all_loggers(level=CRITICAL, spylevel=DEBUG)
+
 
 class AbstractShellTester:
 

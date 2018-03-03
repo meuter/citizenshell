@@ -1,63 +1,7 @@
 from .loggers import stdin_logger, stdout_logger, stderr_logger
 from .shellerror import ShellError
 
-class ShellResult:
-
-    def __init__(self, cmd, out, err, xc):
-        self._cmd = cmd
-        self._out = self._convert_to_list_of_string(out)
-        self._err = self._convert_to_list_of_string(err)
-        self._xc = xc
-
-    @staticmethod
-    def _convert_to_list_of_string(lines):
-        result = []
-        for line in lines:
-            if isinstance(line, bytes):
-                result.append(line.decode('utf-8'))
-            else:
-                result.append(line)
-        return result
-
-    def __eq__(self, other):
-        if isinstance(other, str):
-            if len(other) == 0:
-                return self.stdout() == ['']
-            return other.splitlines() == self.stdout()
-        return (other.command() == self.command()) and (other.stdout()    == self.stdout()) and \
-               (other.stderr()  == self.stderr())  and (other.exit_code() == self.exit_code())
-
-    def __iter__(self):
-        return iter(self.stdout())
-
-    def wait(self):
-        pass
-
-    def __nonzero__(self):
-        return self.exit_code() == 0
-
-    def __bool__(self):
-        return self.exit_code() == 0
-
-    def __str__(self):
-        return "\n".join(self._out)
-
-    def stdout(self):
-        return self._out
-
-    def stderr(self):
-        return self._err
-
-    def command(self):
-        return self._cmd
-
-    def exit_code(self):
-        return self._xc
-
-    def __repr__(self):
-        return "ShellResult('%s', %s, %s, '%d')" % (self.command(), self.stdout(), self.stderr(), self.exit_code())
-
-class IterableShellResult():
+class ShellResult():
 
     def __init__(self, command, queue, wait, check_err):
         stdin_logger.info(command)

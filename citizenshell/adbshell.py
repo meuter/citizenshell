@@ -1,6 +1,6 @@
 from .abstractconnectedshell import AbstractConnectedShell
 from .streamreader import PrefixedStreamReader
-from .shellresult import IterableShellResult
+from .shellresult import ShellResult
 from .localshell import LocalShell
 from .loggerthread import LoggerThread
 from .queue import Queue
@@ -34,7 +34,7 @@ class AdbShell(AbstractConnectedShell):
         process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
         queue = Queue()
         PrefixedStreamReader(process.stdout, queue)
-        return IterableShellResult(command, queue, wait, check_err)
+        return ShellResult(command, queue, wait, check_err)
 
     def push(self, local_path, remote_path):
         self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))

@@ -1,7 +1,7 @@
 from subprocess import Popen, PIPE
 
 from .abstractshell import AbstractShell
-from .shellresult import IterableShellResult
+from .shellresult import ShellResult
 from .streamreader import StandardStreamReader
 from .queue import Queue
 from threading import Thread
@@ -20,4 +20,4 @@ class LocalShell(AbstractShell):
             queue.put( (0, process.wait()) )
             queue.put( (0, None) )
         Thread(target=post_process_exit_code).start()
-        return IterableShellResult(command, queue, wait, check_err)
+        return ShellResult(command, queue, wait, check_err)

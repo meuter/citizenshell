@@ -1,6 +1,6 @@
 from .abstractconnectedshell import AbstractConnectedShell
 from .streamreader import PrefixedStreamReader
-from .shellresult import IterableShellResult
+from .shellresult import ShellResult
 from .shellerror import ShellError
 from .queue import Queue
 
@@ -12,7 +12,7 @@ class SerialShell(AbstractConnectedShell):
 
     def __init__(self, port, baudrate=115200, bytesize=EIGHTBITS, parity=PARITY_NONE, username=None, password=None, *args, **kwargs):
         super(SerialShell, self).__init__(port, *args, **kwargs)
-        self._prompt = str(uuid4())
+        self._prompt = "PROMPT$" #str(uuid4())
         self._port = port
         self._baudrate = baudrate
         self._bytesize = bytesize
@@ -34,10 +34,12 @@ class SerialShell(AbstractConnectedShell):
             if self._password:
                 self._read_until("Password: ")
                 self._write(self._password + "\n")
-            sleep(.1)
+            
         self._write("export PS1=%s\n" % self._prompt)
+        self._read_until(self._prompt)
+        self._read_until(self._prompt)
+
         self._write("export COLUMNS=500\n")
-        self._read_until("COLUMNS=500")
         self._read_until(self._prompt)
 
     def do_disconnect(self):
@@ -45,7 +47,7 @@ class SerialShell(AbstractConnectedShell):
         self._serial.close()
         
     def _write(self, text):
-        self.log_spy_write(text)
+        self.log_spy_write(text.rstrip("\r\n"))
         self._serial.write(text.encode("utf-8"))
         self._serial.flush()
 
@@ -53,7 +55,7 @@ class SerialShell(AbstractConnectedShell):
         out = ''
         while self._serial.in_waiting:
             out += self._serial.read(self._serial.in_waiting)
-        self.log_spy_read(out)
+        self.log_spy_read(out.rstrip("\r\n"))
         return out
 
     def _read_until(self, marker):
@@ -62,16 +64,17 @@ class SerialShell(AbstractConnectedShell):
             out += self._serial.read(1)
             if out.endswith(marker):
                 break
-        self.log_spy_write(out)
+        self.log_spy_read(out.rstrip("\r\n"))
         return out
 
     def _read_until_2(self, markers):
         out = ''
-        while True:
-            out += self._serial.read(1)
+        finished = False
+        while not finished:
+            out += self._serial.read(1)            
             for i in range(len(markers)):
                 if out.endswith(markers[i]):
-                    self.log_spy_write(out)
+                    self.log_spy_read(out.rstrip("\n\r"))
                     return (i, out)
 
     def readline(self):
@@ -85,7 +88,7 @@ class SerialShell(AbstractConnectedShell):
         self._write(PrefixedStreamReader.wrap_command(command, env) + "\n")
         queue = Queue()
         PrefixedStreamReader(self, queue)
-        return IterableShellResult(command, queue, wait, check_err)
+        return ShellResult(command, queue, wait, check_err)
 
 
 

@@ -6,7 +6,7 @@ from os import chmod
 from re import compile as compile_regex
 
 from .abstractconnectedshell import AbstractConnectedShell
-from .shellresult import IterableShellResult
+from .shellresult import ShellResult
 from .streamreader import PrefixedStreamReader
 from .queue import Queue
 from .utils import convert_permissions
@@ -37,8 +37,10 @@ class TelnetShell(AbstractConnectedShell):
             self._write(self._password + "\n")            
         sleep(.1)
         self._write("export PS1=%s\n" % self._prompt)
+        self._read_until(self._prompt)
+        self._read_until(self._prompt)
+
         self._write("export COLUMNS=500\n")
-        self._read_until("COLUMNS=500")
         self._read_until(self._prompt)
 
     def do_disconnect(self):
@@ -58,14 +60,14 @@ class TelnetShell(AbstractConnectedShell):
         self.log_spy_read(line.decode('utf-8').rstrip("\n\r"))
         if index == 0:
             return line            
-        return None
+        return None         
 
     def execute_command(self, command, env={}, wait=True, check_err=False):    
         wrapped_command = PrefixedStreamReader.wrap_command(command, env)
-        self._write(wrapped_command + "\n")        
+        self._write(wrapped_command + "\n")
         queue = Queue()
         PrefixedStreamReader(self, queue)
-        return IterableShellResult(command, queue, wait, check_err)
+        return ShellResult(command, queue, wait, check_err)
 
     def detect_available(self):
         if self._available_commands is None:
