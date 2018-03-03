@@ -40,7 +40,7 @@ class PrefixedStreamReader(Thread):
     def run(self):
         while True:
             line = self.input_stream.readline()
-            if not line: 
+            if line is None:
                 break
             line = line.decode("utf-8").rstrip("\r\n")
             prefix, line = line[:4], line[4:]
@@ -53,3 +53,4 @@ class PrefixedStreamReader(Thread):
         self.output_queue.put( (1, None) )
         self.output_queue.put( (2, None) )
         self.output_queue.put( (0, None) )
+        

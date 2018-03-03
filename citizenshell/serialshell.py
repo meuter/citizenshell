@@ -58,19 +58,11 @@ class SerialShell(AbstractConnectedShell):
         self.log_spy_read(out.rstrip("\r\n"))
         return out
 
-    def _read_until(self, marker):
+    def _read_until(self, markers):
+        if isinstance(markers, str):
+            markers = [ markers ]
         out = ''
-        while True:
-            out += self._serial.read(1)
-            if out.endswith(marker):
-                break
-        self.log_spy_read(out.rstrip("\r\n"))
-        return out
-
-    def _read_until_2(self, markers):
-        out = ''
-        finished = False
-        while not finished:
+        while True:   
             out += self._serial.read(1)            
             for i in range(len(markers)):
                 if out.endswith(markers[i]):
@@ -78,14 +70,17 @@ class SerialShell(AbstractConnectedShell):
                     return (i, out)
 
     def readline(self):
-        (index, line) = self._read_until_2([ "\n", self._prompt ])
+        (index, line) = self._read_until([ "\n", self._prompt ])
         if index == 0:
-            return line            
+            return line         
         return None
 
-    def execute_command(self, command, env={}, wait=False, check_err=False):
+    def execute_command(self, command, env={}, wait=True, check_err=False):
         self.log_stdin(command)
-        self._write(PrefixedStreamReader.wrap_command(command, env) + "\n")
+        self._write(PrefixedStreamReader.wrap_command(command, env))
+        sleep(.1)
+        self._read_available()
+        self._write("\n")
         queue = Queue()
         PrefixedStreamReader(self, queue)
         return ShellResult(command, queue, wait, check_err)

@@ -28,12 +28,16 @@ class AdbShell(AbstractConnectedShell):
     def disconnect(self):
         self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=True)
             
+    def readline(self):
+        line = self._process.stdout.readline()
+        return line if line else None
+
     def execute_command(self, command, env={}, wait=True, check_err=False):
         formatted_command = PrefixedStreamReader.wrap_command(command, env)
         adb_command = "adb -s %s:%d shell '%s'" % (self._hostname, self._port, formatted_command.replace('\'', '\'"\'"\''))
-        process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
+        self._process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
         queue = Queue()
-        PrefixedStreamReader(process.stdout, queue)
+        PrefixedStreamReader(self, queue)
         return ShellResult(command, queue, wait, check_err)
 
     def push(self, local_path, remote_path):

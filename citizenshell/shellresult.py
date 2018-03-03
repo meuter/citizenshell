@@ -15,6 +15,7 @@ class ShellResult():
         if wait: self.wait()
 
     def iter_combined(self):
+        err_detected = None
         if self._finished:
             for entry in self._combined:
                 yield entry
@@ -34,10 +35,11 @@ class ShellResult():
                 elif fd == 2:                    
                     stderr_logger.error(line)
                     if self._check_err:
-                        raise ShellError(self.command(), "stderr '%s'" % line)
+                        err_detected = ShellError(self.command(), "stderr '%s'" % line)
                 self._combined.append( (fd, line) )
                 yield (fd, line)
             self._finished = True
+            if err_detected is not None: raise err_detected
 
     def iter_stdout(self):
         for fd, line in self.iter_combined():
