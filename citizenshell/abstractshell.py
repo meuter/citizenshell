@@ -6,27 +6,27 @@ class AbstractShell(dict):
 
     @staticmethod
     def log_stdin(line):        
-        stdin_logger.info(line)
+        stdin_logger.info(line.rstrip("\n\r"))
 
     @staticmethod
     def log_stdout(line):
-        stdout_logger.info(line)
+        stdout_logger.info(line.rstrip("\n\r"))
 
     @staticmethod
     def log_stderr(line):
-        stderr_logger.error(line)
+        stderr_logger.error(line.rstrip("\n\r"))
 
     @staticmethod
     def log_oob(line):
-        oob_logger.info(line)
+        oob_logger.info(line.rstrip("\n\r"))
 
     @staticmethod
     def log_spy_read(line):
-        spy_read_logger.debug(line)
+        spy_read_logger.debug(line.rstrip("\n\r"))
 
     @staticmethod
     def log_spy_write(line):
-        spy_write_logger.debug(line)
+        spy_write_logger.debug(line.rstrip("\n\r"))
     
 
     def __init__(self, check_xc=False, check_err=False, wait=True, **kwargs):        
