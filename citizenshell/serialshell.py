@@ -12,7 +12,7 @@ class SerialShell(AbstractConnectedShell):
 
     def __init__(self, port, baudrate=115200, bytesize=EIGHTBITS, parity=PARITY_NONE, username=None, password=None, *args, **kwargs):
         super(SerialShell, self).__init__(port, *args, **kwargs)
-        self._prompt = "PROMPT$" #str(uuid4())
+        self._prompt = str(uuid4())
         self._port = port
         self._baudrate = baudrate
         self._bytesize = bytesize
