@@ -72,6 +72,22 @@ class AbstractShellTester:
         assert result.stderr() == []
         assert result.exit_code() == 15
 
+    def test_shell_result_has_combined_err_and_out(self):
+        shell = self.get_shell()
+        result = shell("echo line; echo error >&2; echo otherline")
+        assert result.stdout() == [ "line", "otherline" ]
+        assert result.stderr() == [ "error" ]
+        assert result.exit_code() == 0
+
+        combined = result.combined()
+        line_hit = combined.index( (1, "line") )
+        error_hit = combined.index( (2, "error") )
+        otherline_hit = combined.index( (1, "otherline") )
+
+        assert line_hit != -1 and otherline_hit != -1
+        assert line_hit < otherline_hit
+        assert error_hit != -1
+
     def test_shell_can_run_command_on_multiple_lines(self):
         shell = self.get_shell()
         result = shell("echo Bar\necho Foo")
@@ -242,6 +258,11 @@ class AbstractShellTester:
         finally:
             shell("rm %s" % remote_path)
 
+    def test_shell_command_with_empty_outputlines(self):
+        shell = self.get_shell()
+        result = shell("echo; echo; echo; echo")
+        assert result.stdout() == ['', '', '', '']
+
     def test_shell_execute_command_no_wait(self):
         shell = self.get_shell()
         collected = []
@@ -274,3 +295,24 @@ class AbstractShellTester:
         assert result.stderr() == []
         assert result.stdout() == [ "bloop" for _ in range(4) ]
 
+
+    def test_shell_execute_command_no_wait_and_check_err(self):
+        shell = self.get_shell()
+        collected = []
+        with raises(ShellError):
+            for (fd, line) in shell("echo line; sleep .1; echo error >&2; sleep .1; echo otherline", wait=False, check_err=True).iter_combined():
+                collected.append( (fd, line) )
+        shell.wait()
+        assert collected == [
+            (1, "line"),
+            (2, "error")
+        ]
+
+    def test_shell_execute_command_wait_and_check_err(self):
+        shell = self.get_shell()
+        collected = []
+        with raises(ShellError):
+            for (fd, line) in shell("echo line; sleep .1; echo error >&2; sleep .1; echo otherline", wait=True, check_err=True).iter_combined():
+                collected.append( (fd, line) )
+
+        assert collected == []
