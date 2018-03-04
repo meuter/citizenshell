@@ -63,28 +63,23 @@ class AbstractShell(dict):
         self._err_logger.setLevel(level)
         self._spy_read_logger.setLevel(spylevel)
         self._spy_write_logger.setLevel(spylevel)
-
-    def _log(self, logger, level, text, transform=str):
-        for line in text.splitlines():            
-            logger.log(level, transform(line))
-
     def log_stdin(self, text):
-        self._log(self._in_logger, INFO, text)
+        self._in_logger.info(text)
 
     def log_stdout(self, text):
-        self._log(self._out_logger, INFO, text)
+        self._out_logger.info(text)
 
     def log_stderr(self, text):
-        self._log(self._err_logger, ERROR, text)
+        self._err_logger.error(text)
 
     def log_oob(self, text):
-        self._log(self._oob_logger, INFO, text)
+        self._oob_logger.info(text)
 
     def log_spy_read(self, text):
-        self._log(self._spy_read_logger, DEBUG, text, transform=repr)
+        self._spy_read_logger.debug(repr(text))
 
     def log_spy_write(self, text):
-        self._log(self._spy_write_logger, DEBUG, text, transform=repr)
+        self._spy_write_logger.debug(repr(text))
 
     def detect_command(self, *alternatives, **kwargs):
         for alternative in alternatives:

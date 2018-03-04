@@ -1,4 +1,7 @@
 from .abstractshell import AbstractShell
+from .utils import convert_permissions
+from hashlib import md5
+from os import chmod
 
 class AbstractRemoteShell(AbstractShell):
 
@@ -32,5 +35,15 @@ class AbstractRemoteShell(AbstractShell):
     def do_disconnect(self):
         raise NotImplementedError("this method should be implemented by subclass")
 
-
+    def pull(self, local_path, remote_path):
+        self.log_oob("pulling '%s' <- '%s'..." % (local_path, remote_path))        
+        result = self.execute_command("ls -la %s" % remote_path)
+        permissions = convert_permissions(str(result).split()[0])
+        remote_md5 = self.md5(remote_path)
+        content = self.hexdump(remote_path).decode('hex')
+        if remote_md5 and (md5(content).hexdigest() != remote_md5):
+            raise RuntimeError("file transfer error")
+        open(local_path, "wb").write(content)
+        chmod(local_path, permissions)
+        self.log_oob("done!")
     

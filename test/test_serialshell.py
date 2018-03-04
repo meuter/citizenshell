@@ -2,7 +2,7 @@ from os import environ
 from pytest import mark, raises, skip
 from citizenshell import SerialShell
 from shelltester import AbstractShellTester
-from logging import INFO, DEBUG
+from logging import INFO, DEBUG, CRITICAL
 
 class TestSerialShell(AbstractShellTester):
 

@@ -217,10 +217,11 @@ class AbstractShellTester:
         assert shell('echo "$FOO"', FOO="foo") == "foo"
 
     def get_test_remote_path(self, shell):
-        if isinstance(shell, AdbShell):
+        if shell("test -d /data/local"):
             return path.join("/data", "local", str(uuid4()))
-        else:
+        if shell("test -d /tmp"):
             return path.join("/tmp", str(uuid4()))
+        assert False, "could not find any suitable path to store temporary test file"
 
     def test_shell_can_pull_file(self):
         shell = self.get_shell()

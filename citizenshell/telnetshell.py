@@ -9,7 +9,6 @@ from .abstractremoteshell import AbstractRemoteShell
 from .shellresult import ShellResult
 from .streamreader import PrefixedStreamReader
 from .queue import Queue
-from .utils import convert_permissions
 
 class TelnetShell(AbstractRemoteShell):
 
@@ -62,18 +61,6 @@ class TelnetShell(AbstractRemoteShell):
         queue = Queue()
         PrefixedStreamReader(self, queue)
         return ShellResult(self, command, queue, wait, check_err)
-
-    def pull(self, local_path, remote_path):
-        self.log_oob("pulling '%s' <- '%s'..." % (local_path, remote_path))        
-        result = self.execute_command("ls -la %s" % remote_path)
-        permissions = convert_permissions(str(result).split()[0])
-        remote_md5 = self.md5(remote_path)
-        content = self.hexdump(remote_path).decode('hex')
-        if remote_md5 and (md5(content).hexdigest() != remote_md5):
-            raise RuntimeError("file transfer error")
-        open(local_path, "wb").write(content)
-        chmod(local_path, permissions)
-        self.log_oob("done!")
         
     def reboot_wait_and_reconnect(self, reboot_delay=40):
         # TODO(cme): add oob logging
