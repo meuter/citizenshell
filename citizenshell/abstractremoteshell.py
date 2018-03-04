@@ -1,6 +1,7 @@
 from .abstractshell import AbstractShell
 from hashlib import md5
 from os import chmod
+from time import sleep
 
 class AbstractRemoteShell(AbstractShell):
 
@@ -20,13 +21,12 @@ class AbstractRemoteShell(AbstractShell):
             self.log_oob("connecting to '%s'..." % self._target)
             self.do_connect()
             self._connected = True
-            self.log_oob("connected!")
 
     def disconnect(self):
         if self._connected:
-            self.log_oob("disconnected from '%s'..." % self._target)
+            self.log_oob("disconnecting from '%s'..." % self._target)
             self.do_disconnect()
-            self.log_oob("disconnected!")
+            self._connected = False
 
     def do_connect(self):
         raise NotImplementedError("this method should be implemented by subclass")
@@ -34,6 +34,8 @@ class AbstractRemoteShell(AbstractShell):
     def do_disconnect(self):
         raise NotImplementedError("this method should be implemented by subclass")
     
+    def do_reboot(self):
+        raise NotImplementedError("this method should be implemented by subclass")
 
     def do_pull(self, local_path, remote_path):
         remote_md5 = self.md5(remote_path)
@@ -66,4 +68,16 @@ class AbstractRemoteShell(AbstractShell):
         local_md5 = local_md5.hexdigest()
         remote_md5 = self.md5(remote_path)
         if remote_md5 and remote_md5 != local_md5:
-            raise RuntimeError("file transfer error")    
+            raise RuntimeError("file transfer error")
+
+    def reboot_wait_and_reconnect(self, reboot_delay=40):
+        self.log_oob("rebooting...")
+        self.do_reboot()
+        self.disconnect()
+        sleep_left=reboot_delay
+        sleep_delta=5
+        while sleep_left > 0:
+            self.log_oob("reconnecting in %d sec..." % (sleep_left))
+            sleep(sleep_delta)
+            sleep_left -= sleep_delta
+        self.connect()

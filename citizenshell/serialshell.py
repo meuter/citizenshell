@@ -92,5 +92,6 @@ class SerialShell(AbstractRemoteShell):
         PrefixedStreamReader(self, queue)
         return ShellResult(self, command, queue, wait, check_err)
 
-
+    def do_reboot(self):
+        self._write("reboot\n")
 

@@ -68,16 +68,5 @@ class TelnetShell(AbstractRemoteShell):
         PrefixedStreamReader(self, queue)
         return ShellResult(self, command, queue, wait, check_err)
         
-    def reboot_wait_and_reconnect(self, reboot_delay=40):
-        # TODO(cme): add oob logging
+    def do_reboot(self):
         self._write("reboot\n")
-        self.log_stdin("reboot")
-        self.disconnect()
-        sleep_left=reboot_delay
-        sleep_delta=5
-        while sleep_left > 0:
-            self.log_oob("reconnecting in %d sec..." % (sleep_left))
-            sleep(sleep_delta)
-            sleep_left -= sleep_delta
-        self.connect()
-

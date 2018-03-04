@@ -49,4 +49,5 @@ class SecureShell(AbstractRemoteShell):
     def do_push(self, local_path, remote_path):
         self._scp_client.put(local_path, remote_path)
 
-
+    def do_reboot(self):
+        self("reboot > /dev/null 2>&1 &")

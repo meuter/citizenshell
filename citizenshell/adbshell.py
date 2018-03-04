@@ -6,6 +6,8 @@ from .loggerthread import LoggerThread
 from .queue import Queue
 from subprocess import Popen, PIPE
 from os import chmod
+from threading import Thread
+from time import sleep
 
 
 class AdbShell(AbstractRemoteShell):
@@ -24,8 +26,8 @@ class AdbShell(AbstractRemoteShell):
             raise RuntimeError(str(result))
         self._connected = True
 
-    def disconnect(self):
-        self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=True)
+    def do_disconnect(self):
+        self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=False)
             
     def readline(self):
         line = self._process.stdout.readline()
@@ -45,4 +47,14 @@ class AdbShell(AbstractRemoteShell):
     def do_pull(self, local_path, remote_path):
         self._localshell("adb pull '%s' '%s'" % (remote_path, local_path), check_err=False)
 
+    def do_reboot(self):
+        def disconnect_after_delay(delay):
+            sleep(delay)
+            self.disconnect()
+        # 'adb reboot' blocks indefinitely, you need to run 'adb disconnect' on the side
+        # to make 'adb reboot' return.        
+        thread = Thread(target=disconnect_after_delay, args=(3,))
+        thread.start()
+        self._localshell("adb reboot")
+        thread.join()
 
