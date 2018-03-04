@@ -79,6 +79,11 @@ class SerialShell(AbstractRemoteShell):
         return None
 
     def execute_command(self, command, env={}, wait=True, check_err=False):
+        # NOTE(cme): need to re-export the prompt because the serial line might be shared 
+        #            bewteen several instance of SerialShell to the same tty    
+        self._write("export PS1='%s'\n" % self._prompt)
+        self._read_until(self._prompt)
+        self._read_until(self._prompt)
         self._write(PrefixedStreamReader.wrap_command(command, env))
         sleep(.1)
         self._read_available()

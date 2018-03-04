@@ -11,12 +11,12 @@ class TestSerialShell(AbstractShellTester):
         if "TEST_SERIAL_PORT" not in environ:
             skip("need to define TEST_SERIAL_PORT environment variable")
 
-    def get_shell(self, *args, **kwargs):
+    def instanciate_new_shell(self, *args, **kwargs):
         TEST_SERIAL_PORT = environ.get("TEST_SERIAL_PORT")
         TEST_SERIAL_USER = environ.get("TEST_SERIAL_USER", None)
         TEST_SERIAL_PASS = environ.get("TEST_SERIAL_PASS", None)
         TEST_SERIAL_BAUDRATE = int(environ.get("TEST_SERIAL_BAUDRATE", "115200"))   
         result = SerialShell(port=TEST_SERIAL_PORT, username=TEST_SERIAL_USER, password=TEST_SERIAL_PASS,
-                             baudrate=TEST_SERIAL_BAUDRATE, log_level=DEBUG, *args, **kwargs)
+                             baudrate=TEST_SERIAL_BAUDRATE, *args, **kwargs)
         return result
 

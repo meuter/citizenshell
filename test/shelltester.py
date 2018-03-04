@@ -25,7 +25,7 @@ class AbstractShellTester:
     def get_shell(self, *args, **kwargs):
         result = self.get_shell_from_cache(args, kwargs)
         if result is None:
-            result = self.add_shell_to_cache(args, kwargs, self.instanciate_new_shell(*args, log_level=DEBUG, **kwargs))
+            result = self.add_shell_to_cache(args, kwargs, self.instanciate_new_shell(*args, log_level=INFO, **kwargs))
         return result
 
     def instanciate_new_shell(self, *args, **kwargs):
