@@ -26,7 +26,6 @@ class TelnetShell(AbstractConnectedShell):
         self._is_connected = False
         self._buffer = ""
         self.connect()
-        self._available_commands = None
 
     def do_connect(self):
         self._telnet.open(self._hostname, self._port)
@@ -59,45 +58,18 @@ class TelnetShell(AbstractConnectedShell):
             return line            
         return None         
 
-    def execute_command(self, command, env={}, wait=True, check_err=False):    
+    def execute_command(self, command, env={}, wait=True, check_err=False):
         wrapped_command = PrefixedStreamReader.wrap_command(command, env)
         self._write(wrapped_command + "\n")
         queue = Queue()
         PrefixedStreamReader(self, queue)
         return ShellResult(self, command, queue, wait, check_err)
 
-    def detect_available(self):
-        if self._available_commands is None:
-            self._available_commands = []
-            for command in [ "md5", "md5sum", "hexdump", "od" ]:
-                if self.execute_command("which %s" % command).exit_code() == 0:
-                    self._available_commands.append(command)
-
-    def compute_md5(self, remote_path):
-        self.detect_available()
-        if "md5sum" in self._available_commands:
-            result = self.execute_command("md5sum '%s'" % remote_path)
-            return str(result).split()[0].strip() if result else None
-        elif "md5" in self._available_commands:
-            result = self.execute_command("md5 '%s'" % remote_path)
-            return str(result).split()[0].strip() if result else None
-        return None
-
-    def hexdump(self, remote_path):
-        self.detect_available()
-        if "hexdump" in self._available_commands:
-            result = self.execute_command("hexdump -C %s | cut -c 10-60" % remote_path)
-            return str(result).replace(" ", "").rstrip("\r\n")
-        elif "od" in self._available_commands:
-            result = self.execute_command("od -t x1 -An %s" % remote_path)
-            return str(result).replace(" ", "").rstrip("\r\n")
-        return None
-        
     def pull(self, local_path, remote_path):
         self.log_oob("pulling '%s' <- '%s'..." % (local_path, remote_path))        
         result = self.execute_command("ls -la %s" % remote_path)
         permissions = convert_permissions(str(result).split()[0])
-        remote_md5 = self.compute_md5(remote_path)
+        remote_md5 = self.md5(remote_path)
         content = self.hexdump(remote_path).decode('hex')
         if remote_md5 and (md5(content).hexdigest() != remote_md5):
             raise RuntimeError("file transfer error")

@@ -19,7 +19,8 @@ class AbstractShell(dict):
         self._err_logger = self._build_logger("%s.err" % str(self), stderr, color="red")
         self._oob_logger = self._build_logger("%s.oob" % str(self), stdout, prefix="> ", color="yellow")
         self._spy_read_logger = self._build_logger("%s.spy.read" % str(self), stdout, prefix="<<< ", color="magenta")
-        self._spy_write_logger = self._build_logger("%s.spy.write" % str(self), stdout, prefix=">>> ", color="green")
+        self._spy_write_logger = self._build_logger("%s.spy.write" % str(self), stdout, prefix=">>> ", color="green")        
+        self._available_commands = {}
 
     def id(self):
         return self._id
@@ -43,7 +44,7 @@ class AbstractShell(dict):
     def wait(self):
         self._result.wait()
 
-    def execute_command(self, cmd, env, wait, check_xc):
+    def execute_command(self, command, env={}, wait=True, check_err=False):
         raise NotImplementedError("this method must be implemented by the subclass")
 
     @staticmethod
@@ -55,7 +56,6 @@ class AbstractShell(dict):
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         return logger
-
 
     def configure_loggers(self, level=INFO, spylevel=CRITICAL):
         self._in_logger.setLevel(level)
@@ -85,4 +85,33 @@ class AbstractShell(dict):
 
     def log_spy_write(self, text):
         self._log(self._spy_write_logger, DEBUG, text, transform=repr)
-    
+
+    def detect_command(self, *alternatives, **kwargs):
+        for alternative in alternatives:
+            if self.execute_command("which %s" % alternative):
+                return alternative
+        if kwargs.get("mandatory", True):
+            raise RuntimeError("could find command '%s', tried any of the the following: %s" % (alternatives[0], alternatives))
+        return None
+        
+    def get_command(self, *alternatives, **kwargs):
+        command = alternatives[0]
+        if command not in self._available_commands:
+            detected = self.detect_command(*alternatives, **kwargs)
+            self._available_commands[command] = detected
+            return detected
+        return self._available_commands[command]
+
+    def md5(self, path, mandatory=False):
+        command = self.get_command("md5sum", "md5", mandatory=mandatory)
+        result = self.execute_command("%s '%s'" % (command, path))
+        return str(result).split()[0].strip() if result else None
+
+    def hexdump(self, path, mandatory=True):
+        command = self.get_command("hexdump", "od", mandatory=mandatory)
+        if command == "hexdump":
+            result = self.execute_command("hexdump -C %s | cut -c 10-60" % path)
+        elif command == "od":
+            result = self.execute_command("od -t x1 -An %s" % path)
+        return str(result).replace(" ", "").rstrip("\r\n")
+        
