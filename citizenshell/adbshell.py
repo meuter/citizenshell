@@ -2,7 +2,6 @@ from .abstractremoteshell import AbstractRemoteShell
 from .streamreader import PrefixedStreamReader
 from .shellresult import ShellResult
 from .localshell import LocalShell
-from .loggerthread import LoggerThread
 from .queue import Queue
 from subprocess import Popen, PIPE
 from os import chmod
