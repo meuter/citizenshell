@@ -253,7 +253,7 @@ class AbstractShellTester:
         remote_path = self.get_test_remote_path(shell)
         assert not shell("cat %s" % remote_path)
         with NamedTemporaryFile() as temp_file:
-            temp_file.write(content)
+            temp_file.write(content.encode('utf-8'))
             temp_file.flush()
             chmod(temp_file.name, 0o777)
             shell.push(temp_file.name, remote_path)
