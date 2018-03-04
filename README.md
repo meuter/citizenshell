@@ -153,3 +153,19 @@ try:
 except ShellError as e:
     assert True, "will be reached"
 ```
+
+you can pull file from the remote host (for `LocalShell` it's just doing a copy):
+
+```python
+shell("echo -n test > remote_file.txt")
+shell.pull("local_file.txt", "remote_file.txt")
+assert open("local_file.txt", "r").read() == "test"
+```
+
+or push file to the remote host (again, for `LocalShell` it's just doing a copy):
+
+```python
+open("local_file.txt", "w").write("test")
+shell.push("local_file.txt", "remote_file.txt")
+assert str(shell("cat remote_file.txt")) == "test"
+```
