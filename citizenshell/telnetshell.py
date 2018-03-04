@@ -16,8 +16,6 @@ class TelnetShell(AbstractRemoteShell):
     def __init__(self, hostname, username, password=None, port=23, *args, **kwargs):
         super(TelnetShell, self).__init__(hostname, *args, **kwargs)
         self._prompt = self._id
-        self._prompt_re = compile_regex(self._prompt)
-        self._endl_re = compile_regex("\n")
         self._hostname = hostname
         self._username = username
         self._password = password
@@ -52,7 +50,7 @@ class TelnetShell(AbstractRemoteShell):
         return out
 
     def readline(self):
-        (index, _, line) = self._telnet.expect([self._endl_re, self._prompt_re])
+        (index, _, line) = self._telnet.expect([ "\n", self._prompt])
         self.log_spy_read(line.decode('utf-8').rstrip("\n\r"))
         if index == 0:
             return line            
