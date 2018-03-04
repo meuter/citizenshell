@@ -1,7 +1,7 @@
 from paramiko import SSHClient, AutoAddPolicy
 
 from .abstractshell import AbstractShell
-from .abstractconnectedshell import AbstractConnectedShell
+from .abstractremoteshell import AbstractRemoteShell
 from .shellresult import ShellResult
 from .queue import Queue
 from .streamreader import StandardStreamReader
@@ -9,7 +9,7 @@ from threading import Thread
 from scp import SCPClient
 
 
-class SecureShell(AbstractConnectedShell):
+class SecureShell(AbstractRemoteShell):
 
     def __init__(self, hostname, username, password=None, port=22, **kwargs):        
         super(SecureShell, self).__init__(hostname, **kwargs)

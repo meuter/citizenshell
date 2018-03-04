@@ -5,13 +5,13 @@ from hashlib import md5
 from os import chmod
 from re import compile as compile_regex
 
-from .abstractconnectedshell import AbstractConnectedShell
+from .abstractremoteshell import AbstractRemoteShell
 from .shellresult import ShellResult
 from .streamreader import PrefixedStreamReader
 from .queue import Queue
 from .utils import convert_permissions
 
-class TelnetShell(AbstractConnectedShell):
+class TelnetShell(AbstractRemoteShell):
 
     def __init__(self, hostname, username, password=None, port=23, *args, **kwargs):
         super(TelnetShell, self).__init__(hostname, *args, **kwargs)

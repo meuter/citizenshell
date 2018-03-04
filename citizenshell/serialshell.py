@@ -1,4 +1,4 @@
-from .abstractconnectedshell import AbstractConnectedShell
+from .abstractremoteshell import AbstractRemoteShell
 from .streamreader import PrefixedStreamReader
 from .shellresult import ShellResult
 from .shellerror import ShellError
@@ -8,7 +8,7 @@ from time import sleep
 from serial import serial_for_url, EIGHTBITS, PARITY_NONE
 from uuid import uuid4
 
-class SerialShell(AbstractConnectedShell):
+class SerialShell(AbstractRemoteShell):
 
     def __init__(self, port, baudrate=115200, bytesize=EIGHTBITS, parity=PARITY_NONE, username=None, password=None, *args, **kwargs):
         super(SerialShell, self).__init__(port, *args, **kwargs)

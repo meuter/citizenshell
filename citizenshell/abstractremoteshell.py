@@ -1,10 +1,10 @@
 from .abstractshell import AbstractShell
 
-class AbstractConnectedShell(AbstractShell):
+class AbstractRemoteShell(AbstractShell):
 
     def __init__(self, target, *args, **kwargs):
         self._target = target
-        super(AbstractConnectedShell, self).__init__(*args, **kwargs)
+        super(AbstractRemoteShell, self).__init__(*args, **kwargs)
         self._connected = False
 
     def __repr__(self):

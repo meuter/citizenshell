@@ -1,4 +1,4 @@
-from .abstractconnectedshell import AbstractConnectedShell
+from .abstractremoteshell import AbstractRemoteShell
 from .streamreader import PrefixedStreamReader
 from .shellresult import ShellResult
 from .localshell import LocalShell
@@ -9,7 +9,7 @@ from subprocess import Popen, PIPE
 from os import chmod
 
 
-class AdbShell(AbstractConnectedShell):
+class AdbShell(AbstractRemoteShell):
 
     def __init__(self, hostname, port=5555, *args, **kwargs):
         super(AdbShell, self).__init__(hostname, *args, **kwargs)
