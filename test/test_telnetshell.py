@@ -16,4 +16,4 @@ class TestTelnetShell(AbstractShellTester):
         username = environ.get("TEST_TELNET_USER")
         password = environ.get("TEST_TELNET_PASS", None)
         port = int(environ.get("TEST_TELNET_PORT", 23))
-        return TelnetShell(hostname, username=username, password=password, port=port, *args, **kwargs)        
+        return TelnetShell(hostname, username=username, password=password, port=port, *args, **kwargs)

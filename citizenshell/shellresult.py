@@ -1,10 +1,9 @@
-from .loggers import stdin_logger, stdout_logger, stderr_logger
 from .shellerror import ShellError
 
 class ShellResult():
 
-    def __init__(self, command, queue, wait, check_err):
-        stdin_logger.info(command)
+    def __init__(self, shell, command, queue, wait, check_err):
+        self._shell = shell
         self._command = command
         self._queue = queue
         self._combined = []
@@ -12,6 +11,7 @@ class ShellResult():
         self._finished = False
         self._wait = wait
         self._check_err = check_err
+        self._shell.log_stdin(command)
         if wait: self.wait()
 
     def iter_combined(self):
@@ -38,9 +38,9 @@ class ShellResult():
                 yield (fd, line)
 
                 if fd == 1:
-                    stdout_logger.info(line)
+                    self._shell.log_stdout(line)
                 elif fd == 2:                    
-                    stderr_logger.error(line)
+                    self._shell.log_stderr(line)
                     if self._check_err:                        
                         err_detected = ShellError(self.command(), "stderr '%s'" % line)
                         if not self._wait:
@@ -103,5 +103,5 @@ class ShellResult():
         return self.exit_code() == 0
 
     def __repr__(self):
-        return "%s('%s', %s, %s, %s)" % (self.__class__, self.command(), self.stdout(), self.stderr(), str(self.exit_code()))
+        return "%s(%s, '%s', %s, %s, %s)" % (self.__class__.__name__, str(self._shell), self.command(), self.stdout(), self.stderr(), str(self.exit_code()))
 

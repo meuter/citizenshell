@@ -1,5 +1,5 @@
 from pytest import mark, raises, skip
-from citizenshell import ShellError, configure_all_loggers, AdbShell
+from citizenshell import ShellError, AdbShell
 from itertools import product
 from logging import INFO, ERROR, DEBUG, CRITICAL
 from backports.tempfile import TemporaryDirectory
@@ -7,9 +7,6 @@ from tempfile import NamedTemporaryFile
 from os import path, stat
 from uuid import uuid4
 from time import time
-
-configure_all_loggers(level=INFO, spylevel=DEBUG)
-
 
 class AbstractShellTester:
 
@@ -28,6 +25,7 @@ class AbstractShellTester:
         result = self.get_shell_from_cache(args, kwargs)
         if result is None:
             result = self.add_shell_to_cache(args, kwargs, self.instanciate_new_shell(*args, **kwargs))
+        result.configure_loggers(level=INFO, spylevel=DEBUG)
         return result
 
     def instanciate_new_shell(self, *args, **kwargs):
@@ -197,14 +195,16 @@ class AbstractShellTester:
 
     def test_shell_logs(self, caplog):
         cmd = ">&2 echo error && echo output && exit 13"
-        caplog.set_level(INFO, logger="citizenshell.in")
-        caplog.set_level(INFO, logger="citizenshell.out")
-        caplog.set_level(INFO, logger="citizenshell.err")
         shell = self.get_shell()
+        base_logger = str(shell)
+        caplog.set_level(INFO, logger="%s.in" % base_logger)
+        caplog.set_level(INFO, logger="%s.out" % base_logger)
+        caplog.set_level(INFO, logger="%s.err" % base_logger)
+
         shell(cmd)
-        in_index = caplog.record_tuples.index(('citizenshell.in', INFO, cmd))
-        out_index = caplog.record_tuples.index(('citizenshell.err', ERROR, u"error"))
-        err_index = caplog.record_tuples.index(('citizenshell.out', INFO, u"output"))
+        in_index  = caplog.record_tuples.index(('%s.in'  % base_logger, INFO, cmd))
+        out_index = caplog.record_tuples.index(('%s.err' % base_logger, ERROR, u"error"))
+        err_index = caplog.record_tuples.index(('%s.out' % base_logger, INFO, u"output"))
         assert in_index < out_index
         assert in_index < err_index
 

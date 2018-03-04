@@ -41,7 +41,7 @@ class SecureShell(AbstractConnectedShell):
             queue.put( (0, chan.recv_exit_status()) )
             queue.put( (0, None) )
         Thread(target=post_process_exit_code).start()
-        return ShellResult(command, queue, wait, check_err)
+        return ShellResult(self, command, queue, wait, check_err)
 
     def pull(self, local_path, remote_path):
         self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))

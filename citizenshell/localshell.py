@@ -20,4 +20,4 @@ class LocalShell(AbstractShell):
             queue.put( (0, process.wait()) )
             queue.put( (0, None) )
         Thread(target=post_process_exit_code).start()
-        return ShellResult(command, queue, wait, check_err)
+        return ShellResult(self, command, queue, wait, check_err)

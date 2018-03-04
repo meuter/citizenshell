@@ -15,7 +15,7 @@ class TelnetShell(AbstractConnectedShell):
 
     def __init__(self, hostname, username, password=None, port=23, *args, **kwargs):
         super(TelnetShell, self).__init__(hostname, *args, **kwargs)
-        self._prompt = str(uuid4())
+        self._prompt = self._id
         self._prompt_re = compile_regex(self._prompt)
         self._endl_re = compile_regex("\n")
         self._hostname = hostname
@@ -38,9 +38,6 @@ class TelnetShell(AbstractConnectedShell):
         sleep(.1)
         self._write("export PS1=%s\n" % self._prompt)
         self._read_until(self._prompt)
-        self._read_until(self._prompt)
-
-        self._write("export COLUMNS=500\n")
         self._read_until(self._prompt)
 
     def do_disconnect(self):
@@ -67,7 +64,7 @@ class TelnetShell(AbstractConnectedShell):
         self._write(wrapped_command + "\n")
         queue = Queue()
         PrefixedStreamReader(self, queue)
-        return ShellResult(command, queue, wait, check_err)
+        return ShellResult(self, command, queue, wait, check_err)
 
     def detect_available(self):
         if self._available_commands is None:

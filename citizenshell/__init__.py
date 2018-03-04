@@ -7,7 +7,6 @@ from .adbshell import AdbShell
 from .serialshell import SerialShell
 from .shell import Shell
 from .parseduri import ParsedUri
-from .loggers import configure_all_loggers
 
 sh = Shell()
 

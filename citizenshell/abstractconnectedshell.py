@@ -3,9 +3,12 @@ from .abstractshell import AbstractShell
 class AbstractConnectedShell(AbstractShell):
 
     def __init__(self, target, *args, **kwargs):
+        self._target = target
         super(AbstractConnectedShell, self).__init__(*args, **kwargs)
         self._connected = False
-        self._target = target
+
+    def __repr__(self):
+        return "%s(id=%s,target=%s)" % (self.__class__.__name__, repr(self._id), repr(self._target))
 
     def is_connected(self):
         return self._connected

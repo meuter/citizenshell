@@ -12,7 +12,7 @@ class SerialShell(AbstractConnectedShell):
 
     def __init__(self, port, baudrate=115200, bytesize=EIGHTBITS, parity=PARITY_NONE, username=None, password=None, *args, **kwargs):
         super(SerialShell, self).__init__(port, *args, **kwargs)
-        self._prompt = str(uuid4())
+        self._prompt = self.id()
         self._port = port
         self._baudrate = baudrate
         self._bytesize = bytesize
@@ -35,11 +35,8 @@ class SerialShell(AbstractConnectedShell):
                 self._read_until("Password: ")
                 self._write(self._password + "\n")
             
-        self._write("export PS1=%s\n" % self._prompt)
+        self._write("export PS1='%s'\n" % self._prompt)
         self._read_until(self._prompt)
-        self._read_until(self._prompt)
-
-        self._write("export COLUMNS=500\n")
         self._read_until(self._prompt)
 
     def do_disconnect(self):
@@ -76,14 +73,13 @@ class SerialShell(AbstractConnectedShell):
         return None
 
     def execute_command(self, command, env={}, wait=True, check_err=False):
-        self.log_stdin(command)
         self._write(PrefixedStreamReader.wrap_command(command, env))
         sleep(.1)
         self._read_available()
         self._write("\n")
         queue = Queue()
         PrefixedStreamReader(self, queue)
-        return ShellResult(command, queue, wait, check_err)
+        return ShellResult(self, command, queue, wait, check_err)
 
 
 
