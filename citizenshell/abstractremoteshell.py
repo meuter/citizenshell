@@ -1,5 +1,4 @@
 from .abstractshell import AbstractShell
-from .utils import convert_permissions
 from hashlib import md5
 from os import chmod
 
@@ -34,16 +33,37 @@ class AbstractRemoteShell(AbstractShell):
 
     def do_disconnect(self):
         raise NotImplementedError("this method should be implemented by subclass")
+    
 
-    def pull(self, local_path, remote_path):
-        self.log_oob("pulling '%s' <- '%s'..." % (local_path, remote_path))        
-        result = self.execute_command("ls -la %s" % remote_path)
-        permissions = convert_permissions(str(result).split()[0])
+    def do_pull(self, local_path, remote_path):
         remote_md5 = self.md5(remote_path)
         content = self.hexdump(remote_path).decode('hex')
         if remote_md5 and (md5(content).hexdigest() != remote_md5):
             raise RuntimeError("file transfer error")
         open(local_path, "wb").write(content)
-        chmod(local_path, permissions)
-        self.log_oob("done!")
-    
+
+    def do_push(self, local_path, remote_path):
+
+        def read_by_chunk(path, chunk_size=512):
+            file_object = open(path, "rb")
+            while True:
+                chunk = file_object.read(chunk_size)
+                if not chunk: 
+                    break
+                yield chunk
+
+        def backslash_xify(chunk):
+            result = ""
+            while chunk:
+                result += r"\\x" + chunk[0].encode('hex')
+                chunk = chunk[1:]
+            return result
+        
+        local_md5 = md5()
+        for chunk in read_by_chunk(local_path):
+            local_md5.update(chunk)
+            self("echo -n -e %s >> %s\n" % (backslash_xify(chunk), remote_path))
+        local_md5 = local_md5.hexdigest()
+        remote_md5 = self.md5(remote_path)
+        if remote_md5 and remote_md5 != local_md5:
+            raise RuntimeError("file transfer error")    

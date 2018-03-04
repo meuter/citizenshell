@@ -43,14 +43,10 @@ class SecureShell(AbstractRemoteShell):
         Thread(target=post_process_exit_code).start()
         return ShellResult(self, command, queue, wait, check_err)
 
-    def pull(self, local_path, remote_path):
-        self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))
+    def do_pull(self, local_path, remote_path):
         self._scp_client.get(remote_path, local_path)
-        self.log_oob("done!")
 
-    def push(self, local_path, remote_path):
-        self.log_oob("pushing '%s' -> '%s'..." % (local_path, remote_path))
+    def do_push(self, local_path, remote_path):
         self._scp_client.put(local_path, remote_path)
-        self.log_oob("done!")
 
 

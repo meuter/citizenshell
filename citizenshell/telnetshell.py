@@ -32,9 +32,15 @@ class TelnetShell(AbstractRemoteShell):
             self._read_until("Password: ")
             self._write(self._password + "\n")            
         sleep(.1)
-        self._write("export PS1=%s\n" % self._prompt)
+
+        self._write("export PS1='%s'\n" % self._prompt)
         self._read_until(self._prompt)
         self._read_until(self._prompt)
+        self._write("export COLUMNS=1024\n")
+        self._read_until(self._prompt)
+        self._write("stty columns 1027\n")
+        self._read_until(self._prompt)
+
 
     def do_disconnect(self):
         self._telnet.close()
@@ -74,5 +80,4 @@ class TelnetShell(AbstractRemoteShell):
             sleep(sleep_delta)
             sleep_left -= sleep_delta
         self.connect()
-
 

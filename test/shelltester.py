@@ -1,5 +1,5 @@
 from pytest import mark, raises, skip
-from citizenshell import ShellError, AdbShell
+from citizenshell import ShellError, AdbShell, sh
 from itertools import product
 from logging import INFO, ERROR, DEBUG, CRITICAL
 from backports.tempfile import TemporaryDirectory
@@ -7,6 +7,7 @@ from tempfile import NamedTemporaryFile
 from os import path, stat
 from uuid import uuid4
 from time import time
+from os import chmod
 
 class AbstractShellTester:
 
@@ -24,8 +25,7 @@ class AbstractShellTester:
     def get_shell(self, *args, **kwargs):
         result = self.get_shell_from_cache(args, kwargs)
         if result is None:
-            result = self.add_shell_to_cache(args, kwargs, self.instanciate_new_shell(*args, **kwargs))
-        result.configure_loggers(level=INFO, spylevel=DEBUG)
+            result = self.add_shell_to_cache(args, kwargs, self.instanciate_new_shell(*args, log_level=DEBUG, **kwargs))
         return result
 
     def instanciate_new_shell(self, *args, **kwargs):
@@ -171,6 +171,11 @@ class AbstractShellTester:
         shell = self.get_shell(GREET="Hello")
         assert shell("echo $GREET $WHO", WHO="Citizen") == "Hello Citizen"
 
+    def test_readme_example_3_one_line(self):
+        shell = self.get_shell()
+        result = [int(x) for x in shell("for i in 1 2 3 4; do echo $i; done")]
+        assert result == [1, 2, 3, 4]
+
     def test_readme_example_3(self):
         shell = self.get_shell()
         result = [int(x) for x in shell("""
@@ -217,45 +222,44 @@ class AbstractShellTester:
         assert shell('echo "$FOO"', FOO="foo") == "foo"
 
     def get_test_remote_path(self, shell):
+        filename = "test_file_"+uuid4().hex[:16].upper()
         if shell("test -d /data/local"):
-            return path.join("/data", "local", str(uuid4()))
+            return path.join("/data", "local", filename)
         if shell("test -d /tmp"):
-            return path.join("/tmp", str(uuid4()))
+            return path.join("/tmp", filename)
         assert False, "could not find any suitable path to store temporary test file"
 
     def test_shell_can_pull_file(self):
         shell = self.get_shell()
-        if not hasattr(shell, "pull"):
-            skip("Shell '%s' does not have a push method" % shell.__class__.__name__)
         remote_path = self.get_test_remote_path(shell)
         content = "this is a file\n"
         assert not shell("cat %s" % remote_path)
         assert shell("echo -n '%s' >> %s" % (content, remote_path))
         assert shell("chmod 777 %s" % remote_path)
-        assert str(shell("ls -la %s" % remote_path)).split()[0] == "-rwxrwxrwx"
+        assert shell.get_permissions(remote_path) == 0o777
 
         try:
             with TemporaryDirectory() as sandbox:
                 local_path = path.join(sandbox, path.split(remote_path)[-1])
                 shell.pull(local_path, remote_path)
                 assert open(local_path, "r").read() == content
-                assert "%o" % (stat(local_path).st_mode & 0o777) == "777"
+                assert (stat(local_path).st_mode & 0o777) == 0o777
         finally:
             shell("rm %s" % remote_path)
 
     def test_shell_can_push_file(self):
         shell = self.get_shell()
-        if not hasattr(shell, "push"):
-            skip("Shell '%s' does not have a push method" % shell.__class__.__name__)
         content = "this is a file\n"
         remote_path = self.get_test_remote_path(shell)
         assert not shell("cat %s" % remote_path)
         with NamedTemporaryFile() as temp_file:
             temp_file.write(content)
             temp_file.flush()
+            chmod(temp_file.name, 0o777)
             shell.push(temp_file.name, remote_path)
         try:
             assert shell("cat %s" % remote_path) == content
+            assert shell.get_permissions(remote_path) == 0o777
         finally:
             shell("rm %s" % remote_path)
 

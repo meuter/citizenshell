@@ -7,6 +7,7 @@ from .queue import Queue
 from time import sleep
 from serial import serial_for_url, EIGHTBITS, PARITY_NONE
 from uuid import uuid4
+from logging import CRITICAL
 
 class SerialShell(AbstractRemoteShell):
 
@@ -18,7 +19,7 @@ class SerialShell(AbstractRemoteShell):
         self._bytesize = bytesize
         self._parity = parity
         self._username = username
-        self._password = password        
+        self._password = password
         self.connect()
 
     def do_connect(self):
@@ -39,12 +40,17 @@ class SerialShell(AbstractRemoteShell):
         self._read_until(self._prompt)
         self._read_until(self._prompt)
 
+        self._write("export COLUMNS=1024\n")
+        self._read_until(self._prompt)
+        self._write("stty columns 1024\n")
+        self._read_until(self._prompt)
+
     def do_disconnect(self):
         self._write("exit\n")
         self._serial.close()
         
     def _write(self, text):
-        self.log_spy_write(text.rstrip("\r\n"))
+        self.log_spy_write(text)
         self._serial.write(text.encode("utf-8"))
         self._serial.flush()
 
@@ -52,18 +58,18 @@ class SerialShell(AbstractRemoteShell):
         out = ''
         while self._serial.in_waiting:
             out += self._serial.read(self._serial.in_waiting)
-        self.log_spy_read(out.rstrip("\r\n"))
+        self.log_spy_read(out)
         return out
 
     def _read_until(self, markers):
         if isinstance(markers, str):
             markers = [ markers ]
         out = ''
-        while True:   
-            out += self._serial.read(1)            
+        while True:            
+            out += self._serial.read(1)
             for i in range(len(markers)):
                 if out.endswith(markers[i]):
-                    self.log_spy_read(out.rstrip("\n\r"))
+                    self.log_spy_read(out)
                     return (i, out)
 
     def readline(self):

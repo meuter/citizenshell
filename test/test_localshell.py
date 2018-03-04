@@ -3,6 +3,7 @@ from time import time
 
 from citizenshell import LocalShell, ShellError, sh
 from shelltester import AbstractShellTester
+
 class TestLocalShell(AbstractShellTester):
     
     def instanciate_new_shell(self, **kwargs):
