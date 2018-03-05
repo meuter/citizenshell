@@ -87,7 +87,7 @@ class AbstractShell(dict):
 
     def detect_command(self, *alternatives, **kwargs):
         for alternative in alternatives:
-            if self.execute_command("which %s" % alternative):
+            if self.execute_command("command -v %s" % alternative):
                 return alternative
         if kwargs.get("mandatory", True):
             raise RuntimeError("could find command '%s', tried any of the the following: %s" % (alternatives[0], alternatives))
