@@ -146,7 +146,7 @@ except ShellError as e:
 the shell can also raise an exception if something is printed on the standard error:
 
 ```python
-shell("echo DANGER >&2").stderr() == "DANGER" # will not raise any exception
+shell("echo DANGER >&2").stderr() == ["DANGER"] # will not raise any exception
 try:
     shell("echo DANGER >&2", check_err=True) # will raise an exception
     assert False, "will not be reached"
