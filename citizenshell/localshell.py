@@ -6,12 +6,13 @@ from .streamreader import StandardStreamReader
 from .queue import Queue
 from threading import Thread
 from shutil import copyfile
-from os import chmod, stat
+from os import chmod, stat, environ
 
 class LocalShell(AbstractShell):
 
     def __init__(self, *args, **kwargs):
         AbstractShell.__init__(self, *args, **kwargs)
+        self.update(environ)
         
     def execute_command(self, command, env={}, wait=True, check_err=False):
         process = Popen(command, env=env, shell=True, stdout=PIPE, stderr=PIPE)
