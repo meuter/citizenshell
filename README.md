@@ -134,6 +134,29 @@ You can inject environment variable to the shell
 assert shell("echo $VAR", VAR="bar") == "bar"
 ```
 
+By default, shell inherits "$CWD" from the environment (aka $PWD).
+
+Still, if ever a command needs to be run from a custom path, one
+way to achieve this is:
+
+```python
+    shell = LocalShell()
+    os.chdir(first_custom_path)
+    shell('first_command')
+    os.chdir(second_custom_path)
+    shell('second_command')
+```
+
+This works ... but it is ugly! Two levels of abstraction are mixed.
+
+This is better:
+
+```python
+    shell = LocalShell()
+    shell('first_command', cwd=first_custom_path)
+    shell('second_command', cwd=second_custom_path)
+```
+
 The shell can raise an exception if the exit code is non-zero:
 
 ```python

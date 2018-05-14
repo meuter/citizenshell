@@ -14,8 +14,9 @@ class LocalShell(AbstractShell):
         AbstractShell.__init__(self, *args, **kwargs)
         self.update(environ)
         
-    def execute_command(self, command, env={}, wait=True, check_err=False):
-        process = Popen(command, env=env, shell=True, stdout=PIPE, stderr=PIPE)
+    def execute_command(self, command, env={}, wait=True, check_err=False, cwd=None):
+        process = Popen(command, env=env, shell=True, stdout=PIPE, stderr=PIPE, cwd=cwd)
+        print 'cwd = ', cwd
         queue = Queue()
         StandardStreamReader(process.stdout, 1, queue)
         StandardStreamReader(process.stderr, 2, queue)
