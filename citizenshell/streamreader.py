@@ -22,10 +22,12 @@ class StandardStreamReader(Thread):
 class PrefixedStreamReader(Thread):
 
     @staticmethod
-    def wrap_command(command, environment):
+    def wrap_command(command, environment, cwd=None):
         result = command
         for var, val in environment.items():
             result = "%s=%s; " % (var, val) + result
+        if cwd:
+            result = ("cd \"%s\"; " % cwd) + result
         prefix_filter = 'while read line || [ -n "$line" ]; do echo %s$line; done'
         out_filter = prefix_filter % "OUT-"
         err_filter = prefix_filter % "ERR-"

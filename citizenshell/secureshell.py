@@ -33,7 +33,7 @@ class SecureShell(AbstractRemoteShell):
         for var, val in env.items():
             command = "%s=%s; " % (var, val) + command
         chan = self._client.get_transport().open_session()
-        chan.exec_command( (("cd %s &&" % cwd) if cwd else "") + command)
+        chan.exec_command( (("cd \"%s\"; " % cwd) if cwd else "") + command)
         queue = Queue()
         StandardStreamReader(chan.makefile("r"), 1, queue)
         StandardStreamReader(chan.makefile_stderr("r"), 2, queue)

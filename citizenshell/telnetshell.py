@@ -61,8 +61,8 @@ class TelnetShell(AbstractRemoteShell):
             return line            
         return None         
 
-    def execute_command(self, command, env={}, wait=True, check_err=False):
-        wrapped_command = PrefixedStreamReader.wrap_command(command, env)
+    def execute_command(self, command, env={}, wait=True, check_err=False, cwd=None):
+        wrapped_command = PrefixedStreamReader.wrap_command(command, env, cwd)
         self._write(wrapped_command + "\n")
         queue = Queue()
         PrefixedStreamReader(self, queue)
