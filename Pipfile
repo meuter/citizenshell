@@ -1,12 +1,9 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [dev-packages]
-
 pytest = "*"
 pytest-sugar = "*"
 pytest-watch = "*"
@@ -17,16 +14,13 @@ wheel = "*"
 twine = "*"
 "backports.tempfile" = "*"
 
-
 [packages]
-
 paramiko = "*"
 termcolor = "*"
 uritools = "*"
 pyserial = "*"
 scp = "*"
-
+pytest = "*"
 
 [requires]
-
 python_version = "2.7"
