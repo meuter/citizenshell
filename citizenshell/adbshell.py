@@ -32,8 +32,8 @@ class AdbShell(AbstractRemoteShell):
         line = self._process.stdout.readline()
         return line if line else None
 
-    def execute_command(self, command, env={}, wait=True, check_err=False):
-        formatted_command = PrefixedStreamReader.wrap_command(command, env)
+    def execute_command(self, command, env={}, wait=True, check_err=False, cwd=None):
+        formatted_command = PrefixedStreamReader.wrap_command(command, env, cwd)
         adb_command = "adb -s %s:%d shell '%s'" % (self._hostname, self._port, formatted_command.replace('\'', '\'"\'"\''))
         self._process = Popen(adb_command, env=None, shell=True, stdout=PIPE, stderr=PIPE)
         queue = Queue()
