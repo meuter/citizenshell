@@ -321,3 +321,10 @@ class AbstractShellTester:
                 collected.append( (fd, line) )
 
         assert collected == []
+
+    def test_shell_command_is_executed_in_cwd(self):
+        shell = self.get_shell()
+        cwd = shell("pwd").stdout()[0]
+        assert cwd is not None
+        up = shell("pwd", cwd=path.dirname(cwd)).stdout()[0]
+        assert up == path.dirname(cwd)

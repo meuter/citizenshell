@@ -90,7 +90,7 @@ Once you have shell, any shell, you can call it directly and get the standart ou
 assert shell("echo Hello World") == "Hello World"
 ```
 
-or you can also iterate over the standard output:
+You can also iterate over the standard output:
 
 ```python
 result = [int(x) for x in shell("""
@@ -101,7 +101,9 @@ result = [int(x) for x in shell("""
 assert result == [1, 2, 3, 4]
 ```
 
-you don't have to wait for the command to finish to recieve the lines:
+You don't have to wait for the command to finish to receive the output.
+
+This loop
 
 ```python
 for line in shell("for i in 1 2 3 4; do echo -n 'It is '; date +%H:%M:%S; sleep 1; done", wait=False)
@@ -117,7 +119,7 @@ would produce something like:
 >>> It is 14:24:55!
 ```
 
-you can extract stdout, stderr and exit code seperately:
+You can extract stdout, stderr and exit code seperately:
 
 ```python
 result = shell(">&2 echo error && echo output && exit 13")
@@ -126,13 +128,36 @@ assert result.stderr() == ["error"]
 assert result.exit_code() == 13
 ```
 
-you can inject environment variable to the shell
+You can inject environment variable to the shell
 
 ```python
 assert shell("echo $VAR", VAR="bar") == "bar"
 ```
 
-or have the shell raise an exception if the exit code is non-zero:
+By default, shell inherits "$CWD" from the environment (aka $PWD).
+
+Still, if ever a command needs to be run from a custom path, one
+way to achieve this is:
+
+```python
+    shell = LocalShell()
+    os.chdir(first_custom_path)
+    shell('first_command')
+    os.chdir(second_custom_path)
+    shell('second_command')
+```
+
+This works ... but it is ugly! Two levels of abstraction are mixed.
+
+This is better:
+
+```python
+    shell = LocalShell()
+    shell('first_command', cwd=first_custom_path)
+    shell('second_command', cwd=second_custom_path)
+```
+
+The shell can raise an exception if the exit code is non-zero:
 
 ```python
 assert shell("exit 13").exit_code() == 13 # will not raise any exception
@@ -143,7 +168,7 @@ except ShellError as e:
     assert True, "will be reached"
 ```
 
-the shell can also raise an exception if something is printed on the standard error:
+The shell can also raise an exception if something is printed on the standard error:
 
 ```python
 shell("echo DANGER >&2").stderr() == ["DANGER"] # will not raise any exception
@@ -154,7 +179,7 @@ except ShellError as e:
     assert True, "will be reached"
 ```
 
-you can pull file from the remote host (for `LocalShell` it's just doing a copy):
+You can pull file from the remote host (for `LocalShell` it's just doing a copy):
 
 ```python
 shell("echo -n test > remote_file.txt")

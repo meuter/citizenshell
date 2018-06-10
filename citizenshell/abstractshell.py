@@ -30,14 +30,14 @@ class AbstractShell(dict):
     def __repr__(self):
         return "%s(id=%s)" % (self.__class__.__name__, self._id)
 
-    def __call__(self, cmd, check_xc=None, check_err=None, wait=None, **kwargs):
+    def __call__(self, cmd, check_xc=None, check_err=None, wait=None, cwd=None, **kwargs):
         check_xc = check_xc if check_xc is not None else self._check_xc
         check_err = check_err if check_err is not None else self._check_err
         wait = wait if wait is not None else self._wait
 
         env = dict(self)
         env.update(kwargs)
-        self._result = self.execute_command(cmd, env, wait, check_err)
+        self._result = self.execute_command(cmd, env, wait, check_err, cwd)
 
         if check_xc and self._result.exit_code() != 0:
             raise ShellError(cmd, "exit code '%s'" % str(self._result.exit_code()))
@@ -46,7 +46,7 @@ class AbstractShell(dict):
     def wait(self):
         self._result.wait()
 
-    def execute_command(self, command, env={}, wait=True, check_err=False):
+    def execute_command(self, command, env={}, wait=True, check_err=False, cwd=None):
         raise NotImplementedError("this method must be implemented by the subclass")
 
     @staticmethod
