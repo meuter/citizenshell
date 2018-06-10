@@ -279,7 +279,7 @@ class AbstractShellTester:
         for i in range(3,0,-1):
             assert collected[i][1] == "bloop"
             diff = collected[i][0] - collected[i-1][0]
-            assert (delta*0.75 < diff) and (diff < delta*1.25)
+            assert (delta*0.5 < diff) and (diff < delta*1.5)
 
         assert result.exit_code() == 0
         assert result.stderr() == []
@@ -326,5 +326,7 @@ class AbstractShellTester:
         shell = self.get_shell()
         cwd = shell("pwd").stdout()[0]
         assert cwd is not None
-        up = shell("pwd", cwd=path.dirname(cwd)).stdout()[0]
-        assert up == path.dirname(cwd)
+        up = path.split(cwd)[0]
+        assert up is not None
+        cwd = shell("pwd", cwd=up).stdout()[0]
+        assert cwd == up
