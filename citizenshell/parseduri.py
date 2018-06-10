@@ -34,8 +34,9 @@ class ParsedUri:
         password_from_uri = None
         userinfo = parsed_uri.getuserinfo()
         if userinfo:
-            if userinfo.find(":") != -1:
-                username_from_uri, password_from_uri = userinfo.split(":")
+            index = userinfo.find(":")
+            if index != -1:                
+                username_from_uri, password_from_uri = userinfo[:index], userinfo[index+1:]
                 if username_from_uri == "":
                     username_from_uri = None                    
             else:

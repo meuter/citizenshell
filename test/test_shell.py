@@ -1,6 +1,10 @@
 from os import environ
 from citizenshell import SecureShell, TelnetShell, Shell, LocalShell, AdbShell, ShellError
 from pytest import mark, raises
+try:
+    from urllib.parse import quote_plus
+except:
+    from urllib import quote_plus
 
 ###################################################################################################
 
@@ -30,7 +34,7 @@ def get_telnet_shell_by_uri(**kwargs):
     password = environ.get("TEST_TELNET_PASS", None)
     port = int(environ.get("TEST_TELNET_PORT", 23))
     if hostname and username and password and port:
-        shell =  Shell("telnet://%s:%s@%s:%d" % (username, password, hostname, port), **kwargs)
+        shell =  Shell("telnet://%s:%s@%s:%d" % (username, quote_plus(password), hostname, port), **kwargs)
     elif hostname and username: 
         shell =  Shell("telnet://%s@%s:%d" % (username, hostname, port), **kwargs)
     assert isinstance(shell, TelnetShell)

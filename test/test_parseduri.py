@@ -1,5 +1,9 @@
 from citizenshell import ParsedUri
 from pytest import raises
+try:
+    from urllib.parse import quote_plus
+except:
+    from urllib import quote_plus
 
 def test_parse_uri_all_in_uri():
     result = ParsedUri("myscheme://john:secretpassword@thehostname.com:1234")
@@ -9,6 +13,14 @@ def test_parse_uri_all_in_uri():
     assert result.hostname == "thehostname.com"
     assert result.port == 1234
 
+def test_parse_uri_all_in_uri_password_with_weird_char():
+    password = "pass?::"
+    result = ParsedUri("myscheme://john:%s@thehostname.com:1234" % quote_plus(password))
+    assert result.scheme == "myscheme"
+    assert result.username == "john"
+    assert result.password == password
+    assert result.hostname == "thehostname.com"
+    assert result.port == 1234
 
 def test_parse_uri_no_password_in_uri():
     result = ParsedUri("myscheme://john@thehostname.com:1234")
