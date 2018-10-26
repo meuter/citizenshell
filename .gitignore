@@ -13,3 +13,4 @@ MANIFEST
 citizenshell.egg-info
 env/**
 .envrc
+Pipfile.lock
