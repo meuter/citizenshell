@@ -2,6 +2,7 @@ from .abstractshell import AbstractShell
 from hashlib import md5
 from os import chmod
 from time import sleep
+from binascii import hexlify, unhexlify
 
 class AbstractRemoteShell(AbstractShell):
 
@@ -33,13 +34,13 @@ class AbstractRemoteShell(AbstractShell):
 
     def do_disconnect(self):
         raise NotImplementedError("this method should be implemented by subclass")
-    
+
     def do_reboot(self):
         raise NotImplementedError("this method should be implemented by subclass")
 
     def do_pull(self, local_path, remote_path):
         remote_md5 = self.md5(remote_path)
-        content = self.hexdump(remote_path).decode('hex')
+        content = unhexlify(self.hexdump(remote_path))
         if remote_md5 and (md5(content).hexdigest() != remote_md5):
             raise RuntimeError("file transfer error")
         open(local_path, "wb").write(content)
@@ -50,17 +51,17 @@ class AbstractRemoteShell(AbstractShell):
             file_object = open(path, "rb")
             while True:
                 chunk = file_object.read(chunk_size)
-                if not chunk: 
+                if not chunk:
                     break
                 yield chunk
 
         def backslash_xify(chunk):
             result = ""
             while chunk:
-                result += r"\\x" + chunk[0].encode('hex')
+                result += r"\\x" + hexlify(chunk[0:1]).decode('utf-8')
                 chunk = chunk[1:]
             return result
-        
+
         local_md5 = md5()
         for chunk in read_by_chunk(local_path):
             local_md5.update(chunk)

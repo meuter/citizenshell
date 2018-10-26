@@ -60,6 +60,7 @@ class AbstractShell(dict):
         return logger
 
     def set_log_level(self, level):
+        self._log_level = level
         self._in_logger.setLevel(level)
         self._out_logger.setLevel(level)
         self._err_logger.setLevel(level)

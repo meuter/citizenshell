@@ -11,23 +11,23 @@ from time import sleep
 
 class AdbShell(AbstractRemoteShell):
 
-    def __init__(self, hostname, port=5555, *args, **kwargs):
+    def __init__(self, hostname, port=5555, root=False, *args, **kwargs):
         super(AdbShell, self).__init__(hostname, *args, **kwargs)
-        self._hostname = hostname        
+        self._hostname = hostname
         self._port = port
-        self._localshell = LocalShell(check_err=True, check_xc=True)
+        self._root = root
+        self._localshell = LocalShell(log_level=self._log_level, check_err=True, check_xc=True)
         self.connect()
 
     def do_connect(self):
-        result = self._localshell("adb connect %s:%d" % (self._hostname, self._port), check_err=True, check_xc=True)
-        if str(result).find("unable to connect") != -1:
-            # for some reason the exit code of 'adb connect' is zero even if the connection cannot be established
-            raise RuntimeError(str(result))
-        self._connected = True
+        self._localshell("adb start-server", check_err=False)
+        self._localshell("adb connect %s:%d" % (self._hostname, self._port))
+        if self._root:
+            self._localshell("adb -s %s:%d root" % (self._hostname, self._port))
 
     def do_disconnect(self):
         self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=False)
-            
+
     def readline(self):
         line = self._process.stdout.readline()
         return line if line else None
@@ -51,7 +51,7 @@ class AdbShell(AbstractRemoteShell):
             sleep(delay)
             self.disconnect()
         # 'adb reboot' blocks indefinitely, you need to run 'adb disconnect' on the side
-        # to make 'adb reboot' return.        
+        # to make 'adb reboot' return.
         thread = Thread(target=disconnect_after_delay, args=(3,))
         thread.start()
         self._localshell("adb reboot")

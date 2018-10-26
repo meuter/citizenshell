@@ -35,7 +35,7 @@ class SerialShell(AbstractRemoteShell):
             if self._password:
                 self._read_until("Password: ")
                 self._write(self._password + "\n")
-            
+
         self._write("export PS1='%s'\n" % self._prompt)
         self._read_until(self._prompt)
         self._read_until(self._prompt)
@@ -48,7 +48,7 @@ class SerialShell(AbstractRemoteShell):
     def do_disconnect(self):
         self._write("exit\n")
         self._serial.close()
-        
+
     def _write(self, text):
         self.log_spy_write(text)
         self._serial.write(text.encode("utf-8"))
@@ -57,16 +57,22 @@ class SerialShell(AbstractRemoteShell):
     def _read_available(self):
         out = ''
         while self._serial.in_waiting:
-            out += self._serial.read(self._serial.in_waiting)
+            out += self._read_string(self._serial.in_waiting)
         self.log_spy_read(out)
         return out
+
+    def _read_string(self, n):
+        chunk = self._serial.read(n)
+        if hasattr(chunk, "decode"):
+            chunk = chunk.decode()
+        return chunk
 
     def _read_until(self, markers):
         if isinstance(markers, str):
             markers = [ markers ]
         out = ''
-        while True:            
-            out += self._serial.read(1)
+        while True:
+            out += self._read_string(1)
             for i in range(len(markers)):
                 if out.endswith(markers[i]):
                     self.log_spy_read(out)
@@ -75,12 +81,12 @@ class SerialShell(AbstractRemoteShell):
     def readline(self):
         (index, line) = self._read_until([ "\n", self._prompt ])
         if index == 0:
-            return line         
+            return line
         return None
 
     def execute_command(self, command, env={}, wait=True, check_err=False, cwd=None):
-        # NOTE(cme): need to re-export the prompt because the serial line might be shared 
-        #            bewteen several instance of SerialShell to the same tty    
+        # NOTE(cme): need to re-export the prompt because the serial line might be shared
+        #            bewteen several instance of SerialShell to the same tty
         self._write("export PS1='%s'\n" % self._prompt)
         self._read_until(self._prompt)
         self._read_until(self._prompt)
