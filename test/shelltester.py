@@ -127,7 +127,7 @@ class AbstractShellTester:
         assert "SOME_VARIABLE" in shell
         assert shell["SOME_VARIABLE"] == "value"
         assert shell("echo $SOME_VARIABLE") == "value"
-        del shell["SOME_VARIABLE"]    
+        del shell["SOME_VARIABLE"]
         assert "SOME_VARIABLE" not in shell
         assert shell("echo $SOME_VARIABLE") == ""
 
@@ -152,10 +152,10 @@ class AbstractShellTester:
             with raises(ShellError):
                 shell("exit 13", check_xc=local_check_xc)
         elif global_check_xc and not local_check_xc:
-            shell("exit 13", check_xc=local_check_xc)        
+            shell("exit 13", check_xc=local_check_xc)
 
     @mark.parametrize("global_check_err,local_check_err", [ (True, True), (True, False), (False, True), (False, False) ])
-    def test_shell_check_err_raises(self, global_check_err, local_check_err):    
+    def test_shell_check_err_raises(self, global_check_err, local_check_err):
         shell =self.get_shell(check_err=global_check_err)
 
         if global_check_err:
@@ -165,7 +165,7 @@ class AbstractShellTester:
             with raises(ShellError):
                 shell(">&2 echo error", check_err=local_check_err)
         elif global_check_err and not local_check_err:
-            shell(">&2 echo error", check_err=local_check_err)        
+            shell(">&2 echo error", check_err=local_check_err)
 
     def test_readme_example_2(self):
         shell = self.get_shell(GREET="Hello")
@@ -275,11 +275,11 @@ class AbstractShellTester:
         result = shell("for i in 1 2 3 4; do echo bloop; sleep %s; done" % delta, wait=False)
         for line in result:
             collected.append( (time(), line))
-        
-        for i in range(3,0,-1):
+
+        for i in range(3,1,-1):
             assert collected[i][1] == "bloop"
             diff = collected[i][0] - collected[i-1][0]
-            assert (delta*0.5 < diff) and (diff < delta*1.5)
+            assert diff > 0.1 and diff < 0.3
 
         assert result.exit_code() == 0
         assert result.stderr() == []
@@ -292,7 +292,7 @@ class AbstractShellTester:
         result = shell("for i in 1 2 3 4; do echo bloop; sleep %s; done" % delta, wait=True)
         for line in result:
             collected.append( (time(), line))
-        
+
         diff = collected[-1][0] - collected[0][0]
         assert diff < delta
 
