@@ -30,7 +30,7 @@ class PrefixedStreamReader(Thread):
             result = "%s=%s; " % (var, val) + result
         if cwd:
             result = ("cd \"%s\"; " % cwd) + result
-        prefix_filter = 'while read line || [ -n "$line" ]; do echo %s$line; done'
+        prefix_filter = 'while IFS= read -r line || [ -n "$line" ]; do echo %s"$line"; done'
         out_filter = prefix_filter % "OUT-"
         err_filter = prefix_filter % "ERR-"
         return "{ { { (%s) 2>&3; echo XC--$? >&4; } | %s >&2; } 3>&1 4>&2 1>&2 | %s; } 2>&1" % (result.strip(), out_filter, err_filter)
