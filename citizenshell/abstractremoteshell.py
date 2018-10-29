@@ -47,7 +47,7 @@ class AbstractRemoteShell(AbstractShell):
 
     def do_push(self, local_path, remote_path):
 
-        def read_by_chunk(path, chunk_size=512):
+        def read_by_chunk(path, chunk_size=128):
             file_object = open(path, "rb")
             while True:
                 chunk = file_object.read(chunk_size)
@@ -63,6 +63,7 @@ class AbstractRemoteShell(AbstractShell):
             return result
 
         local_md5 = md5()
+        self("rm -f %s" % remote_path)
         for chunk in read_by_chunk(local_path):
             local_md5.update(chunk)
             self("echo -n -e %s >> %s\n" % (backslash_xify(chunk), remote_path))
