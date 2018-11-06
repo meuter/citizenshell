@@ -7,6 +7,7 @@ from .queue import Queue
 from .streamreader import StandardStreamReader
 from threading import Thread
 from scp import SCPClient
+from time import sleep
 
 
 class SecureShell(AbstractRemoteShell):
@@ -51,3 +52,5 @@ class SecureShell(AbstractRemoteShell):
 
     def do_reboot(self):
         self("reboot > /dev/null 2>&1 &")
+        sleep(.3)
+        

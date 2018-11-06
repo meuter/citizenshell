@@ -100,4 +100,5 @@ class SerialShell(AbstractRemoteShell):
 
     def do_reboot(self):
         self._write("reboot\n")
+        sleep(.3)
 
