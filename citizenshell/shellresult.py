@@ -24,6 +24,9 @@ class ShellResult():
             while out_left or err_left or not process_finished:
                 fd, line = self._queue.get()
 
+                if isinstance(line, Exception):
+                    raise line
+
                 if line is None:
                     if fd == 1: out_left = False
                     if fd == 2: err_left = False
