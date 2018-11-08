@@ -230,6 +230,7 @@ from logging import INFO
 
 shell = LocalShell(log_level=INFO)
 shell(">&2 echo error && echo output && exit 13")
+shell("echo Finished")
 ```
 
 will produce the following logs:
@@ -238,5 +239,7 @@ will produce the following logs:
 $ >&2 echo error && echo output && exit 13
 output
 error
+$ echo Finished
+Finished
 ```
 
