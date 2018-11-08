@@ -194,3 +194,46 @@ open("local_file.txt", "w").write("test")
 shell.push("local_file.txt", "remote_file.txt")
 assert str(shell("cat remote_file.txt")) == "test"
 ```
+
+## Logs
+
+Every shell object has a set of loggers: stdin, stderr and stdout, as well as for out of band logging message. 
+By default they are all set to `logging.CRITICAL` which does not log anything. However, this log level
+can be configured either using the `log_level=` keyword argument in the shell constructor:
+
+```python
+from citizenshell import LocalShell
+from logging import INFO
+
+shell = LocalShell(log_level=INFO)
+```
+
+or by calling the `set_log_level()` method:
+
+```python
+from citizenshell import sh
+from logging import INFO
+
+sh.set_log_level(INFO)
+```
+
+When configured with `logging.INFO`:
+- all commands are logged on stdout prefixed by a `$` and colored in cyan with `termcolor`
+- all characters produced on stdout are logged to stdout
+- all characters produced on stdout are logged to stderr and colored in red with `termcolor`
+
+For example:
+
+```python
+from citizenshell import LocalShell
+from logging import INFO
+
+shell = LocalShell(log_level=INFO)
+shell(">&2 echo error && echo output && exit 13")
+```
+
+will produce the following logs:
+
+<span style="color:cyan">$ >&2 echo error && echo output && exit 13</span><br/>
+<span>output</span><br/>
+<span style="color:red">error</span><br/>
