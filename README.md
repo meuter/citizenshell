@@ -235,7 +235,7 @@ shell("echo Hello > /tmp/from.txt")
 shell.push("/tmp/from.txt", "/tmp/to.txt")
 ```
 
-will produce the following logs (colors are omitted)
+will produce the following logs (colors are omitted):
 
 ```
 $ >&2 echo error && echo output && exit 13
