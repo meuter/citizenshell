@@ -221,6 +221,7 @@ When configured with `logging.INFO`:
 - all commands are logged on stdout prefixed by a `$` and colored in cyan with `termcolor`
 - all characters produced on stdout are logged to stdout
 - all characters produced on stdout are logged to stderr and colored in red with `termcolor`
+- all out of band message are logged to stdout and colored in yello with `termcolor`
 
 For example:
 
