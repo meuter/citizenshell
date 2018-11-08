@@ -243,3 +243,5 @@ $ echo Finished
 Finished
 ```
 
+For more even more logs messages, `logging.DEBUG` can be used.
+
