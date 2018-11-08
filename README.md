@@ -234,6 +234,7 @@ shell(">&2 echo error && echo output && exit 13")
 
 will produce the following logs:
 
-<span style="color:cyan">$ >&2 echo error && echo output && exit 13</span><br/>
-<span>output</span><br/>
-<span style="color:red">error</span><br/>
+<font color="cyan" face="courier">$ >&2 echo error && echo output && exit 13</font><br/>
+<font face="courier">output</font><br/>
+<font color="red" face="courier">error</font><br/>
+
