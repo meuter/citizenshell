@@ -231,7 +231,8 @@ from logging import INFO
 
 shell = LocalShell(log_level=INFO)
 shell(">&2 echo error && echo output && exit 13")
-shell("echo Finished")
+shell("echo Hello > /tmp/from.txt")
+shell.push("/tmp/from.txt", "/tmp/to.txt")
 ```
 
 will produce the following logs:
@@ -240,9 +241,12 @@ will produce the following logs:
 $ >&2 echo error && echo output && exit 13
 output
 error
-$ echo Finished
-Finished
+$ echo Hello > /tmp/from.txt
+> '/tmp/from.txt' -> '/tmp/to.txt'
+$ command -v chmod
+/bin/chmod
+$ chmod 664 '/tmp/to.txt'
 ```
 
-For more even more logs messages, `logging.DEBUG` can be used.
+For more even more logs messages, `logging.DEBUG` can be used. 
 
