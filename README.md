@@ -235,7 +235,8 @@ shell(">&2 echo error && echo output && exit 13")
 will produce the following logs:
 
 ```
-$ >&2 echo error && echo output && exit 13 output
+$ >&2 echo error && echo output && exit 13
+output
 error
 ```
 
