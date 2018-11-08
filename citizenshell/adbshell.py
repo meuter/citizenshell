@@ -24,6 +24,8 @@ class AdbShell(AbstractRemoteShell):
         self._localshell("adb connect %s:%d" % (self._hostname, self._port))
         if self._root:
             self._localshell("adb -s %s:%d root" % (self._hostname, self._port))
+            self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=False)
+            self._localshell("adb connect %s:%d" % (self._hostname, self._port))
 
     def do_disconnect(self):
         self._localshell("adb disconnect %s:%s" % (self._hostname, self._port), check_err=False)
@@ -41,10 +43,10 @@ class AdbShell(AbstractRemoteShell):
         return ShellResult(self, command, queue, wait, check_err)
 
     def do_push(self, local_path, remote_path):
-        self._localshell("adb push '%s' '%s'" % (local_path, remote_path), check_err=False)
+        self._localshell("adb -s %s:%d push '%s' '%s'" % (self._hostname, self._port, local_path, remote_path), check_err=False)
 
     def do_pull(self, local_path, remote_path):
-        self._localshell("adb pull '%s' '%s'" % (remote_path, local_path), check_err=False)
+        self._localshell("adb -s %s:%d pull '%s' '%s'" % (self._hostname, self._port, remote_path, local_path), check_err=False)
 
     def do_reboot(self):
         def disconnect_after_delay(delay):
@@ -54,6 +56,6 @@ class AdbShell(AbstractRemoteShell):
         # to make 'adb reboot' return.
         thread = Thread(target=disconnect_after_delay, args=(3,))
         thread.start()
-        self._localshell("adb reboot")
+        self._localshell("adb -s %s:%d reboot" % (self._hostname, self._port))
         thread.join()
 
