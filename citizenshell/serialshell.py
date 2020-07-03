@@ -55,26 +55,28 @@ class SerialShell(AbstractRemoteShell):
         self._serial.flush()
 
     def _read_available(self):
-        out = ''
+        out = b''
         while self._serial.in_waiting:
             out += self._read_string(self._serial.in_waiting)
+        if hasattr(out, "decode"):
+            out = out.decode()
         self.log_spy_read(out)
         return out
 
     def _read_string(self, n):
         chunk = self._serial.read(n)
-        if hasattr(chunk, "decode"):
-            chunk = chunk.decode()
         return chunk
 
     def _read_until(self, markers):
         if isinstance(markers, str):
             markers = [ markers ]
-        out = ''
+        out = b''
         while True:
             out += self._read_string(1)
             for i in range(len(markers)):
-                if out.endswith(markers[i]):
+                if out.endswith(bytes(markers[i], 'utf-8')):
+                    if hasattr(out, "decode"):
+                        out = out.decode()
                     self.log_spy_read(out)
                     return (i, out)
 
