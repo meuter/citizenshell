@@ -66,7 +66,7 @@ def get_secureshell_by_uri(**kwargs):
     password = environ.get("TEST_SSH_PASS", None)
     port = int(environ.get("TEST_SSH_PORT", 22))
     if (hostname and username and password and port):
-        shell = Shell("ssh://%s:%s@%s:%d" % (username, password, hostname, port), **kwargs)
+        shell = Shell("ssh://%s:%s@%s:%d" % (username, quote_plus(password), hostname, port), **kwargs)
     elif (hostname and username and port):
         shell = Shell("ssh://%s@%s:%d" % (username, hostname, port), **kwargs)
     else:
