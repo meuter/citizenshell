@@ -74,7 +74,7 @@ class SerialShell(AbstractRemoteShell):
         while True:
             out += self._read_string(1)
             for i in range(len(markers)):
-                if out.endswith(bytes(markers[i], 'utf-8')):
+                if out.endswith(markers[i].encode("utf-8")):
                     if hasattr(out, "decode"):
                         out = out.decode()
                     self.log_spy_read(out)
