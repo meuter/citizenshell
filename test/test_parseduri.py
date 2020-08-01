@@ -117,15 +117,17 @@ def test_parse_uri_only_scheme_and_hostname_in_uri_password_as_arg():
 
 
 def test_parsed_uri_telnet_no_username():
-    with raises(RuntimeError, message="scheme 'telnet' requires 'hostname' and 'username'"):
+    with raises(RuntimeError) as e:
         ParsedUri("telnet://hostname")
+    assert e.value.args == ("scheme '%s' requires 'hostname' and 'username'", 'telnet')
 
 def test_parsed_uri_telnet_username_as_arg():
     ParsedUri("telnet://hostname", username="john")
 
 def test_parsed_uri_ssh_no_username():
-    with raises(RuntimeError, message="scheme 'ssh' requires 'hostname' and 'username'"):
+    with raises(RuntimeError) as e:
         ParsedUri("ssh://hostname")
+    assert e.value.args == ("scheme '%s' requires 'hostname' and 'username'", 'ssh')
 
 def test_parsed_uri_ssh_username_as_arg():
     ParsedUri("ssh://hostname", username="john")
