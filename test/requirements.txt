@@ -1,0 +1,9 @@
+pytest
+pytest-sugar
+pytest-watch
+pypandoc
+bpython
+pylint
+wheel
+twine
+backports.tempfile
