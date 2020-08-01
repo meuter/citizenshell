@@ -1,12 +1,5 @@
 from setuptools import setup
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except(IOError, ImportError):
-    long_description = open('README.md').read()
-
-
 setup(
     name='citizenshell',
     version='2.2.8',
@@ -16,7 +9,8 @@ setup(
     author='Cedric Meuter',
     author_email='cedric.meuter@gmail.com',
     description='Interact with shell locally or over different connection types (telnet, ssh, serial, adb)',
-    long_description=long_description,
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     keywords=["shell", "telnet", "adb", "ssh", "serial"],
     download_url="https://github.com/meuter/citizenshell/archive/2.2.7.tar.gz",
     install_requires=[
