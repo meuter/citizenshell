@@ -9,7 +9,7 @@ except(IOError, ImportError):
 
 setup(
     name='citizenshell',
-    version='2.2.7',
+    version='2.2.8',
     packages=['citizenshell'],
     url='https://github.com/meuter/citizenshell',
     license='MIT',
