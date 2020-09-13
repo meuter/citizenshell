@@ -12,7 +12,7 @@ from time import sleep
 
 class SecureShell(AbstractRemoteShell):
 
-    def __init__(self, hostname, username, password=None, port=22, **kwargs):        
+    def __init__(self, hostname, username, password=None, port=22, **kwargs):
         super(SecureShell, self).__init__(hostname, **kwargs)
         self._hostname = hostname
         self._port = port
@@ -53,4 +53,4 @@ class SecureShell(AbstractRemoteShell):
     def do_reboot(self):
         self("reboot > /dev/null 2>&1 &")
         sleep(.3)
-        
+
