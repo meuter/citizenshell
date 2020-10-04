@@ -1,5 +1,9 @@
-from paramiko import SSHClient, AutoAddPolicy
+import sys
+if sys.version_info.major == 2:
+    from warnings import filterwarnings
+    filterwarnings("ignore", module=".*paramiko.*")
 
+from paramiko import SSHClient, AutoAddPolicy
 from .abstractshell import AbstractShell
 from .abstractremoteshell import AbstractRemoteShell
 from .shellresult import ShellResult
