@@ -9,5 +9,7 @@ from .serialshell import SerialShell
 from .shell import Shell
 from .parseduri import ParsedUri
 
+__version__=open("VERSION").read().strip()
+
 sh = Shell()
 
