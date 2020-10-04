@@ -1,7 +1,0 @@
-paramiko
-termcolor
-pypandoc
-uritools
-pyserial
-backports.tempfile
-scp
