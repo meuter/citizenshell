@@ -3,7 +3,7 @@ from .streamreader import PrefixedStreamReader
 from .shellresult import ShellResult
 from .localshell import LocalShell
 from .queue import Queue
-from subprocess import Popen, PIPE, check_output
+from subprocess import Popen, PIPE, check_output, call
 from os import chmod
 from threading import Thread
 from time import sleep
@@ -19,15 +19,16 @@ class AdbShell(AbstractRemoteShell):
     def list_available_devices(cls):
         local_devices = []
         remote_devices = []
-        for line in check_output("adb devices", shell=True).splitlines():
-            line = line.decode("utf-8")
-            match = cls.ADB_LOCAL_DEVICE_RE.match(line)
-            if match:
-                local_devices.append(match.group("device"))
-                continue
-            match = cls.ADB_REMOTE_DEVICE_RE.match(line)
-            if match:
-                remote_devices.append("%s:%s" % (match.group("hostname"), match.group("port")))
+        if call("command -v adb", shell=True):
+            for line in check_output("adb devices", shell=True).splitlines():
+                line = line.decode("utf-8")
+                match = cls.ADB_LOCAL_DEVICE_RE.match(line)
+                if match:
+                    local_devices.append(match.group("device"))
+                    continue
+                match = cls.ADB_REMOTE_DEVICE_RE.match(line)
+                if match:
+                    remote_devices.append("%s:%s" % (match.group("hostname"), match.group("port")))
         return (local_devices, remote_devices)
 
     def __init__(self, hostname=None, device=None, port=5555, root=False, 
