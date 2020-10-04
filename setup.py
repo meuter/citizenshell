@@ -1,6 +1,20 @@
 from setuptools import setup
-
+from sys import version_info
 VERSION=open("VERSION").read().strip()
+
+REQUIREMENTS = [
+    'termcolor>=1.1.0',
+    'paramiko>=2.4.0',
+    'uritools>=2.1.0',
+    'pyserial>=3.4',
+    'scp>=0.10.2',
+    'backports.tempfile>=0.4.0'
+]
+
+if version_info.major == 2:
+    REQUIREMENTS += [
+        'bcrypt<=3.1.7'
+    ]
 
 setup(
     name='citizenshell',
