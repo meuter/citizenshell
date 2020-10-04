@@ -45,12 +45,29 @@ First you need a shell. For that you have several options:
 
 5. you can instanciate the `AdbShell` for shell over ADB:
 
-    ```python
-    from citizenshell import AdbShell
+    - if ADB devices is reachable over TCP/IP:
 
-    shell = AdbShell(hostname="acme.org", username="john",
-                     password="secretpassword")
-    ```
+      ```python
+      from citizenshell import AdbShell
+  
+      shell = AdbShell(hostname="acme.org", port=5555)
+      ```
+
+    - if ADB device is connected via USB:
+
+      ```python
+      from citizenshell import AdbShell
+  
+      shell = AdbShell(device="1c123a09dab45cbf")
+      ```
+
+    - if there is only one ADB device connected via USB:
+
+      ```python
+      from citizenshell import AdbShell
+  
+      shell = AdbShell()
+      ```
 
 6. you can instanciate the `SerialShell` for shell over serial line:
 
