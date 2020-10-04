@@ -1,6 +1,15 @@
 from setuptools import setup
 from sys import version_info
-VERSION=open("VERSION").read().strip()
+
+def get_version(rel_path):
+    for line in open(rel_path).readlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
+VERSION=get_version("citizenshell/__init__.py")
 
 REQUIREMENTS = [
     'termcolor>=1.1.0',
@@ -20,6 +29,7 @@ setup(
     name='citizenshell',
     version=VERSION,
     packages=['citizenshell'],
+    package_data={ "citizenshell": [ "VERSION" ]},
     url='https://github.com/meuter/citizenshell',
     license='MIT',
     author='Cedric Meuter',
