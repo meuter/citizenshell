@@ -10,11 +10,14 @@ from .abstractremoteshell import AbstractRemoteShell
 from .shellresult import ShellResult
 from .streamreader import PrefixedStreamReader
 from .queue import Queue
+from logging import CRITICAL
 
 class TelnetShell(AbstractRemoteShell):
 
-    def __init__(self, hostname, username, password=None, port=23, *args, **kwargs):
-        super(TelnetShell, self).__init__(hostname, *args, **kwargs)
+    def __init__(self, hostname, username, password=None, port=23, 
+                 check_xc=False, check_err=False, wait=True, log_level=CRITICAL, **kwargs):
+        super(TelnetShell, self).__init__(hostname, check_xc=check_xc, check_err=check_err, 
+                                          wait=wait, log_level=log_level, **kwargs)
         self._prompt = self._id
         self._hostname = hostname
         self._username = username
