@@ -85,10 +85,12 @@ First you need a shell. For that you have several options:
     ```python
     from citizenshell import Shell
 
-    localshell = Shell()
+    localshell  = Shell()
     telnetshell = Shell("telnet://john:secretpassword@acme.org:1234")
     secureshell = Shell("ssh://john:secretpassword@acme.org:1234")
-    adbshell = Shell("adb://myandroiddevice:5555")
+    adbshell    = Shell("adb://myandroiddevice:5555")
+    adbtcpshell = Shell("adb+tcp://myandroiddevice:5555")
+    adbtcpshell = Shell("adb+usb://1c123a09dab45cbf")
     serialshell = Shell("serial://jogn:secretpassword@/dev/ttyUSB3?baudrate=115200")
     ```
 

@@ -18,7 +18,8 @@ def Shell(uri=None, check_xc=False, check_err=False, wait=True, log_level=CRITIC
         return SecureShell(hostname=parsed_uri.hostname, username=parsed_uri.username, 
                            password=parsed_uri.password, port=parsed_uri.port, **parsed_uri.kwargs)
     elif parsed_uri.scheme == "adb":
-        return AdbShell(hostname=parsed_uri.hostname, port=parsed_uri.port, **parsed_uri.kwargs)
+        return AdbShell(hostname=parsed_uri.hostname, port=parsed_uri.port, device=parsed_uri.device,
+                        **parsed_uri.kwargs)
     elif parsed_uri.scheme == "serial":
         return SerialShell(port=parsed_uri.port, username=parsed_uri.username, 
                            password=parsed_uri.password, baudrate=parsed_uri.baudrate, **parsed_uri.kwargs)

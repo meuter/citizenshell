@@ -9,6 +9,7 @@ class ParsedUri:
         self.kwargs = dict(kwargs)
         self.baudrate = None
         self.parse_userinfo(parsed_uri)
+        self.parse_deviceinfo(parsed_uri)
         self.parse_hostinfo(parsed_uri)
         self.validate()
         self.fill_defaults()
@@ -44,21 +45,39 @@ class ParsedUri:
         self.username = self.get_uri_part("username", username_from_uri)
         self.password = self.get_uri_part("password", password_from_uri)
 
+    def parse_deviceinfo(self, parsed_uri):
+        self.device = parsed_uri.gethost()
+
     def validate(self):
-        if self.scheme in ["telnet", "ssh" ]:
+        if self.scheme in ("telnet", "ssh"):
             if not self.hostname or not self.username:
                 raise RuntimeError("scheme '%s' requires 'hostname' and 'username'", self.scheme)
-        if self.scheme in ["adb"]:
+        if self.scheme in ("adb", "adb+tcp"):
             if not self.hostname:
                 raise RuntimeError("scheme '%s' requires 'hostname'", self.scheme)
+        if self.scheme in ("adb+usb",):
+            if not self.device:
+                raise RuntimeError("scheme '%s' requires 'device'", self.scheme)
 
     def fill_defaults(self):
-        if self.scheme == "telnet" and self.port is None:
-            self.port = 23
-        elif self.scheme == "ssh" and self.port is None:
-            self.port = 22
-        elif self.scheme == "adb" and self.port is None:
-            self.port = 5555
+        if self.scheme == "telnet":
+            self.port = self.port or 23
+        elif self.scheme == "ssh":
+            self.port = self.port or 22
+        elif self.scheme in ("adb","adb+tcp"):
+            self.port = self.port or 5555
+        elif self.scheme == "adb+usb":
+            self.port = None
+
+        if self.scheme in ("telnet", "adb", "ssh"):
+            self.device = None
+        elif self.scheme == "adb+usb":
+            self.hostname = None
+            self.scheme = "adb"
+        elif self.scheme == "adb+tcp":
+            self.device = None
+            self.scheme = "adb"
+            
 
     def get_uri_part(self, argname, from_uri):
         from_kwargs = self.kwargs.get(argname, None)

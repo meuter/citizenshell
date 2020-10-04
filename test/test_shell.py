@@ -120,6 +120,26 @@ def test_adbshell_by_uri_with_port():
     assert isinstance(shell, AdbShell)
     assert shell("echo Hello World") == "Hello World"
 
+@mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
+def test_adbshell_with_tcp():
+    hostname = environ.get("TEST_ADB_HOST")
+    assert hostname
+    shell = Shell("adb+tcp://%s:5555" % hostname)
+    assert isinstance(shell, AdbShell)
+    assert shell("echo Hello World") == "Hello World"
+
+###################################################################################################
+
+TEST_ADB_DEVICE_NOT_AVAILABLE = environ.get("TEST_ADB_DEVICE", None) is None
+
+@mark.skipif(TEST_ADB_HOSTNAME_NOT_AVAILABLE, reason="test host not available")
+def test_adbshell_with_usb():
+    device = environ.get("TEST_ADB_HOST")
+    assert device
+    shell = Shell("adb+usb://%s" % device)
+    assert isinstance(shell, AdbShell)
+    assert shell("echo Hello World") == "Hello World"
+
 ###################################################################################################
 
 TEST_SERIAL_PORT_AVAILABLE = environ.get("TEST_SERIAL_PORT", None) is None
