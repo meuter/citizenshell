@@ -7,12 +7,14 @@ from subprocess import Popen, PIPE
 from os import chmod
 from threading import Thread
 from time import sleep
-
+from logging import CRITICAL
 
 class AdbShell(AbstractRemoteShell):
 
-    def __init__(self, hostname, port=5555, root=False, *args, **kwargs):
-        super(AdbShell, self).__init__(hostname, *args, **kwargs)
+    def __init__(self, hostname, port=5555, root=False, 
+                 check_xc=False, check_err=False, wait=True, log_level=CRITICAL, **kwargs):
+        super(AdbShell, self).__init__(hostname, check_xc=check_xc, check_err=check_err, 
+                                       wait=wait, log_level=log_level, **kwargs)
         self._hostname = hostname
         self._port = port
         self._root = root
