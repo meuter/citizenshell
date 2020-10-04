@@ -6,3 +6,4 @@ bpython
 pylint
 wheel
 twine
+backports.tempfile

@@ -13,5 +13,6 @@ python:
 script:
   - sudo apt-get install pandoc
   - python setup.py install
+  - pip install -r test/requirements.txt
   - pytest -s test/
   - python setup.py sdist

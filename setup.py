@@ -21,7 +21,6 @@ setup(
         'uritools>=2.1.0',
         'pyserial>=3.4',
         'scp>=0.10.2',
-        'backports.tempfile>=0.4.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
