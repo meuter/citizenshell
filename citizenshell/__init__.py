@@ -1,3 +1,4 @@
+from logging import DEBUG, INFO, CRITICAL, WARNING, FATAL
 from .localshell import LocalShell
 from .secureshell import SecureShell
 from .shellerror import ShellError
