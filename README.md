@@ -106,7 +106,7 @@ You don't have to wait for the command to finish to receive the output.
 This loop
 
 ```python
-for line in shell("for i in 1 2 3 4; do echo -n 'It is '; date +%H:%M:%S; sleep 1; done", wait=False)
+for line in shell("for i in 1 2 3 4; do echo -n 'It is '; date +%H:%M:%S; sleep 1; done", wait=False):
     print ">>>", line + "!"
 ```
 
