@@ -14,7 +14,7 @@ env2/bin/activate: test/requirements.txt
 
 test2: env2
 	source env2/bin/activate; \
-		pytest test
+		pytest test --tb=short
 
 
 shell2: env2
@@ -37,7 +37,7 @@ shell3: env3
 
 test3: env3
 	source env3/bin/activate; \
-		pytest test
+		pytest test --tb=short
 
 clean:
 	rm -rf env2 env3
