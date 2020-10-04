@@ -19,7 +19,7 @@ class AdbShell(AbstractRemoteShell):
     def list_available_devices(cls):
         local_devices = []
         remote_devices = []
-        if call("command -v adb", shell=True):
+        if call("command -v adb", shell=True) == 0:
             for line in check_output("adb devices", shell=True).splitlines():
                 line = line.decode("utf-8")
                 match = cls.ADB_LOCAL_DEVICE_RE.match(line)
