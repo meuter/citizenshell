@@ -1,8 +1,10 @@
 from setuptools import setup
 
+VERSION=open("VERSION").read().strip()
+
 setup(
     name='citizenshell',
-    version='2.2.8',
+    version=VERSION,
     packages=['citizenshell'],
     url='https://github.com/meuter/citizenshell',
     license='MIT',
@@ -12,7 +14,7 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     keywords=["shell", "telnet", "adb", "ssh", "serial"],
-    download_url="https://github.com/meuter/citizenshell/archive/2.2.7.tar.gz",
+    download_url="https://github.com/meuter/citizenshell/archive/" + VERSION + ".tar.gz",
     install_requires=[
         'termcolor>=1.1.0',
         'paramiko>=2.4.0',

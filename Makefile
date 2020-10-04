@@ -44,3 +44,9 @@ test3: env3
 clean:
 	rm -rf env2 env3
 	find -iname "*.pyc" -delete
+
+dist: env3
+	source env3/bin/activate; \
+		python setup.py sdist
+
+.PHONY: dist clean
