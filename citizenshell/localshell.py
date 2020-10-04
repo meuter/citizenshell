@@ -7,11 +7,13 @@ from .queue import Queue
 from threading import Thread
 from shutil import copyfile
 from os import chmod, stat, environ
+from logging import CRITICAL
 
 class LocalShell(AbstractShell):
 
-    def __init__(self, *args, **kwargs):
-        AbstractShell.__init__(self, *args, **kwargs)
+    def __init__(self, check_xc=False, check_err=False, wait=True, log_level=CRITICAL, **kwargs):
+        AbstractShell.__init__(self, check_xc=check_xc, check_err=check_err,
+                               wait=wait, log_level=log_level, **kwargs)
         self.update(environ)
         
     def execute_command(self, command, env={}, wait=True, check_err=False, cwd=None):
@@ -30,3 +32,4 @@ class LocalShell(AbstractShell):
 
     def do_push(self, local_path, remote_path):
         copyfile(local_path, remote_path)
+
