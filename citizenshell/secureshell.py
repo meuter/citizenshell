@@ -8,12 +8,14 @@ from .streamreader import StandardStreamReader
 from threading import Thread
 from scp import SCPClient
 from time import sleep
-
+from logging import CRITICAL
 
 class SecureShell(AbstractRemoteShell):
 
-    def __init__(self, hostname, username, password=None, port=22, **kwargs):
-        super(SecureShell, self).__init__(hostname, **kwargs)
+    def __init__(self, hostname, username, password=None, port=22,
+                 check_xc=False, check_err=False, wait=True, log_level=CRITICAL, **kwargs):
+        super(SecureShell, self).__init__(hostname, check_xc=check_xc, check_err=check_err, 
+                                          wait=wait, log_level=log_level, **kwargs)
         self._hostname = hostname
         self._port = port
         self._username = username
