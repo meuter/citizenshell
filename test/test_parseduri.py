@@ -75,12 +75,19 @@ def test_parse_uri_scheme_only_no_slash_slash():
 
 def test_parse_uri_empty_string():
     result = ParsedUri("")
-    assert result.scheme == None
+    assert result.scheme == "local"
     assert result.username == None
     assert result.password == None
     assert result.hostname == None
     assert result.port == None
 
+def test_parse_uri_no_argument():
+    result = ParsedUri()
+    assert result.scheme == "local"
+    assert result.username == None
+    assert result.password == None
+    assert result.hostname == None
+    assert result.port == None
 
 def test_parse_uri_port_as_arg():
     result = ParsedUri("myscheme://thehostname.com", port=4567)

@@ -3,8 +3,8 @@ from uritools import urisplit
 
 class ParsedUri:
 
-    def __init__(self, uri, **kwargs):
-        parsed_uri = urisplit(uri)
+    def __init__(self, uri=None, **kwargs):
+        parsed_uri = urisplit(uri or "local://")
         self.scheme = parsed_uri.scheme
         self.kwargs = dict(kwargs)
         self.baudrate = None
