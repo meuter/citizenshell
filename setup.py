@@ -13,7 +13,7 @@ REQUIREMENTS = [
 
 if version_info.major == 2:
     REQUIREMENTS += [
-        'bcrypt<=3.1.7'
+        'bcrypt==3.1.7'
     ]
 
 setup(
