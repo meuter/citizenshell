@@ -38,6 +38,7 @@ class SerialShell(AbstractRemoteShell):
                 self._read_until("Password: ")
                 self._write(self._password + "\n")
 
+        sleep(.1)
         self._write("export PS1='%s'\n" % self._prompt)
         self._read_until(self._prompt)
         self._read_until(self._prompt)
