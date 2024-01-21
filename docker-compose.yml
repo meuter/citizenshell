@@ -1,0 +1,15 @@
+---
+version: "3.5"
+
+services:
+  devshell:
+    container_name: citizenshell
+    hostname: citizenshell
+    build: .
+    environment:
+      - SHELL=/bin/bash
+    volumes:
+      - ./:/citizenshell
+    working_dir: /citizenshell
+
+
