@@ -1,7 +1,6 @@
-from pytest import mark, raises, skip
-from citizenshell import ShellError, AdbShell, sh
-from itertools import product
-from logging import INFO, ERROR, DEBUG, CRITICAL
+from pytest import mark, raises
+from citizenshell import ShellError
+from logging import INFO, ERROR, DEBUG
 from backports.tempfile import TemporaryDirectory
 from tempfile import NamedTemporaryFile
 from os import path, stat
@@ -9,23 +8,27 @@ from uuid import uuid4
 from time import time
 from os import chmod
 
-class AbstractShellTester:
 
+class AbstractShellTester:
     shell_cache = {}
 
     @classmethod
     def get_shell_from_cache(cls, args, kwargs):
-        return cls.shell_cache.get(repr(cls)+repr(args)+repr(kwargs), None)
+        return cls.shell_cache.get(repr(cls) + repr(args) + repr(kwargs), None)
 
     @classmethod
     def add_shell_to_cache(cls, args, kwargs, shell):
-        cls.shell_cache[repr(cls)+repr(args)+repr(kwargs)] = shell
+        cls.shell_cache[repr(cls) + repr(args) + repr(kwargs)] = shell
         return shell
 
     def get_shell(self, *args, **kwargs):
         result = self.get_shell_from_cache(args, kwargs)
         if result is None:
-            result = self.add_shell_to_cache(args, kwargs, self.instanciate_new_shell(*args, log_level=DEBUG, **kwargs))
+            result = self.add_shell_to_cache(
+                args,
+                kwargs,
+                self.instanciate_new_shell(*args, log_level=DEBUG, **kwargs),
+            )
         return result
 
     def instanciate_new_shell(self, *args, **kwargs):
@@ -73,14 +76,14 @@ class AbstractShellTester:
     def test_shell_result_has_combined_err_and_out(self):
         shell = self.get_shell()
         result = shell("echo line; echo error >&2; echo otherline")
-        assert result.stdout() == [ "line", "otherline" ]
-        assert result.stderr() == [ "error" ]
+        assert result.stdout() == ["line", "otherline"]
+        assert result.stderr() == ["error"]
         assert result.exit_code() == 0
 
         combined = result.combined()
-        line_hit = combined.index( (1, "line") )
-        error_hit = combined.index( (2, "error") )
-        otherline_hit = combined.index( (1, "otherline") )
+        line_hit = combined.index((1, "line"))
+        error_hit = combined.index((2, "error"))
+        otherline_hit = combined.index((1, "otherline"))
 
         assert line_hit != -1 and otherline_hit != -1
         assert line_hit < otherline_hit
@@ -89,7 +92,7 @@ class AbstractShellTester:
     def test_shell_can_run_command_on_multiple_lines(self):
         shell = self.get_shell()
         result = shell("echo Bar\necho Foo")
-        assert result.stdout() == [ "Bar", "Foo" ]
+        assert result.stdout() == ["Bar", "Foo"]
         assert result.stderr() == []
         assert result.exit_code() == 0
 
@@ -117,7 +120,7 @@ class AbstractShellTester:
         collected = []
         for line in shell("echo 'Foo\nBar'"):
             collected.append(line)
-        assert collected == ['Foo', 'Bar']
+        assert collected == ["Foo", "Bar"]
 
     def test_shell_has_environment_variable(self):
         shell = self.get_shell()
@@ -141,7 +144,10 @@ class AbstractShellTester:
         assert shell("echo $VAR", VAR="bar") == "bar"
         assert shell("echo $VAR") == "foo"
 
-    @mark.parametrize("global_check_xc,local_check_xc", [ (True, True), (True, False), (False, True), (False, False) ])
+    @mark.parametrize(
+        "global_check_xc,local_check_xc",
+        [(True, True), (True, False), (False, True), (False, False)],
+    )
     def test_shell_check_xc_raises(self, global_check_xc, local_check_xc):
         shell = self.get_shell(check_xc=global_check_xc)
 
@@ -154,9 +160,12 @@ class AbstractShellTester:
         elif global_check_xc and not local_check_xc:
             shell("exit 13", check_xc=local_check_xc)
 
-    @mark.parametrize("global_check_err,local_check_err", [ (True, True), (True, False), (False, True), (False, False) ])
+    @mark.parametrize(
+        "global_check_err,local_check_err",
+        [(True, True), (True, False), (False, True), (False, False)],
+    )
     def test_shell_check_err_raises(self, global_check_err, local_check_err):
-        shell =self.get_shell(check_err=global_check_err)
+        shell = self.get_shell(check_err=global_check_err)
 
         if global_check_err:
             with raises(ShellError):
@@ -178,11 +187,16 @@ class AbstractShellTester:
 
     def test_readme_example_3(self):
         shell = self.get_shell()
-        result = [int(x) for x in shell("""
+        result = [
+            int(x)
+            for x in shell(
+                """
             for i in 1 2 3 4; do
                 echo $i;
             done
-        """)]
+        """
+            )
+        ]
         assert result == [1, 2, 3, 4]
 
     def test_readme_example_4(self):
@@ -207,9 +221,9 @@ class AbstractShellTester:
         caplog.set_level(INFO, logger="%s.err" % base_logger)
 
         shell(cmd)
-        in_index  = caplog.record_tuples.index(('%s.in'  % base_logger, INFO, cmd))
-        out_index = caplog.record_tuples.index(('%s.err' % base_logger, ERROR, u"error"))
-        err_index = caplog.record_tuples.index(('%s.out' % base_logger, INFO, u"output"))
+        in_index = caplog.record_tuples.index(("%s.in" % base_logger, INFO, cmd))
+        out_index = caplog.record_tuples.index(("%s.err" % base_logger, ERROR, "error"))
+        err_index = caplog.record_tuples.index(("%s.out" % base_logger, INFO, "output"))
         assert in_index < out_index
         assert in_index < err_index
 
@@ -222,7 +236,7 @@ class AbstractShellTester:
         assert shell('echo "$FOO"', FOO="foo") == "foo"
 
     def get_test_remote_path(self, shell):
-        filename = "test_file_"+uuid4().hex[:16].upper()
+        filename = "test_file_" + uuid4().hex[:16].upper()
         if shell("test -d /data/local"):
             return path.join("/data", "local", filename)
         if shell("test -d /tmp"):
@@ -253,7 +267,7 @@ class AbstractShellTester:
         remote_path = self.get_test_remote_path(shell)
         assert not shell("cat %s" % remote_path)
         with NamedTemporaryFile() as temp_file:
-            temp_file.write(content.encode('utf-8'))
+            temp_file.write(content.encode("utf-8"))
             temp_file.flush()
             chmod(temp_file.name, 0o777)
             shell.push(temp_file.name, remote_path)
@@ -266,59 +280,67 @@ class AbstractShellTester:
     def test_shell_command_with_empty_outputlines(self):
         shell = self.get_shell()
         result = shell("echo; echo; echo; echo")
-        assert result.stdout() == ['', '', '', '']
+        assert result.stdout() == ["", "", "", ""]
 
     def test_shell_execute_command_no_wait(self):
         shell = self.get_shell()
         collected = []
-        delta=.2
-        result = shell("for i in 1 2 3 4; do echo bloop; sleep %s; done" % delta, wait=False)
+        delta = 0.2
+        result = shell(
+            "for i in 1 2 3 4; do echo bloop; sleep %s; done" % delta, wait=False
+        )
         for line in result:
-            collected.append( (time(), line))
+            collected.append((time(), line))
 
-        for i in range(3,1,-1):
+        for i in range(3, 1, -1):
             assert collected[i][1] == "bloop"
-            diff = collected[i][0] - collected[i-1][0]
+            diff = collected[i][0] - collected[i - 1][0]
             assert diff > 0.1 and diff < 0.3
 
         assert result.exit_code() == 0
         assert result.stderr() == []
-        assert result.stdout() == [ "bloop" for _ in range(4) ]
+        assert result.stdout() == ["bloop" for _ in range(4)]
 
     def test_shell_execute_command_wait(self):
         shell = self.get_shell()
         collected = []
-        delta=.2
-        result = shell("for i in 1 2 3 4; do echo bloop; sleep %s; done" % delta, wait=True)
+        delta = 0.2
+        result = shell(
+            "for i in 1 2 3 4; do echo bloop; sleep %s; done" % delta, wait=True
+        )
         for line in result:
-            collected.append( (time(), line))
+            collected.append((time(), line))
 
         diff = collected[-1][0] - collected[0][0]
         assert diff < delta
 
         assert result.exit_code() == 0
         assert result.stderr() == []
-        assert result.stdout() == [ "bloop" for _ in range(4) ]
-
+        assert result.stdout() == ["bloop" for _ in range(4)]
 
     def test_shell_execute_command_no_wait_and_check_err(self):
         shell = self.get_shell()
         collected = []
         with raises(ShellError):
-            for (fd, line) in shell("echo line; sleep .1; echo error >&2; sleep .1; echo otherline", wait=False, check_err=True).iter_combined():
-                collected.append( (fd, line) )
+            for fd, line in shell(
+                "echo line; sleep .1; echo error >&2; sleep .1; echo otherline",
+                wait=False,
+                check_err=True,
+            ).iter_combined():
+                collected.append((fd, line))
         shell.wait()
-        assert collected == [
-            (1, "line"),
-            (2, "error")
-        ]
+        assert collected == [(1, "line"), (2, "error")]
 
     def test_shell_execute_command_wait_and_check_err(self):
         shell = self.get_shell()
         collected = []
         with raises(ShellError):
-            for (fd, line) in shell("echo line; sleep .1; echo error >&2; sleep .1; echo otherline", wait=True, check_err=True).iter_combined():
-                collected.append( (fd, line) )
+            for fd, line in shell(
+                "echo line; sleep .1; echo error >&2; sleep .1; echo otherline",
+                wait=True,
+                check_err=True,
+            ).iter_combined():
+                collected.append((fd, line))
 
         assert collected == []
 

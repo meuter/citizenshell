@@ -21,7 +21,7 @@ class StandardStreamReader(Thread):
                 line = line.rstrip("\n\r")
                 self.output_queue.put( (self.input_fd, line) )
             self.output_queue.put( (self.input_fd, None) )
-        except Exception as e:         
+        except Exception as e:
             self.output_queue.put( (self.input_fd, e) )
 
 
@@ -46,7 +46,7 @@ class PrefixedStreamReader(Thread):
         self.start()
 
     def readline(self, r_retries = 3):
-        caught = None        
+        caught = None
         for _ in range(r_retries):
             try:
                 line = self.input_stream.readline()

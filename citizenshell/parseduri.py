@@ -1,6 +1,5 @@
 from uritools import urisplit
 
-
 class ParsedUri:
 
     def __init__(self, uri=None, **kwargs):
@@ -15,13 +14,13 @@ class ParsedUri:
         self.fill_defaults()
 
     def parse_hostinfo(self, parsed_uri):
-        if self.scheme == "serial":            
+        if self.scheme == "serial":
             path_from_uri = parsed_uri.getpath()
             hostname_from_uri = parsed_uri.gethost(default=None).upper()
             port_from_uri = path_from_uri if path_from_uri else hostname_from_uri
             self.port = self.get_uri_part("port", port_from_uri)
             baudrate_from_uri = parsed_uri.getquerydict().get("baudrate", [None])[0]
-            self.baudrate = int(self.get_uri_part("baudrate", baudrate_from_uri))            
+            self.baudrate = int(self.get_uri_part("baudrate", baudrate_from_uri))
         else:
             hostname_from_uri = parsed_uri.gethost(default=None)
             if not hostname_from_uri or str(hostname_from_uri) == '':
@@ -36,10 +35,10 @@ class ParsedUri:
         userinfo = parsed_uri.getuserinfo()
         if userinfo:
             index = userinfo.find(":")
-            if index != -1:                
+            if index != -1:
                 username_from_uri, password_from_uri = userinfo[:index], userinfo[index+1:]
                 if username_from_uri == "":
-                    username_from_uri = None                    
+                    username_from_uri = None
             else:
                 username_from_uri = userinfo
         self.username = self.get_uri_part("username", username_from_uri)
@@ -77,11 +76,11 @@ class ParsedUri:
         elif self.scheme == "adb+tcp":
             self.device = None
             self.scheme = "adb"
-            
+
 
     def get_uri_part(self, argname, from_uri):
         from_kwargs = self.kwargs.get(argname, None)
-        
+
         if argname in self.kwargs:
             del self.kwargs[argname]
 
@@ -91,4 +90,4 @@ class ParsedUri:
             return from_uri
         return from_kwargs
 
-    
+

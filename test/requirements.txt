@@ -1,5 +1,4 @@
 pytest
-pytest-sugar
 pytest-watch
 pypandoc
 bpython

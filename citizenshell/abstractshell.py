@@ -1,6 +1,6 @@
 from .shellerror import ShellError
 from uuid import uuid4
-from logging import getLogger, StreamHandler, Formatter, INFO, DEBUG, ERROR, CRITICAL
+from logging import getLogger, StreamHandler, Formatter, CRITICAL
 from sys import stdout, stderr
 from termcolor import colored
 from os import chmod, stat

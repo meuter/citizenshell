@@ -1,6 +1,5 @@
 from .abstractshell import AbstractShell
 from hashlib import md5
-from os import chmod
 from time import sleep
 from binascii import hexlify, unhexlify
 

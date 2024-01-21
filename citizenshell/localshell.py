@@ -6,7 +6,7 @@ from .streamreader import StandardStreamReader
 from .queue import Queue
 from threading import Thread
 from shutil import copyfile
-from os import chmod, stat, environ
+from os import environ
 from logging import CRITICAL
 
 class LocalShell(AbstractShell):
@@ -15,7 +15,7 @@ class LocalShell(AbstractShell):
         AbstractShell.__init__(self, check_xc=check_xc, check_err=check_err,
                                wait=wait, log_level=log_level, **kwargs)
         self.update(environ)
-        
+
     def execute_command(self, command, env={}, wait=True, check_err=False, cwd=None):
         process = Popen(command, env=env, shell=True, stdout=PIPE, stderr=PIPE, cwd=cwd)
         queue = Queue()

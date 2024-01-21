@@ -31,7 +31,7 @@ class ShellResult():
                     if fd == 1: out_left = False
                     if fd == 2: err_left = False
                     if fd == 0: process_finished = True
-                    continue                
+                    continue
 
                 if fd == 0:
                     self._xc = line
@@ -42,15 +42,15 @@ class ShellResult():
 
                 if fd == 1:
                     self._shell.log_stdout(line)
-                elif fd == 2:                    
+                elif fd == 2:
                     self._shell.log_stderr(line)
-                    if self._check_err:                        
+                    if self._check_err:
                         err_detected = ShellError(self.command(), "stderr '%s'" % line)
                         if not self._wait:
                             raise err_detected  # pylint: disable-msg=E0702
 
             self._finished = True
-            if err_detected: 
+            if err_detected:
                 raise err_detected  # pylint: disable-msg=E0702
 
     def iter_stdout(self):

@@ -11,9 +11,9 @@ from logging import CRITICAL
 
 class SerialShell(AbstractRemoteShell):
 
-    def __init__(self, port, baudrate=115200, bytesize=EIGHTBITS, parity=PARITY_NONE, username=None, password=None, 
+    def __init__(self, port, baudrate=115200, bytesize=EIGHTBITS, parity=PARITY_NONE, username=None, password=None,
                  check_xc=False, check_err=False, wait=True, log_level=CRITICAL,**kwargs):
-        super(SerialShell, self).__init__(port, check_xc=check_xc, check_err=check_err, 
+        super(SerialShell, self).__init__(port, check_xc=check_xc, check_err=check_err,
                                           wait=wait, log_level=log_level, **kwargs)
         self._prompt = self.id() + '# '
         self._port = port

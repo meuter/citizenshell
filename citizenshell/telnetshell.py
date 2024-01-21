@@ -1,9 +1,5 @@
 from telnetlib import Telnet
-from uuid import uuid4
 from time import sleep
-from hashlib import md5
-from os import chmod
-from re import compile as compile_regex
 from sys import version_info
 
 from .abstractremoteshell import AbstractRemoteShell
@@ -14,9 +10,9 @@ from logging import CRITICAL
 
 class TelnetShell(AbstractRemoteShell):
 
-    def __init__(self, hostname, username, password=None, port=23, 
+    def __init__(self, hostname, username, password=None, port=23,
                  check_xc=False, check_err=False, wait=True, log_level=CRITICAL, **kwargs):
-        super(TelnetShell, self).__init__(hostname, check_xc=check_xc, check_err=check_err, 
+        super(TelnetShell, self).__init__(hostname, check_xc=check_xc, check_err=check_err,
                                           wait=wait, log_level=log_level, **kwargs)
         self._prompt = self._id
         self._hostname = hostname

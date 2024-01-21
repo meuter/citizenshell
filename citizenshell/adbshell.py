@@ -4,7 +4,6 @@ from .shellresult import ShellResult
 from .localshell import LocalShell
 from .queue import Queue
 from subprocess import Popen, PIPE, check_output, call
-from os import chmod
 from threading import Thread
 from time import sleep
 from logging import CRITICAL
@@ -31,13 +30,13 @@ class AdbShell(AbstractRemoteShell):
                     remote_devices.append("%s:%s" % (match.group("hostname"), match.group("port")))
         return (local_devices, remote_devices)
 
-    def __init__(self, hostname=None, device=None, port=5555, root=False, 
+    def __init__(self, hostname=None, device=None, port=5555, root=False,
                  check_xc=False, check_err=False, wait=True, log_level=CRITICAL, **kwargs):
         if hostname is None and device is None:
             local, remote = self.list_available_devices()
             if len(local) == 1 and len(remote) == 0:
                 self._target = local[0]
-                self._remote = False          
+                self._remote = False
             else:
                 raise RuntimeError("multiple device found { local: %s, remote: %s }, please provide host or device" % (local, remote))
         elif hostname is not None and device is not None:
@@ -49,11 +48,11 @@ class AdbShell(AbstractRemoteShell):
             self._target = device
             self._remote = False
         self._root = root
-        super(AdbShell, self).__init__(self._target, check_xc=check_xc, check_err=check_err, 
+        super(AdbShell, self).__init__(self._target, check_xc=check_xc, check_err=check_err,
                                        wait=wait, log_level=log_level, **kwargs)
         self._localshell = LocalShell(log_level=log_level, check_err=True, check_xc=True)
         self.connect()
-                
+
     def do_connect(self):
         self._localshell("adb start-server", check_err=False)
         if self._remote:
