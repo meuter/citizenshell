@@ -37,3 +37,7 @@ jobs:
         pip install -Ur test/requirements.txt
         pip install -e .
         pytest test
+      env:
+        # NOTE: for some reason the SHELL environment variable
+        #       is not defined in GH actions
+        SHELL: /bin/bash
